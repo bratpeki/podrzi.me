@@ -9,19 +9,54 @@ public class Action {
     private Integer idAction;
 
     private Float goal;
+
+    public Boolean getVisible() {
+        return visible;
+    }
+
+    public void setVisible(Boolean visible) {
+        this.visible = visible;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Float getCollected() {
+        return collected;
+    }
+
+    public void setCollected(Float collected) {
+        this.collected = collected;
+    }
+
+    public Float getGoal() {
+        return goal;
+    }
+
+    public void setGoal(Float goal) {
+        this.goal = goal;
+    }
+
     private Float collected;
     private String name;
     @Column(name = "`desc`", length = 10000)
     private String desc;
     private Boolean visible;
 
-    public String GetName() {
-        return name;
-    }
     public Float GetMissing() {
         return ((float)(Math.round((goal-collected)*100))/100);
-    }
-    public Boolean GetVisible() {
-        return visible;
     }
 }

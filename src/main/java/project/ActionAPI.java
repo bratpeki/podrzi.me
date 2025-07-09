@@ -1,14 +1,11 @@
 package project;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/actions")
 public class ActionAPI {
     private final ActionRepository actionRepository;
 
@@ -19,7 +16,7 @@ public class ActionAPI {
     @GetMapping("/getactions")
     public List<String> GetActions() {
         List<Action> list = actionRepository.findAll();
-        return list.stream().map(Action::GetName).toList();
+        return list.stream().map(Action::getName).toList();
     }
 
     @GetMapping("/getactionmissing")
@@ -31,6 +28,11 @@ public class ActionAPI {
     @GetMapping("/getactionvisible")
     public Boolean GetVisible(@RequestParam Integer idAction) {
         Action a = actionRepository.findByidAction(idAction);
-        return a.GetVisible();
+        return a.getVisible();
+    }
+
+    @PostMapping("/addaction")
+    public Action SetAction(@RequestBody Action action) {
+        return actionRepository.save(action);
     }
 }
