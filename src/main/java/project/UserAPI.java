@@ -18,6 +18,6 @@ public class UserAPI {
     @GetMapping("/getusers")
     public List<String> GetUsers() {
         List<User> list = userRepository.findAll();
-        return list.stream().map(User::GetDisplayname).toList();
+        return list.stream().map(User::GetDisplayName).toList();
     }
 }
