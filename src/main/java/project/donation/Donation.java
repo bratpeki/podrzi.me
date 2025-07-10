@@ -8,6 +8,21 @@ import java.time.LocalDateTime;
 
 @Entity
 public class Donation {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer idDonation;
+
+    @ManyToOne
+    @JoinColumn(name = "idAction")
+    private Action action;
+
+    @ManyToOne
+    @JoinColumn(name = "idUser")
+    private User user;
+
+    private Float amount;
+    private LocalDateTime donationTime;
+
     public Integer getIdDonation() {
         return idDonation;
     }
@@ -48,22 +63,7 @@ public class Donation {
         this.action = action;
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idDonation;
-
-    @ManyToOne
-    @JoinColumn(name = "idAction")
-    private Action action;
-
-    @ManyToOne
-    @JoinColumn(name = "idUser")
-    private User user;
-
-    private Float amount;
-    private LocalDateTime donationTime;
-
     public String getNameAmount() {
-        return action.getIdAction() + " " + action.getName() + " " + user.getDisplayName() + " " + amount.toString();
+        return action.getIdAction() + " " + action.getName() + " " + user.getDisplayname() + " " + amount.toString();
     }
 }

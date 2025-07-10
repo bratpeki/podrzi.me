@@ -16,18 +16,29 @@ public class UserAPI {
     @GetMapping("/getusers")
     public List<String> GetUsers() {
         List<User> list = userRepository.findAll();
-        return list.stream().map(User::getDisplayName).toList();
+        return list.stream().map(User::getDisplayname).toList();
     }
 
-    @GetMapping("/userauth")
-    public Boolean LoginUser(@RequestParam String username, @RequestParam String password) {
-        User u = userRepository.findByusername(username);
-        return u.getPassword().equals(password);
+    @PostMapping("/userauth")
+    public Boolean LoginUser(@RequestBody UserLoginDTO uldto) {
+        User u = userRepository.findByusername(uldto.getUsername());
+        return u.getPassword().equals(uldto.getPassword());
     }
 
     @PostMapping("/adduser")
-    public User SetUser(@RequestBody User user) {
-        return userRepository.save(user);
+    public String SetUser(@RequestBody User user) {
+
+        if (userRepository.findByemail(user.getEmail()) != null)
+            return "emailerror";
+
+        if (userRepository.findByusername(user.getUsername()) != null)
+            return "usernameerror";
+
+        if (userRepository.findBydisplayname(user.getDisplayname()) != null)
+            return "displaynameerror";
+
+        userRepository.save(user);
+        return "success";
     }
 
 

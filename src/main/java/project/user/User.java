@@ -16,12 +16,12 @@ public class User {
         this.desc = desc;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public String getDisplayname() {
+        return displayname;
     }
 
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
+    public void setDisplayname(String displayname) {
+        this.displayname = displayname;
     }
 
     public String getPassword() {
@@ -40,9 +40,18 @@ public class User {
         this.username = username;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     private String username;
     private String password;
-    private String displayName;
+    private String email;
+    private String displayname;
     @Column(name = "`desc`", length = 2000)
     private String desc;
 
