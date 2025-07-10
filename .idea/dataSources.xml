@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="mydb@192.168.0.120" uuid="4ab7c52a-694e-4141-bd79-a9125c4bce3b">
+    <data-source source="LOCAL" name="Database" uuid="4ab7c52a-694e-4141-bd79-a9125c4bce3b">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <imported>true</imported>
       <remarks>$PROJECT_DIR$/src/main/resources/application.properties</remarks>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://192.168.0.120:3306/mydb</jdbc-url>
+      <jdbc-url>jdbc:mysql://podrzime.ddns.net:3306/mydb</jdbc-url>
       <jdbc-additional-properties>
         <property name="com.intellij.clouds.kubernetes.db.host.port" />
         <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
