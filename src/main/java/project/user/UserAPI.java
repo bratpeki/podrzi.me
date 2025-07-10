@@ -1,4 +1,4 @@
-package project;
+package project.user;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -29,4 +29,6 @@ public class UserAPI {
     public User SetUser(@RequestBody User user) {
         return userRepository.save(user);
     }
+
+
 }

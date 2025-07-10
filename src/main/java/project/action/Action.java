@@ -1,4 +1,4 @@
-package project;
+package project.action;
 
 import jakarta.persistence.*;
 
@@ -12,6 +12,14 @@ public class Action {
 
     public Boolean getVisible() {
         return visible;
+    }
+
+    public Integer getIdAction() {
+        return idAction;
+    }
+
+    public void setIdAction(Integer idAction) {
+        this.idAction = idAction;
     }
 
     public void setVisible(Boolean visible) {

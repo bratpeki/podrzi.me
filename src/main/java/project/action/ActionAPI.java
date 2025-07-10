@@ -1,4 +1,4 @@
-package project;
+package project.action;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +29,12 @@ public class ActionAPI {
     public Boolean GetVisible(@RequestParam Integer idAction) {
         Action a = actionRepository.findByidAction(idAction);
         return a.getVisible();
+    }
+
+    @GetMapping("/getvisibleactions")
+    public List<Action> GetVisibleActions() {
+        List<Action> list = actionRepository.findAll();
+        return list.stream().filter(a -> a.getVisible() == true).toList();
     }
 
     @PostMapping("/addaction")
