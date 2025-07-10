@@ -5,6 +5,8 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import LoginPage from './LoginPage';
 import RegisterPage from './RegisterPage';
 import HomePage from './HomePage';
+import CreateActionPage from './CreateActionPage';
+import AboutUsPage from './AboutUsPage';
 
 function Home() {
   return (
@@ -34,6 +36,8 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/home" element={<HomePage />} />
+        <Route path="/createAction" element={<CreateActionPage/>}/>
+        <Route path="/aboutUs" element={<AboutUsPage/>}/>
       </Routes>
     </Router>
   );
