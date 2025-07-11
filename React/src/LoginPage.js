@@ -25,7 +25,7 @@ function LoginPage() {
     });
 
     if (!response.ok) {
-      throw new Error('Authentication failed');
+      throw new Error('Autentifikacija neuspjesna!');
     }
 
     const text = await response.text(); 
@@ -33,10 +33,10 @@ function LoginPage() {
        navigate('/home')
     }
     else{
-      setResponseMessage('incorrect password. Please check your credentials.');
+      setResponseMessage('Neispravna lozinka! Provjerite Vase podatke!');
     }
   } catch (error) {
-    setResponseMessage('Login failed. Please check your credentials.');
+    setResponseMessage('Neuspjesna prijava! Provjerite Vase podatke!');
     console.error(error);
   }
 };
@@ -46,11 +46,11 @@ function LoginPage() {
       <h1 className="text-4xl font-bold text-cyan-600 mb-8">PODRZI.ME</h1>
 
       <div className="w-full max-w-md bg-white p-8 shadow-md rounded border">
-        <h2 className="text-2xl font-semibold mb-6">Log in</h2>
+        <h2 className="text-2xl font-semibold mb-6"><center>Prijava</center></h2>
 
         <input
           type="username"
-          placeholder="Username"
+          placeholder="Korisnicko ime"
           className="w-full mb-4 p-2 border border-cyan-600 rounded"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
@@ -58,37 +58,37 @@ function LoginPage() {
 
         <input
           type="password"
-          placeholder="Password"
+          placeholder="Lozinka"
           className="w-full mb-2 p-2 border border-cyan-600 rounded"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
         <div className="text-right text-sm mb-4">
-          <a href="#" className="link-style">Forgot your password?</a>
+          <a href="#" className="link-style">Zaboravili ste lozinku?</a>
         </div>
 
         <button
           onClick={handleLogin}
           className="w-full bg-cyan-600 text-white py-2 rounded hover:bg-cyan-700 mb-4"
         >
-          Log in
+          Prijavi se
         </button>
 
         <button
           onClick={() => navigate('/home')} 
           className="w-full bg-gray-600 text-white py-2 rounded hover:bg-gray-700 mb-4"
         >
-          Log in as guest
+          Prijavi se kao gost
         </button>
         {responseMessage && (
           <p className="text-center text-sm text-red-600 mb-2">{responseMessage}</p>
         )}
 
         <div className="flex items-center space-x-1 text-sm">
-        <span>Don't have an account?</span>
+        <span>Nemate nalog?</span>
           <Link to="/register" className="link-style">
-            Sign Up
+            Registruj se
           </Link>
         </div>
 

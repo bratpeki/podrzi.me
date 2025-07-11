@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 @Entity
 public class Admin {
     @Id
+    @Column(name = "`username`", length = 40)
     private String username;
     private String password;
     private Boolean owner;

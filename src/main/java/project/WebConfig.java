@@ -15,7 +15,7 @@ public class WebConfig {
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("/api/**")
-                        .allowedOrigins("http://localhost:3000", "http://podrzime.ddns.net:3000")
+                        .allowedOrigins("http://localhost:3000", "http://podrzime.ddns.net:3000", "http://192.168.0.120:3000")
                         .allowedMethods("GET", "POST")
                         .allowedHeaders("*");
             }

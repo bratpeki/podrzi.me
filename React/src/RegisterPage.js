@@ -27,7 +27,7 @@ function RegisterPage() {
   })
     });
     if (!response.ok) {
-      throw new Error('Authentication failed');
+      throw new Error('Neuspjesna autentifikacija!');
     }
 
     const text = await response.text(); 
@@ -35,16 +35,16 @@ function RegisterPage() {
        navigate('/home')
     }
     else if (text == "emailerror"){
-      setResponseMessage('Email taken. Please Choose a different email');
+      setResponseMessage('E-Mail je vec zauzet! Molimo Vas unesite drugu E-Mail adresu!');
     }
     else if (text == "usernameerror"){
-      setResponseMessage('Username taken. Please Choose a different username')
+      setResponseMessage('Korisnicko ime je vec zauzeto! Molimo Vas unesite drugo korisnicko ime!')
     }
     else if (text == "displaynameerror"){
-      setResponseMessage('Display name taken. Please choose a different display name')
+      setResponseMessage('Prikazno ime je vec zauzeto! Molimo Vas unesite drugo prikazno ime!')
     }
 }catch (error) {
-    setResponseMessage('register failed. Please check your credentials.');
+    setResponseMessage('Registracija neuspjesna!');
     console.error(error);
   }
 };
@@ -55,17 +55,17 @@ function RegisterPage() {
 
       <div className="w-full max-w-md bg-white p-8 shadow-md rounded border">
         <div className="text-center mb-4 text-sm">
-          Have an account?{' '}
+          Vec imate nalog?{' '}
           <Link to="/login" className="text-blue-600 hover:underline">
-            Log in
+            Prijavi se
           </Link>
         </div>
 
-        <h2 className="text-2xl font-semibold mb-6">Sign up</h2>
+        <h2 className="text-2xl font-semibold mb-6"><center>Registracija</center></h2>
 
          <input
           type="email"
-          placeholder="Email"
+          placeholder="E-Mail"
           className="w-full mb-4 p-2 border border-cyan-600 rounded"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -73,7 +73,7 @@ function RegisterPage() {
 
         <input
           type="text"
-          placeholder="Username"
+          placeholder="Korisnicko ime"
           className="w-full mb-4 p-2 border border-cyan-600 rounded"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
@@ -81,7 +81,7 @@ function RegisterPage() {
 
          <input
           type="text"
-          placeholder="Display Name"
+          placeholder="Prikazno ime"
           className="w-full mb-4 p-2 border border-cyan-600 rounded"
           value={displayName}
           onChange={(e) => setDisplayName(e.target.value)}
@@ -89,22 +89,22 @@ function RegisterPage() {
        
         <input
           type="password"
-          placeholder="Password"
-          className="w-full mb-6 p-2 border border-cyan-600 rounded"
+          placeholder="Lozinka"
+          className="w-full mb-4 p-2 border border-cyan-600 rounded"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
         <input
           type="password"
-          placeholder="Confirm Password"
-          className="w-full mb-6 p-2 border border-cyan-600 rounded"
+          placeholder="Potrvdi lozinku"
+          className="w-full mb-10 p-2 border border-cyan-600 rounded"
         />
 
         <button
          onClick={handleRegister}
          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
-          Create account
+          Napravi nalog
         </button>
 
         {responseMessage && (
@@ -112,13 +112,13 @@ function RegisterPage() {
         )}
 
         <p className="text-xs text-gray-600 text-center mt-4">
-          By signing up, you agree to our{' '}
+          Registrovanjem prihvatate nasu {' '}
           <a href="#" className="text-blue-600 underline">
-            Privacy Policy
+            Policu privatnosti
           </a>{' '}
-          and{' '}
+          i{' '}
           <a href="#" className="text-blue-600 underline">
-            Terms of Use
+            Uslove koriscenja
           </a>
           .
         </p>

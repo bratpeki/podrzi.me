@@ -14,15 +14,15 @@ function Home() {
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <p className="text-4xl font-extrabold text-red-500">panca</p>
+        <p className="text-4xl font-extrabold text-red-500">PNEIS</p>
         <p>
-          Edit <code>src/App.js</code> and save to reload.
+          EDITUJ <code>KURAC</code> PA SACUVAJ I PONOVO UCITAJ!
         </p>
         <Link
           to="/login"
           className="App-link"
         >
-          Go to Login Page
+          ULOGUJ SE BRALEEEE
         </Link>
       </header>
     </div>
