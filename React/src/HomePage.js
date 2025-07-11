@@ -105,7 +105,7 @@ function HomePage() {
         <div className="container mx-auto px-4 flex justify-center space-x-6 text-sm">
           <Link to="/vodic" className="hover:underline">Vodič</Link>
           <Link to="/aboutUs" className="hover:underline">O nama</Link>
-          <Link to="/kontakt" className="hover:underline">Kontakt</Link>
+          <Link to="/contactUs" className="hover:underline">Kontakt</Link>
           <Link to="/uslovi" className="hover:underline">Uslovi korišćenja</Link>
         </div>
       </footer>
