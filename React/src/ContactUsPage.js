@@ -14,14 +14,40 @@ function ContactPage() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Poruka poslana:', formData);
-    alert('Hvala što ste nas kontaktirali!');
+    
+    const payload={
+      name: formData.ime,
+      email:  formData.email,
+      messagetext:  formData.poruka,
+    };
 
-    // Reset forme
-    setFormData({ ime: '', email: '', poruka: '' });
-  };
+//http://podrzime.ddns.net:8080/api/messages/send
+
+ try {
+      const response = await fetch('http://podrzime.ddns.net:8080/api/messages/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+        });
+
+        if (response.ok) {
+          alert('Hvala što ste nas kontaktirali!');
+          setFormData({ ime: '', email: '', poruka: '' });
+          } else {
+            const errorText = await response.text();
+            alert('Greška prilikom slanja poruke.');
+            console.error('Greška:', errorText);
+          }
+        } catch (error) {
+          console.error('Greška pri konekciji sa serverom:', error);
+          alert('Došlo je do greške pri slanju.');
+        }
+      }; 
+    
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-20">
