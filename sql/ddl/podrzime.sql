@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 8.0.42, for Win64 (x86_64)
 --
--- Host: 127.0.0.1    Database: mydb
+-- Host: 192.168.0.120    Database: mydb
 -- ------------------------------------------------------
 -- Server version	8.0.42
 
@@ -28,12 +28,22 @@ CREATE TABLE `action` (
   `collected` float NOT NULL DEFAULT '0',
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `desc` varchar(10000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `visible` tinyint NOT NULL DEFAULT '1',
+  `visible` bit(1) DEFAULT NULL,
   `imagepath` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`idAction`),
   UNIQUE KEY `idAction_UNIQUE` (`idAction`)
 ) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `action`
+--
+
+LOCK TABLES `action` WRITE;
+/*!40000 ALTER TABLE `action` DISABLE KEYS */;
+INSERT INTO `action` VALUES (1,2000,800,'pero','pero je sirotinja, plz nahrani ga',_binary '','');
+/*!40000 ALTER TABLE `action` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `actionowner`
@@ -54,6 +64,15 @@ CREATE TABLE `actionowner` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `actionowner`
+--
+
+LOCK TABLES `actionowner` WRITE;
+/*!40000 ALTER TABLE `actionowner` DISABLE KEYS */;
+/*!40000 ALTER TABLE `actionowner` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `admin`
 --
 
@@ -62,11 +81,20 @@ DROP TABLE IF EXISTS `admin`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `admin` (
   `username` varchar(40) NOT NULL,
-  `password` varchar(40) NOT NULL,
-  `owner` tinyint NOT NULL DEFAULT '0',
+  `password` varchar(255) DEFAULT NULL,
+  `owner` bit(1) DEFAULT NULL,
   PRIMARY KEY (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `admin`
+--
+
+LOCK TABLES `admin` WRITE;
+/*!40000 ALTER TABLE `admin` DISABLE KEYS */;
+/*!40000 ALTER TABLE `admin` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `comment`
@@ -91,6 +119,15 @@ CREATE TABLE `comment` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `comment`
+--
+
+LOCK TABLES `comment` WRITE;
+/*!40000 ALTER TABLE `comment` DISABLE KEYS */;
+/*!40000 ALTER TABLE `comment` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `donation`
 --
 
@@ -105,10 +142,20 @@ CREATE TABLE `donation` (
   `donationTime` datetime NOT NULL,
   PRIMARY KEY (`idDonation`),
   KEY `fk_ActionDonation_User1_idx` (`idUser`),
-  KEY `fk_ActionDonation_Action1` (`idAction`),
-  CONSTRAINT `fk_ActionDonation_User1` FOREIGN KEY (`idUser`) REFERENCES `user` (`idUser`)
+  KEY `FKskenriiwx4liur6e7e19xhpch` (`idAction`),
+  CONSTRAINT `fk_ActionDonation_User1` FOREIGN KEY (`idUser`) REFERENCES `user` (`idUser`),
+  CONSTRAINT `FKskenriiwx4liur6e7e19xhpch` FOREIGN KEY (`idAction`) REFERENCES `action` (`idAction`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `donation`
+--
+
+LOCK TABLES `donation` WRITE;
+/*!40000 ALTER TABLE `donation` DISABLE KEYS */;
+/*!40000 ALTER TABLE `donation` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `donationreport`
@@ -125,6 +172,65 @@ CREATE TABLE `donationreport` (
   CONSTRAINT `fk_DonationReport_User1` FOREIGN KEY (`User_idUser`) REFERENCES `user` (`idUser`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `donationreport`
+--
+
+LOCK TABLES `donationreport` WRITE;
+/*!40000 ALTER TABLE `donationreport` DISABLE KEYS */;
+/*!40000 ALTER TABLE `donationreport` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `message`
+--
+
+DROP TABLE IF EXISTS `message`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `message` (
+  `idMessage` int NOT NULL AUTO_INCREMENT,
+  `email` varchar(255) DEFAULT NULL,
+  `messagetext` varchar(500) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`idMessage`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `message`
+--
+
+LOCK TABLES `message` WRITE;
+/*!40000 ALTER TABLE `message` DISABLE KEYS */;
+/*!40000 ALTER TABLE `message` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `messages`
+--
+
+DROP TABLE IF EXISTS `messages`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `messages` (
+  `idMessage` int NOT NULL AUTO_INCREMENT,
+  `messagetext` varchar(500) NOT NULL,
+  `email` varchar(90) NOT NULL,
+  `name` varchar(90) NOT NULL,
+  PRIMARY KEY (`idMessage`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `messages`
+--
+
+LOCK TABLES `messages` WRITE;
+/*!40000 ALTER TABLE `messages` DISABLE KEYS */;
+/*!40000 ALTER TABLE `messages` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `notification`
@@ -144,6 +250,15 @@ CREATE TABLE `notification` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `notification`
+--
+
+LOCK TABLES `notification` WRITE;
+/*!40000 ALTER TABLE `notification` DISABLE KEYS */;
+/*!40000 ALTER TABLE `notification` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `refund`
 --
 
@@ -159,6 +274,15 @@ CREATE TABLE `refund` (
   CONSTRAINT `fk_refund_donation1` FOREIGN KEY (`idDonation`) REFERENCES `donation` (`idDonation`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `refund`
+--
+
+LOCK TABLES `refund` WRITE;
+/*!40000 ALTER TABLE `refund` DISABLE KEYS */;
+/*!40000 ALTER TABLE `refund` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `report`
@@ -192,6 +316,15 @@ CREATE TABLE `report` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `report`
+--
+
+LOCK TABLES `report` WRITE;
+/*!40000 ALTER TABLE `report` DISABLE KEYS */;
+/*!40000 ALTER TABLE `report` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `review`
 --
 
@@ -206,6 +339,15 @@ CREATE TABLE `review` (
   CONSTRAINT `fk_Review_User1` FOREIGN KEY (`idUser`) REFERENCES `user` (`idUser`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `review`
+--
+
+LOCK TABLES `review` WRITE;
+/*!40000 ALTER TABLE `review` DISABLE KEYS */;
+/*!40000 ALTER TABLE `review` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `user`
@@ -224,8 +366,18 @@ CREATE TABLE `user` (
   `imagepath` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`idUser`),
   UNIQUE KEY `idUser_UNIQUE` (`idUser`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user`
+--
+
+LOCK TABLES `user` WRITE;
+/*!40000 ALTER TABLE `user` DISABLE KEYS */;
+INSERT INTO `user` VALUES (25,'lol','69669','cigan',NULL,'gej@gej.gej',NULL);
+/*!40000 ALTER TABLE `user` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -236,4 +388,4 @@ CREATE TABLE `user` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-07-10 17:39:57
+-- Dump completed on 2025-07-11 18:00:12
