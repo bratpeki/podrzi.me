@@ -7,6 +7,7 @@ import RegisterPage from './RegisterPage';
 import HomePage from './HomePage';
 import CreateActionPage from './CreateActionPage';
 import AboutUsPage from './AboutUsPage';
+import ContactUsPage from './ContactUsPage';
 
 function Home() {
   return (
@@ -38,6 +39,7 @@ function App() {
         <Route path="/home" element={<HomePage />} />
         <Route path="/createAction" element={<CreateActionPage/>}/>
         <Route path="/aboutUs" element={<AboutUsPage/>}/>
+        <Route path="/contactUs" element={<ContactUsPage/>}/>
       </Routes>
     </Router>
   );
