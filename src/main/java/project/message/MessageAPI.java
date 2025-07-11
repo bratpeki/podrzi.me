@@ -18,7 +18,7 @@ public class MessageAPI {
 
     @PostMapping("/send")
     private String SendMessage(@RequestBody MessageDTO messDTO) {
-        if (!messDTO.getEmail().contains("@"))
+        if (!messDTO.getEmail().contains("@") || !messDTO.getEmail().contains("."))
             return "emailerror";
 
         Message mess = new Message();

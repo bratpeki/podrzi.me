@@ -21,12 +21,16 @@ public class UserAPI {
 
     @PostMapping("/userauth")
     public Boolean LoginUser(@RequestBody UserLoginDTO uldto) {
+        if (uldto.getUsername().isBlank() || uldto.getPassword().isBlank())
+            return false;
         User u = userRepository.findByusername(uldto.getUsername());
         return u.getPassword().equals(uldto.getPassword());
     }
 
     @PostMapping("/adduser")
     public String SetUser(@RequestBody User user) {
+        if (!user.getEmail().contains("@") || !user.getEmail().contains(".") || user.getEmail().isBlank() || user.getUsername().isBlank() || user.getDisplayname().isBlank())
+            return "invaliddataerror";
 
         if (userRepository.findByemail(user.getEmail()) != null)
             return "emailerror";

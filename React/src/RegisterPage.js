@@ -37,6 +37,9 @@ function RegisterPage() {
     else if (text == "emailerror"){
       setResponseMessage('E-Mail je vec zauzet! Molimo Vas unesite drugu E-Mail adresu!');
     }
+    else if (text == "invaliddataerror"){
+      setResponseMessage('Podaci nisu validni! Molimo provjerite podatke ponovo!');
+    }
     else if (text == "usernameerror"){
       setResponseMessage('Korisnicko ime je vec zauzeto! Molimo Vas unesite drugo korisnicko ime!')
     }
@@ -69,6 +72,7 @@ function RegisterPage() {
           className="w-full mb-4 p-2 border border-cyan-600 rounded"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          required
         />
 
         <input
@@ -77,6 +81,7 @@ function RegisterPage() {
           className="w-full mb-4 p-2 border border-cyan-600 rounded"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          required
         />
 
          <input
@@ -85,6 +90,7 @@ function RegisterPage() {
           className="w-full mb-4 p-2 border border-cyan-600 rounded"
           value={displayName}
           onChange={(e) => setDisplayName(e.target.value)}
+          required
         />
        
         <input
@@ -93,12 +99,14 @@ function RegisterPage() {
           className="w-full mb-4 p-2 border border-cyan-600 rounded"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          required
         />
 
         <input
           type="password"
           placeholder="Potrvdi lozinku"
           className="w-full mb-10 p-2 border border-cyan-600 rounded"
+          required
         />
 
         <button
