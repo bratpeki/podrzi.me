@@ -8,6 +8,7 @@ import HomePage from './HomePage';
 import CreateActionPage from './CreateActionPage';
 import AboutUsPage from './AboutUsPage';
 import ContactUsPage from './ContactUsPage';
+import ToSPage from './ToSPage';
 
 function Home() {
   return (
@@ -40,6 +41,7 @@ function App() {
         <Route path="/createAction" element={<CreateActionPage/>}/>
         <Route path="/aboutUs" element={<AboutUsPage/>}/>
         <Route path="/contactUs" element={<ContactUsPage/>}/>
+        <Route path="/ToSPage" element={<ToSPage/>}/>
       </Routes>
     </Router>
   );
