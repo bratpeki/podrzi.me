@@ -1,4 +1,4 @@
-package project;
+package project.utilities;
 
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.web.bind.annotation.*;
