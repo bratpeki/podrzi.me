@@ -1,0 +1,18 @@
+// src/InfoFooter.js
+import React from 'react';
+import { Link } from 'react-router-dom';
+
+function InfoFooter() {
+  return (
+    <footer className="bg-gray-800 text-white py-3 fixed bottom-0 w-full z-50 shadow-inner">
+      <div className="container mx-auto px-4 flex justify-center space-x-6 text-sm">
+        <Link to="/vodic" className="hover:underline">Vodič</Link>
+        <Link to="/aboutUs" className="hover:underline">O nama</Link>
+        <Link to="/contactUs" className="hover:underline">Kontakt</Link>
+        <Link to="/ToSPage" className="hover:underline">Uslovi korišćenja</Link>
+      </div>
+    </footer>
+  );
+}
+
+export default InfoFooter;
