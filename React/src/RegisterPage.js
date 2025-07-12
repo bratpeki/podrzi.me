@@ -1,6 +1,7 @@
 // src/RegisterPage.js
-import React, { useState } from 'react';
+import React, {useContext, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { AuthStateContext } from "./components/UseAuthState";
 
 function RegisterPage() {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ function RegisterPage() {
   const [displayName, setDisplayName] = useState('');
   const [password, setPassword] = useState('');
   const [responseMessage, setResponseMessage] = useState('');
+  const { authState, authDispatch } = useContext(AuthStateContext);
 
  const handleRegister = async () => {
   try {
@@ -32,6 +34,23 @@ function RegisterPage() {
 
     const text = await response.text(); 
     if(text == "success"){
+         const response = await fetch("http://podrzime.ddns.net:8080/api/users/userauth", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: username,
+          password: password,
+        }),
+      });
+      const text1 = await response.text(); 
+      authDispatch({
+          type: "login",
+          payload: {
+            accessToken: text1,
+          },
+        });
        navigate('/home')
     }
     else if (text == "emailerror"){
