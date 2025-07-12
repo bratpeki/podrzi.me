@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import NavigationBar from './NavigationBar';
+import InfoFooter from './InfoFooter';
 
 function HomePage() {
   const [actions, setActions] = useState([]);
@@ -17,28 +19,8 @@ function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
-      {/* Navigation Bar */}
-      <nav className="bg-gray-800 p-4 flex justify-between items-center text-white">
-        <input
-          type="text"
-          placeholder="Pretraga akcija"
-          className="p-2 rounded-md w-1/3 text-black"
-        />
-        <div className="space-x-6 ">
-          <Link to="/createAction" className="hover:underline">
-            Kreiraj akciju
-          </Link>
-          <Link to="/profile" className="hover:underline">
-            Profil
-          </Link>
-          <Link to="/notifications" className="hover:underline">
-            Notifikacije
-          </Link>
-          <Link to="/login" className="hover:underline">
-            Odjavi se
-          </Link>
-        </div>
-      </nav>
+      {/*navigation bar */}
+      <NavigationBar showSearch={true} />
 
       {/* Header */}
       <header className="text-center mt-10 mb-6">
@@ -101,14 +83,7 @@ function HomePage() {
         })}
       </div>
        {/* ✅ Bottom Bar */}
-      <footer className="bg-gray-800 text-white py-3 fixed bottom-0 w-full z-50 shadow-inner">
-        <div className="container mx-auto px-4 flex justify-center space-x-6 text-sm">
-          <Link to="/vodic" className="hover:underline">Vodič</Link>
-          <Link to="/aboutUs" className="hover:underline">O nama</Link>
-          <Link to="/contactUs" className="hover:underline">Kontakt</Link>
-          <Link to="/uslovi" className="hover:underline">Uslovi korišćenja</Link>
-        </div>
-      </footer>
+      <InfoFooter />
     </div>
     
   );
