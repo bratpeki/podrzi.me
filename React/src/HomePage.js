@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import NavigationBar from './NavigationBar';
 import InfoFooter from './InfoFooter';
+import { AuthStateContext } from './components/UseAuthState';
 
 function HomePage() {
   const [actions, setActions] = useState([]);
+  const authState = useContext(AuthStateContext);
 
   useEffect(() => {
     fetch('http://podrzime.ddns.net:8080/api/actions/getvisibleactions')

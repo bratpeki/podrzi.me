@@ -1,0 +1,59 @@
+import { useEffect, createContext, useReducer } from "react";
+
+const initialAuthStateContext = {
+  loggedIn: false,
+  accessToken: null,
+};
+
+const localStorageKey = "accessToken";
+
+function authStateReducer(state, action) {
+  if (!"type" in action)
+    throw new Error("authState action must have a defined type");
+
+  switch (action.type) {
+    case "authCheck": {
+      const localStorageAccessToken = localStorage.getItem(
+        localStorageKey,
+        null
+      );
+
+      if (!localStorageAccessToken)
+        return {
+          ...state,
+          loggedIn: false,
+          accessToken: null,
+        };
+
+      return { ...state, loggedIn: true, accessToken: localStorageAccessToken };
+    }
+    case "login": {
+      const { accessToken } = action.payload;
+      localStorage.setItem(localStorageKey, accessToken);
+      return { ...state, loggedIn: true, accessToken: accessToken };
+    }
+    case "logout": {
+      localStorage.removeItem(localStorageKey);
+      return { ...state, loggedIn: false, accessToken: null };
+    }
+    default:
+      throw new Error("Unsupported authState action called");
+  }
+}
+
+export function useAuth() {
+  const [authState, authDispatch] = useReducer(
+    authStateReducer,
+    initialAuthStateContext
+  );
+
+  useEffect(() => {
+    authDispatch({
+      type: "authCheck",
+    });
+  }, []);
+
+  return { authState, authDispatch };
+}
+
+export const AuthStateContext = createContext(null);

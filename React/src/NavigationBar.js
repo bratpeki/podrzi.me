@@ -1,11 +1,19 @@
 // src/components/NavigationBar.js
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthStateContext } from "./components/UseAuthState";
 
 function NavigationBar({ showSearch = true }) {
+  const { authState, authDispatch } = useContext(AuthStateContext);
+  const navigate = useNavigate();
+
+  const logout = () => {
+    authDispatch({ type: "logout" });
+    navigate("/login");
+  };
+
   return (
     <nav className="bg-gray-800 fixed top-0 w-full p-4 flex items-center justify-between text-white shadow-md z-50">
-      
       {/* Left: Search bar or placeholder */}
       <div className="w-1/3">
         {showSearch && (
@@ -19,7 +27,9 @@ function NavigationBar({ showSearch = true }) {
 
       {/* Center: Title */}
       <div className="absolute left-1/2 transform -translate-x-1/2">
-        <Link to="/home" className="text-5xl font-bold p-4 text-white">PODRŽI.ME</Link>
+        <Link to="/home" className="text-5xl font-bold p-4 text-white">
+          PODRŽI.ME
+        </Link>
       </div>
 
       {/* Right: Nav links */}
@@ -33,9 +43,9 @@ function NavigationBar({ showSearch = true }) {
         <Link to="/notifications" className="hover:underline">
           Notifikacije
         </Link>
-        <Link to="/login" className="hover:underline">
+        <button className="hover:underline" onClick={logout}>
           Odjavi se
-        </Link>
+        </button>
       </div>
     </nav>
   );
