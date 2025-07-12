@@ -1,23 +1,65 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 
 function CreateActionPage() {
+     const [name, setName] = useState('');
+     const [description, setDescription] = useState('');
+     const [goal, setGoal] = useState('');
+     const [responseMessage, setResponseMessage] = useState('');
+
+     const handleCreate = async () => {
+      try {
+        const url = 'http://podrzime.ddns.net:8080/api/actions/addaction'
+        const response = await fetch(url, {
+          method: 'POST',
+        headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "name": name,
+        "desc": description,
+        "goal": goal
+      })
+        });
+        if (!response.ok) {
+          throw new Error('Neuspjesna autentifikacija!');
+        }
+    
+        const text = await response.text(); 
+        if(text == "success"){
+           setResponseMessage('Sačuvana akcija!');
+        }
+        else{
+          setResponseMessage('pogrešio si nešto xd');
+        }
+    }catch (error) {
+        setResponseMessage('greška!');
+        console.error(error);
+      }
+    };
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800">
       {/* Top navigation bar */}
-      <div className="w-full bg-white shadow-sm border-b flex items-center justify-between px-6 py-4">
+      <nav className="w-full bg-white shadow-sm border-b flex items-center justify-between px-6 py-4">
         <div className="flex items-center gap-4">
           <h1 className="text-2xl font-bold text-cyan-600">PODRZI.ME</h1>
         </div>
+
+    {responseMessage && (
+            <p className="text-center text-sm text-red-600 mb-2">{responseMessage}</p>
+            )}
 
         <div className="flex items-center gap-3">
           <button className="text-sm text-gray-400 border border-gray-300 px-3 py-1 rounded hover:text-black hover:border-black">
             Preview
           </button>
-          <button className="bg-black text-white text-sm px-4 py-2 rounded hover:bg-gray-900">
-            Save
+          <button
+          onClick={handleCreate} 
+          className="bg-black text-white text-sm px-4 py-2 rounded hover:bg-gray-900">
+            Sačuvaj
           </button>
         </div>
-      </div>
+      </nav>
 
       {/* Page content */}
       <div className="max-w-5xl mx-auto py-10 px-6 space-y-16">
@@ -46,15 +88,21 @@ function CreateActionPage() {
                 className="w-full border border-gray-300 rounded p-2 mb-4"
                 maxLength={60}
                 placeholder="e.g. Radiotopia: A Storytelling Revolution"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
               />
 
               <label className="block text-sm font-medium mb-1">Subtitle</label>
-              <textarea
+              <input
                 className="w-full border border-gray-300 rounded p-2"
                 maxLength={135}
                 rows={3}
                 placeholder="e.g. We are a collective of amazing storytelling radio shows..."
-              ></textarea>
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+              ></input>
 
               <p className="mt-2 text-sm">
                 Give backers the best first impression of your project with great titles. <a href="#" className="underline">Learn more...</a>
@@ -168,26 +216,7 @@ function CreateActionPage() {
             </div>
           </div>
         </section>
-                {/* Section: Project location */}
-        <section>
-          <div className="grid md:grid-cols-2 gap-10">
-            <div>
-              <h3 className="font-medium text-lg mb-1">Project location</h3>
-              <p className="text-sm text-gray-600">
-                Enter the location that best describes where your project is based.
-              </p>
-            </div>
 
-            <div className="bg-white p-6 shadow border rounded">
-              <label className="block text-sm font-medium mb-1">Location</label>
-              <input
-                type="text"
-                placeholder="Start typing your location..."
-                className="w-full border border-gray-300 rounded p-2"
-              />
-            </div>
-          </div>
-        </section>
                 {/* Section: Funding Goal */}
         <section>
           <div className="grid md:grid-cols-2 gap-10">
@@ -204,6 +233,9 @@ function CreateActionPage() {
                 type="text"
                 placeholder="50000000$"
                 className="w-full border border-gray-300 rounded p-2"
+                value={goal}
+                onChange={(e) => setGoal(e.target.value)}
+                required
               />
             </div>
           </div>

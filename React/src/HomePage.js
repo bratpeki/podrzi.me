@@ -23,21 +23,18 @@ function HomePage() {
       <NavigationBar showSearch={true} />
 
       {/* Header */}
-      <header className="text-center mt-10 mb-6">
-        <h1 className="text-5xl font-bold text-gray-800">Podrži.me</h1>
-        <p className="text-gray-600 mt-2 text-lg">
-          Pregled aktivnih akcija
-        </p>
-        <hr className="w-1/4 mx-auto my-4 border-gray-400" />
+      <header className="text-center mt-10 mb-6 pt-10">
+        <h1 className="text-5xl font-bold text-gray-800">Pregled aktivnih akcija</h1>
       </header>
 
       {/* Category Title */}
+      <hr className="w-1/4 mx-auto my-4 border-gray-400" />
       <h2 className="text-3xl font-semibold text-center text-gray-700 mb-6">
         Humanitarno
       </h2>
 
       {/* Cards Grid */}
-      <div className="flex flex-wrap justify-center gap-6 px-6 flex-grow pb-16">
+      <div className="flex flex-wrap justify-center gap-6 px-6 pb-16">
         {actions.map((action, index) => {
           const progress = Math.min(
             100,
