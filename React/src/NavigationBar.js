@@ -27,7 +27,7 @@ function NavigationBar({ showSearch = true }) {
         <Link to="/createAction" className="hover:underline">
           Kreiraj akciju
         </Link>
-        <Link to="/profile" className="hover:underline">
+        <Link to="/profilePage" className="hover:underline">
           Profil
         </Link>
         <Link to="/notifications" className="hover:underline">

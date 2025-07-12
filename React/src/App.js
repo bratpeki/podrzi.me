@@ -9,6 +9,7 @@ import CreateActionPage from './CreateActionPage';
 import AboutUsPage from './AboutUsPage';
 import ContactUsPage from './ContactUsPage';
 import ToSPage from './ToSPage';
+import ProfilePage from './ProfilePage';
 
 function Home() {
   return (
@@ -41,7 +42,8 @@ function App() {
         <Route path="/createAction" element={<CreateActionPage/>}/>
         <Route path="/aboutUs" element={<AboutUsPage/>}/>
         <Route path="/contactUs" element={<ContactUsPage/>}/>
-        <Route path="/ToSPage" element={<ToSPage/>}/>
+        <Route path="/toSPage" element={<ToSPage/>}/>
+        <Route path="/profilePage" element={<ProfilePage/>}/>
       </Routes>
     </Router>
   );
