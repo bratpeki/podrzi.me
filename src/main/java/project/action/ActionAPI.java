@@ -15,16 +15,17 @@ public class ActionAPI {
 
     @GetMapping("/getvisibleactions")
     public List<ActionDTO> GetVisibleActions() {
-        List<Action> list = actionRepository.findAll().stream().filter(a->a.getVisible() == true).toList();
-        return list.stream().map(a->new ActionDTO(a.getName(), a.getGoal(), a.getCollected(), a.getDesc(), a.getImagepath())).toList();
+        List<Action> list = actionRepository.findAll().stream().filter(a->a.getVisible() == 1).toList();
+        return list.stream().map(a->new ActionDTO(a.getName(), a.getGoal(), a.getCollected(), a.getDesc(), a.getPrimaryimage(), a.getIdAction())).toList();
     }
 
     @PostMapping("/addaction")
     public String SetAction(@RequestBody Action action) {
-        if (actionRepository.findByname(action.getName()) != null && actionRepository.findByname(action.getName()).getVisible() == true)
+        if (actionRepository.findByname(action.getName()) != null && actionRepository.findByname(action.getName()).getVisible() == 1)
             return "taken";
 
-
+        action.setCollected(0.0f);
+        action.setVisible(1);
 
         actionRepository.save(action);
         return "success";

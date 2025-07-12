@@ -12,10 +12,11 @@ public class Action {
     private String name;
     @Column(name = "`desc`", length = 10000)
     private String desc;
-    private Boolean visible;
-    private String imagepath;
+    @Column(name = "visible", columnDefinition = "TINYINT")
+    private Integer visible;
+    private String primaryimage;
 
-    public Boolean getVisible() {
+    public Integer getVisible() {
         return visible;
     }
     public Integer getIdAction() {
@@ -24,7 +25,7 @@ public class Action {
     public void setIdAction(Integer idAction) {
         this.idAction = idAction;
     }
-    public void setVisible(Boolean visible) {
+    public void setVisible(Integer visible) {
         this.visible = visible;
     }
     public String getDesc() {
@@ -51,10 +52,10 @@ public class Action {
     public void setGoal(Float goal) {
         this.goal = goal;
     }
-    public String getImagepath() {
-        return imagepath;
+    public String getPrimaryimage() {
+        return primaryimage;
     }
-    public void setImagepath(String imagepath) {
-        this.imagepath = imagepath;
+    public void setPrimaryimage(String primaryimage) {
+        this.primaryimage = primaryimage;
     }
 }

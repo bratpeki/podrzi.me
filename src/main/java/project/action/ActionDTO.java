@@ -1,20 +1,28 @@
 package project.action;
 
 public class ActionDTO {
+    private Integer idAction;
     private String name;
     private Float goal;
     private Float collected;
     private String desc;
-    private String imagepath;
+    private String primaryimage;
 
-    public ActionDTO(String name, Float goal, Float collected, String desc, String imagepath) {
+    public ActionDTO(String name, Float goal, Float collected, String desc, String imagepath, Integer idAction) {
+        this.idAction = idAction;
         this.name = name;
         this.goal = goal;
         this.collected = collected;
         this.desc = desc;
-        this.imagepath = imagepath;
+        this.primaryimage = imagepath;
     }
 
+    public Integer getIdAction() {
+        return idAction;
+    }
+    public void setIdAction(Integer idAction) {
+        this.idAction = idAction;
+    }
     public String getName() {
         return name;
     }
@@ -39,10 +47,10 @@ public class ActionDTO {
     public void setDesc(String desc) {
         this.desc = desc;
     }
-    public String getImagepath() {
-        return imagepath;
+    public String getPrimaryimage() {
+        return primaryimage;
     }
-    public void setImagepath(String imagepath) {
-        this.imagepath = imagepath;
+    public void setPrimaryimage(String primaryimage) {
+        this.primaryimage = primaryimage;
     }
 }
