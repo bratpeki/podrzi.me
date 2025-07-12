@@ -7,7 +7,7 @@ function HomePage() {
   const [actions, setActions] = useState([]);
 
   useEffect(() => {
-    fetch('http://podrzime.ddns.net:8080/api/actions/getvisibleactions') // Update to your actual backend endpoint
+    fetch('http://podrzime.ddns.net:8080/api/actions/getvisibleactions')
       .then((res) => res.json())
       .then((data) => {
         setActions(data);
@@ -19,7 +19,7 @@ function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
-      {/*navigation bar */}
+      {/* Navigation Bar */}
       <NavigationBar showSearch={true} />
 
       {/* Header */}
@@ -27,7 +27,6 @@ function HomePage() {
         <h1 className="text-5xl font-bold text-gray-800">Pregled aktivnih akcija</h1>
       </header>
 
-      {/* Category Title */}
       <hr className="w-1/4 mx-auto my-4 border-gray-400" />
       <h2 className="text-3xl font-semibold text-center text-gray-700 mb-6">
         Humanitarno
@@ -40,10 +39,13 @@ function HomePage() {
             100,
             (action.collected / action.goal) * 100
           ).toFixed(0);
+
           return (
-            <div
+            <Link
               key={index}
-              className="w-72 bg-white rounded-lg shadow-md overflow-hidden"
+              to="/actionView"
+              state={{ action }}
+              className="w-72 bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-200"
             >
               <img
                 src="https://via.placeholder.com/300x150?text=Akcija"
@@ -51,9 +53,7 @@ function HomePage() {
                 className="w-full h-40 object-cover"
               />
               <div className="p-4">
-                <h3 className="text-lg font-semibold text-gray-800">
-                  {action.name}
-                </h3>
+                <h3 className="text-lg font-semibold text-gray-800">{action.name}</h3>
                 <p className="text-gray-600 text-sm">{action.desc}</p>
                 <p className="text-sm text-gray-600 mt-1">
                   Cilj: {action.goal.toLocaleString()}€
@@ -75,14 +75,14 @@ function HomePage() {
                   {progress}% prikupljeno
                 </p>
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>
-       {/* ✅ Bottom Bar */}
+
+      {/* Footer */}
       <InfoFooter />
     </div>
-    
   );
 }
 

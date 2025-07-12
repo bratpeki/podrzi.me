@@ -10,6 +10,8 @@ import AboutUsPage from './AboutUsPage';
 import ContactUsPage from './ContactUsPage';
 import ToSPage from './ToSPage';
 import ProfilePage from './ProfilePage';
+import ActionViewPage from './ActionViewPage';
+
 
 function Home() {
   return (
@@ -44,6 +46,7 @@ function App() {
         <Route path="/contactUs" element={<ContactUsPage/>}/>
         <Route path="/toSPage" element={<ToSPage/>}/>
         <Route path="/profilePage" element={<ProfilePage/>}/>
+        <Route path="/actionView" element={<ActionViewPage/>}/>
       </Routes>
     </Router>
   );
