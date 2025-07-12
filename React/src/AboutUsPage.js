@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-
+import NavigationBar from './NavigationBar';
+import InfoFooter from './InfoFooter'
 
 
 function AboutUsPage() {
@@ -8,6 +8,7 @@ function AboutUsPage() {
 
     
     <div className="min-h-screen bg-gray-100 flex flex-col justify-between">
+     <NavigationBar showSearch={false} />
       <div className="flex-grow flex flex-col items-center px-4 pt-12 pb-24">
       <div className="bg-white rounded-lg shadow-md max-w-3xl w-full p-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">O nama</h1>
@@ -42,16 +43,9 @@ function AboutUsPage() {
         </p>
       </div>
     </div>
-
-    <footer className="bg-gray-800 text-white py-3 w-full shadow-inner">
-      <div className="container mx-auto px-4 flex justify-center space-x-6 text-sm">
-        <Link to="/vodic" className="hover:underline">Vodič</Link>
-        <Link to="/aboutUs" className="hover:underline">O nama</Link>
-        <Link to="/contactUs" className="hover:underline">Kontakt</Link>
-        <Link to="/ToSPage" className="hover:underline">Uslovi korišćenja</Link>
-      </div>
-    </footer>
+  <InfoFooter />
   </div>
+
   );
 }
 

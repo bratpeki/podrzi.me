@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import NavigationBar from './NavigationBar';
+import InfoFooter from './InfoFooter'
 
 function ContactPage() {
   const [formData, setFormData] = useState({
@@ -50,6 +51,7 @@ function ContactPage() {
 
   return (
       <div className="bg-gray-100 flex flex-col min-h-screen justify-between">
+        <NavigationBar showSearch={false} />
       <div className="flex-grow flex items-center justify-center px-4 py-20">
         <div className="bg-white rounded-lg shadow-md max-w-2xl w-full p-8">
           <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">Kontaktirajte nas</h1>
@@ -103,14 +105,7 @@ function ContactPage() {
         </form>
       </div>
     </div>
-      <footer className="bg-gray-800 text-white py-3 w-full shadow-inner">
-        <div className="container mx-auto px-4 flex justify-center space-x-6 text-sm">
-          <Link to="/vodic" className="hover:underline">Vodič</Link>
-          <Link to="/aboutUs" className="hover:underline">O nama</Link>
-          <Link to="/contactUs" className="hover:underline">Kontakt</Link>
-          <Link to="/ToSPage" className="hover:underline">Uslovi korišćenja</Link>
-        </div>
-      </footer>
+    <InfoFooter />
     </div>
 
   );
