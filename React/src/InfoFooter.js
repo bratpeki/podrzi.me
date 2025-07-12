@@ -9,7 +9,7 @@ function InfoFooter() {
         <Link to="/vodic" className="hover:underline">Vodič</Link>
         <Link to="/aboutUs" className="hover:underline">O nama</Link>
         <Link to="/contactUs" className="hover:underline">Kontakt</Link>
-        <Link to="/uslovi" className="hover:underline">Uslovi korišćenja</Link>
+        <Link to="/ToSPage" className="hover:underline">Uslovi korišćenja</Link>
       </div>
     </footer>
   );
