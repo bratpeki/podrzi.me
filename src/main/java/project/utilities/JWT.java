@@ -39,14 +39,14 @@ public class JWT {
                 .getSubject();
     }
 
-    public String extractId(String token) {
+    public Integer extractId(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
 
-        return claims.get("id", Integer.class).toString();
+        return claims.get("id", Integer.class);
     }
 
     public boolean validateToken(String token) {

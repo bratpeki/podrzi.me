@@ -13,20 +13,38 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class Security {
 
+    String[] PublicMethods = {
+            "/api/users/adduser",
+            "/api/users/userauth",
+            "/api/users/validate",
+            "/api/messages/send",
+            "/api/images/getuserimage",
+            "/api/images/getactionprimary",
+            "/api/images/getactionimage",
+            "/api/images/getactionimages",
+            "/api/actions/getvisibleactions"
+    };
+
+    String[] UserMethods = {
+            "/api/users/showprofile",
+            "/api/users/updateprofile"
+    };
+
+    String[] AdminMethods = {
+            "/api/users/getusers",
+            "/api/messages/getall",
+            "/api/donations/getdonations"
+    };
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf().disable()
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/users/adduser", "/api/users/userauth", "/api/messages/send", "/api/images/getuserimage", "/api/images/getactionprimary",
-                                "/api/images/getactionimage", "/api/images/getactionimages", "/api/actions/getvisibleactions", "/api/users/validate").permitAll() //PUBLIC
-                        .requestMatchers("/api/messages/getall", "/api/users/getusers", "/api/donations/getdonations").hasRole("ADMIN")  //ADMIN
-                        .anyRequest().authenticated()
-                )
-                .sessionManagement(ses->ses.sessionCreationPolicy((SessionCreationPolicy.STATELESS)))
-                .exceptionHandling(ex->ex.authenticationEntryPoint((request, response, authException)->{
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"Unauthorized");
-                }));
+        http.csrf().disable().authorizeHttpRequests(auth -> auth
+                .requestMatchers(PublicMethods).permitAll()     //PUBLIC
+                .requestMatchers(AdminMethods).hasRole("ADMIN") //ADMIN
+                .requestMatchers(UserMethods).hasRole("USER"))  //USER
+                .sessionManagement(ses -> ses.sessionCreationPolicy((SessionCreationPolicy.STATELESS))).exceptionHandling(ex -> ex.authenticationEntryPoint((request, response, authException) -> {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+        }));
 
         return http.build();
     }
