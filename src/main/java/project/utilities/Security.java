@@ -20,7 +20,8 @@ public class Security {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/users/adduser", "/api/users/userauth", "/api/messages/send", "/api/images/getuserimage", "/api/images/getactionprimary",
                                 "/api/images/getactionimage", "/api/images/getactionimages", "/api/actions/getvisibleactions", "/api/users/validate").permitAll() //PUBLIC
-                        .requestMatchers("/api/messages/getall", "/api/users/getusers", "/api/donations/getdonations").hasRole("ADMIN")    //ADMIN
+                        .requestMatchers("/api/messages/getall", "/api/users/getusers", "/api/donations/getdonations").hasRole("ADMIN")  //ADMIN
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(ses->ses.sessionCreationPolicy((SessionCreationPolicy.STATELESS)))
                 .exceptionHandling(ex->ex.authenticationEntryPoint((request, response, authException)->{
