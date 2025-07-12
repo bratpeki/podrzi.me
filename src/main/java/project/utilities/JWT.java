@@ -4,14 +4,14 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
 @Component
 public class JWT {
 
-    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256); // generate random key, for production use config key
-
+    private final Key key = Keys.hmacShaKeyFor("your-very-secret-key-that-is-long-enough-and-stored-safely".getBytes(StandardCharsets.UTF_8) );
 
     public String generateToken(String username) {
         return Jwts.builder()

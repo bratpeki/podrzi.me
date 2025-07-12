@@ -29,14 +29,15 @@ function LoginPage() {
     }
 
     const text = await response.text(); 
-    if(text == "true"){
-       navigate('/home')
+    if(text == "loginerror"){
+        setResponseMessage('Neuspjesna prijava! Provjerite Vase podatke!');
     }
     else{
-      setResponseMessage('Neispravna lozinka! Provjerite Vase podatke!');
+        localStorage.setItem('jwtTokenPodrziMe', text);
+        navigate('/home')
     }
   } catch (error) {
-    setResponseMessage('Neuspjesna prijava! Provjerite Vase podatke!');
+    setResponseMessage('Dogodila se greska tokom prijave!');
     console.error(error);
   }
 };

@@ -12,17 +12,16 @@ import org.springframework.web.bind.annotation.*;
 import project.utilities.JWT;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserAPI {
-    private final AuthenticationManager authenticationManager;
     private final JWT jwt;
     private final UserRepository userRepository;
 
-    public UserAPI (UserRepository userRepository, AuthenticationManager authenticationManager, JWT jwt) {
+    public UserAPI (UserRepository userRepository, JWT jwt) {
         this.userRepository = userRepository;
-        this.authenticationManager = authenticationManager;
         this.jwt = jwt;
     }
 
@@ -34,19 +33,11 @@ public class UserAPI {
 
     @PostMapping("/userauth")
     public ResponseEntity<?> LoginUser(@RequestBody UserLoginDTO uldto) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(uldto.getUsername(), uldto.getPassword())
-            );
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        if (uldto.getUsername().isBlank() || uldto.getPassword().isBlank() || (userRepository.findByusername(uldto.getUsername()) == null))
+            return ResponseEntity.ok("loginerror");
 
-            String jwtt = jwt.generateToken(uldto.getUsername());
-
-            return ResponseEntity.ok(jwtt);
-        }
-        catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Neispravno korisnicko ime ili sifra!");
-        }
+        String jwtt = jwt.generateToken(uldto.getUsername());
+        return ResponseEntity.ok(jwtt);
     }
 
     @PostMapping("/adduser")
@@ -67,5 +58,11 @@ public class UserAPI {
         return "success";
     }
 
-
+    @PostMapping("/validate")
+    public ResponseEntity<?> Validate(@RequestHeader Map<String, String> token) {
+        if (jwt.validateToken(token.get("token")))
+            return ResponseEntity.ok("success");
+        else
+            return ResponseEntity.badRequest().body("invalidtoken");
+    }
 }
