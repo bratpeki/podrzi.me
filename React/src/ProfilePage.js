@@ -1,16 +1,60 @@
-import React from 'react';
+import { useContext, useEffect, useState } from 'react';
 import NavigationBar from './NavigationBar';
 import InfoFooter from './InfoFooter';
+import { AuthStateContext } from './components/UseAuthState';
+import { useNavigate } from 'react-router-dom';
 
 function ProfilePage() {
-  const user = {
-    image: 'https://via.placeholder.com/150', // zamijeni kad imaš upload
-    fullName: 'Marko Marković',
-    displayName: 'marko123',
-    email: 'marko@pneis.com',
-    password: '********', // ne prikazivati pravo
-    bio: 'Ja mrzim cigane ja mrzim camugi.',
-  };
+  const { authState } = useContext(AuthStateContext);
+  const [user, setUser] = useState(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const navigate=useNavigate();
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await fetch('http://podrzime.ddns.net:8080/api/users/showprofile', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'token': authState.accessToken,
+          },
+        });
+
+        if (!res.ok) 
+          throw new Error('Neuspješan dohvatanje profila');
+
+        const data = await res.json();
+
+
+        setUser({
+          image: data.imagepath,
+          userName: data.username,
+          displayName: data.displayname,
+          email: data.email,
+          bio: data.desc,
+        });
+      } catch (err) {
+        console.error('Greška pri učitavanju profila:', err);
+        setTimeout(() => setRetryCount((prev) => prev + 1), 2000);
+      }
+    };
+
+    if (authState?.accessToken) fetchProfile();
+  }, [authState,retryCount]);
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex flex-col justify-between">
+        <NavigationBar />
+        <div className="flex-grow flex items-center justify-center">
+          <p>Učitavanje profila...</p>
+        </div>
+        <InfoFooter />
+      </div>
+    );
+  }
+
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col justify-between">
@@ -28,8 +72,8 @@ function ProfilePage() {
             />
 
             <div className="text-center space-y-1">
-              <h2 className="text-xl font-semibold text-gray-800">{user.fullName}</h2>
-              <p className="text-gray-500">@{user.displayName}</p>
+              <h2 className="text-xl font-semibold text-gray-800">{user.displayName}</h2>
+              <p className="text-gray-500">@{user.userName}</p>
               <p className="text-gray-600 text-sm">{user.email}</p>
             </div>
 
@@ -41,14 +85,16 @@ function ProfilePage() {
             </div>
 
             <div className="mt-6 w-full text-right">
-              <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
-                Uredi profil
+              <button
+                 onClick={() => navigate('/EditProfilePage')}
+                 className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                >
+                 Uredi profil
               </button>
             </div>
           </div>
         </div>
       </div>
-
       <InfoFooter />
     </div>
   );
