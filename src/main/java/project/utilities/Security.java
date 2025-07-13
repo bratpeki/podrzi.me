@@ -20,27 +20,41 @@ public class Security {
     String[] PublicMethods = {
             "/api/users/adduser",
             "/api/users/userauth",
+
             "/api/messages/send",
+
             "/api/images/getuserimage",
             "/api/images/getactionprimary",
             "/api/images/getactionimage",
             "/api/images/getactionimages",
+
             "/api/actions/getvisibleactions",
+            "/api/actions/getaction",
+
+            "/api/donations/adddonation",
+
             "/api/admins/adminauth"
     };
 
     String[] UserMethods = {
             "/api/users/showprofile",
             "/api/users/updateprofile",
+
             "/api/images/uploadaction",
             "/api/images/uploaduser",
-            "/api/actions/addaction"
+
+            "/api/actions/addaction",
+
+            "/api/donations/getdonationsuser"
     };
 
     String[] AdminMethods = {
             "/api/users/getusers",
+
             "/api/messages/getall",
+
             "/api/donations/getdonations",
+
             "/api/admins/addadmin"
     };
 

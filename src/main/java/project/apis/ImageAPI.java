@@ -23,8 +23,8 @@ public class ImageAPI {
         this.actionRepository = actionRepository;
         this.userRepository = userRepository;
     }
-    //private static final String UPLOAD_FOLDER = "/home/root1/podrzi.me/uploads/images";
-    private static final String UPLOAD_FOLDER = "C:\\Users\\Yorth\\IdeaProjects\\podrzi.me\\uploads\\images";
+    private static final String UPLOAD_FOLDER = "/home/root1/podrzi.me/uploads/images";
+    //private static final String UPLOAD_FOLDER = "C:\\Users\\Yorth\\IdeaProjects\\podrzi.me\\uploads\\images";
 
     @PostMapping("/uploadaction")
     public ResponseEntity<?> UploadActionImage(@RequestParam Integer idAction, @RequestParam("file") MultipartFile filen) throws IOException {
@@ -47,7 +47,7 @@ public class ImageAPI {
     public Boolean UploadUserImage(@RequestParam Integer idUser, @RequestParam("file") MultipartFile filen) throws IOException {
         String file = filen.getOriginalFilename().toLowerCase();
 
-        if (!file.endsWith(".jpg") || !file.endsWith(".png") || !file.endsWith(".jpeg") && filen.getSize() > 5000000)
+        if (!(file.endsWith(".jpg") || file.endsWith(".png") || file.endsWith(".jpeg")))
             return false;
 
         String folderPath = UPLOAD_FOLDER + "/users/" + idUser + "/";
