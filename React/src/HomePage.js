@@ -2,14 +2,22 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import NavigationBar from './NavigationBar';
 import InfoFooter from './InfoFooter';
-import { AuthStateContext } from './components/UseAuthState';
+import { AuthStateContext } from "./components/UseAuthState";
 
 function HomePage() {
   const [actions, setActions] = useState([]);
-  const authState = useContext(AuthStateContext);
+  const { authState, authDispatch } = useContext(AuthStateContext);
+
+
 
   useEffect(() => {
-    fetch('http://podrzime.ddns.net:8080/api/actions/getvisibleactions')
+      console.log("CreateActionPage", authState.accessToken);
+    fetch('http://podrzime.ddns.net:8080/api/actions/getvisibleactions', {
+        method: "GET",
+        headers: {
+            "token": authState.accessToken,
+        }
+    })
       .then((res) => res.json())
       .then((data) => {
         setActions(data);
@@ -50,7 +58,7 @@ function HomePage() {
               className="w-72 bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-200"
             >
               <img
-                src="https://placehold.co/800x400?text=Akcija"
+                src={action.primaryimage}
                 alt="Slika akcije"
                 className="w-full h-40 object-cover"
               />

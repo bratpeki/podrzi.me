@@ -9,13 +9,15 @@ public class UserProfileDTO {
     @Column(name = "`desc`", length = 2000)
     private String desc;
     private String imagepath;
+    private String username;
 
-    public UserProfileDTO(String password, String email, String displayname, String desc, String imagepath) {
+    public UserProfileDTO(String password, String email, String displayname, String desc, String imagepath,  String username) {
         this.password = password;
         this.email = email;
         this.displayname = displayname;
         this.desc = desc;
         this.imagepath = imagepath;
+        this.username = username;
     }
 
     public String getPassword() {
@@ -47,5 +49,11 @@ public class UserProfileDTO {
     }
     public void setImagepath(String imagepath) {
         this.imagepath = imagepath;
+    }
+    public String getUsername() {
+        return username;
+    }
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

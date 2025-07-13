@@ -36,16 +36,6 @@ function App() {
   return (
     <>
       <AuthStateContext value={{ authState, authDispatch }}>
-        <h1
-          style={{
-            position: "fixed",
-            padding: "8px",
-            zIndex: 999,
-            backgroundColor: "",
-          }}
-        >
-          Login state: {JSON.stringify(authState)}
-        </h1>
         <Router>
           <Routes>
             <Route path="/" element={<Home />} />

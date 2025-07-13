@@ -1,5 +1,6 @@
 package project.utilities;
 
+import io.micrometer.common.KeyValues;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,15 +18,12 @@ public class Security {
         this.jwtFilter = jwtFilter;
     }
 
-    String[] PublicMethods = {
+    public static String[] PublicMethods = {
             "/api/users/adduser",
             "/api/users/userauth",
 
             "/api/messages/send",
 
-            "/api/images/getuserimage",
-            "/api/images/getactionprimary",
-            "/api/images/getactionimage",
             "/api/images/getactionimages",
 
             "/api/actions/getvisibleactions",
@@ -33,10 +31,12 @@ public class Security {
 
             "/api/donations/adddonation",
 
-            "/api/admins/adminauth"
+            "/api/admins/adminauth",
+
+            "/uploads/**"
     };
 
-    String[] UserMethods = {
+    public static String[] UserMethods = {
             "/api/users/showprofile",
             "/api/users/updateprofile",
 
@@ -44,11 +44,12 @@ public class Security {
             "/api/images/uploaduser",
 
             "/api/actions/addaction",
+            "/api/actions/setprimaryimage",
 
             "/api/donations/getdonationsuser"
     };
 
-    String[] AdminMethods = {
+    public static String[] AdminMethods = {
             "/api/users/getusers",
 
             "/api/messages/getall",

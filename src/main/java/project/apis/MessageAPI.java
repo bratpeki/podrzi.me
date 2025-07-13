@@ -40,8 +40,6 @@ public class MessageAPI {
 
     @PostMapping("/getall")
     private ResponseEntity<?> GetAllMessages(@RequestHeader Map<String, String> token, @RequestBody Map<String, String> admin) {
-        if (!jwt.validateToken(token.get("token")))
-            return ResponseEntity.badRequest().body("invalidtoken");
 
         return ResponseEntity.ok(messageRepository.findAll());
     }

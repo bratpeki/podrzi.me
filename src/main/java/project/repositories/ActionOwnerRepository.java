@@ -1,4 +1,7 @@
 package project.repositories;
 
-public class ActionOwnerRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+import project.classes.ActionOwner;
+
+public interface ActionOwnerRepository extends JpaRepository<ActionOwner, Integer> {
 }

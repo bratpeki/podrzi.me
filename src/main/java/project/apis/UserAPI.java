@@ -60,29 +60,33 @@ public class UserAPI {
 
     @GetMapping("/showprofile")
     public ResponseEntity<?> ShowProfile(@RequestHeader Map<String, String> token) {
-        if (!jwt.validateToken(token.get("token")))
-            return ResponseEntity.badRequest().body("invalidtoken");
-
         User user = userRepository.findByidUser(jwt.extractId(token.get("token")));
-        UserProfileDTO updto = new UserProfileDTO("",  user.getEmail(), user.getDisplayname(), user.getDesc(), user.getImagepath());
+        UserProfileDTO updto = new UserProfileDTO("",  user.getEmail(), user.getDisplayname(), user.getDesc(), user.getImagepath(), user.getUsername());
         return ResponseEntity.ok(updto);
     }
 
     @PostMapping("/updateprofile")
     public ResponseEntity<?> ShowProfile(@RequestHeader Map<String, String> token, @RequestBody UserProfileDTO updto) {
-        if (!jwt.validateToken(token.get("token")))
-            return ResponseEntity.badRequest().body("invalidtoken");
-
         String email = updto.getEmail();
         if (!Pattern.compile("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$").matcher(email).matches())
             return ResponseEntity.badRequest().body("invalidemail");
 
        User user = userRepository.findByidUser(jwt.extractId(token.get("token")));
+
+       if (!updto.getEmail().isBlank())
        user.setEmail(updto.getEmail());
-       user.setPassword(updto.getPassword());
-       user.setDesc(updto.getDesc());
-       user.setDisplayname(updto.getDisplayname());
-       user.setImagepath(updto.getImagepath());
+
+       if (!updto.getPassword().isBlank())
+           user.setPassword(updto.getPassword());
+
+        if (!updto.getDesc().isBlank())
+            user.setDesc(updto.getDesc());
+
+        if (!updto.getDisplayname().isBlank())
+            user.setDisplayname(updto.getDisplayname());
+
+        if (updto.getImagepath() != null && (!updto.getImagepath().isBlank()))
+            user.setImagepath(updto.getImagepath());
        userRepository.save(user);
 
         return ResponseEntity.ok("success");
