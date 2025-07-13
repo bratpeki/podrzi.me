@@ -1,25 +1,30 @@
 package project.message;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
+import project.utilities.*;
+import java.util.regex.Pattern;
 
 import project.admin.*;
 
 @RestController
 @RequestMapping("/api/messages")
 public class MessageAPI {
+    private final JWT jwt;
     private final MessageRepository messageRepository;
     private final AdminRepository adminRepository;
 
-    public MessageAPI(MessageRepository messageRepository, AdminRepository adminRepository) {
+    public MessageAPI(MessageRepository messageRepository, AdminRepository adminRepository, JWT jwt) {
+        this.jwt = jwt;
         this.messageRepository = messageRepository;
         this.adminRepository = adminRepository;
     }
 
     @PostMapping("/send")
-    private String SendMessage(@RequestBody MessageDTO messDTO) {
-        if (!messDTO.getEmail().contains("@") || !messDTO.getEmail().contains("."))
-            return "emailerror";
+    private ResponseEntity<?> SendMessage(@RequestBody MessageDTO messDTO) {
+        if (!Pattern.compile("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$").matcher(messDTO.getEmail()).matches())
+            return ResponseEntity.badRequest().body("emailerror");
 
         Message mess = new Message();
         mess.setEmail(messDTO.getEmail());
@@ -27,17 +32,14 @@ public class MessageAPI {
         mess.setName(messDTO.getName());
 
         messageRepository.save(mess);
-        return "success";
+        return ResponseEntity.ok("success");
     }
 
     @PostMapping("/getall")
-    private List<Message> GetAllMessages(@RequestBody Map<String, String> admin) {
-        List<Admin> list = adminRepository.findAll();
+    private ResponseEntity<?> GetAllMessages(@RequestHeader Map<String, String> token, @RequestBody Map<String, String> admin) {
+        if (!jwt.validateToken(token.get("token")))
+            return ResponseEntity.badRequest().body("invalidtoken");
 
-        //TODO: FIX
-        //if (!list.contains(admin.get("adminusername")))
-        //    return "usernameerror";
-
-        return messageRepository.findAll();
+        return ResponseEntity.ok(messageRepository.findAll());
     }
 }

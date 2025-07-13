@@ -54,17 +54,9 @@ public class UserAPI {
         return ResponseEntity.ok("success");
     }
 
-    @PostMapping("/validate")
-    public ResponseEntity<?> Validate(@RequestHeader Map<String, String> token) {
-        if (jwt.validateToken(token.get("token")))
-            return ResponseEntity.ok("success");
-        else
-            return ResponseEntity.badRequest().body("invalidtoken");
-    }
-
     @GetMapping("/showprofile")
     public ResponseEntity<?> ShowProfile(@RequestHeader Map<String, String> token) {
-        if (!(Validate(token) == ResponseEntity.ok("success")))
+        if (!jwt.validateToken(token.get("token")))
             return ResponseEntity.badRequest().body("invalidtoken");
 
         User user = userRepository.findByidUser(jwt.extractId(token.get("token")));
@@ -74,7 +66,7 @@ public class UserAPI {
 
     @PostMapping("/updateprofile")
     public ResponseEntity<?> ShowProfile(@RequestHeader Map<String, String> token, @RequestBody UserProfileDTO updto) {
-        if (!(Validate(token) == ResponseEntity.ok("success")))
+        if (!jwt.validateToken(token.get("token")))
             return ResponseEntity.badRequest().body("invalidtoken");
 
         String email = updto.getEmail();

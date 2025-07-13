@@ -3,26 +3,30 @@ package project.utilities;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class Security {
 
+    private final JWTFilter jwtFilter;
+
+    public Security(JWTFilter jwtFilter) {
+        this.jwtFilter = jwtFilter;
+    }
+
     String[] PublicMethods = {
             "/api/users/adduser",
             "/api/users/userauth",
-            "/api/users/validate",
             "/api/messages/send",
             "/api/images/getuserimage",
             "/api/images/getactionprimary",
             "/api/images/getactionimage",
             "/api/images/getactionimages",
-            "/api/actions/getvisibleactions"
+            "/api/actions/getvisibleactions",
+            "/api/admins/adminauth"
     };
 
     String[] UserMethods = {
@@ -33,18 +37,22 @@ public class Security {
     String[] AdminMethods = {
             "/api/users/getusers",
             "/api/messages/getall",
-            "/api/donations/getdonations"
+            "/api/donations/getdonations",
+            "/api/admins/addadmin"
     };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().disable().authorizeHttpRequests(auth -> auth
-                .requestMatchers(PublicMethods).permitAll()     //PUBLIC
-                .requestMatchers(AdminMethods).hasRole("ADMIN") //ADMIN
-                .requestMatchers(UserMethods).hasRole("USER"))  //USER
-                .sessionManagement(ses -> ses.sessionCreationPolicy((SessionCreationPolicy.STATELESS))).exceptionHandling(ex -> ex.authenticationEntryPoint((request, response, authException) -> {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-        }));
+                        .requestMatchers(PublicMethods).permitAll()     //PUBLIC
+                        .requestMatchers(AdminMethods).hasRole("ADMIN") //ADMIN
+                        .requestMatchers(UserMethods).hasRole("USER"))  //USER
+                .sessionManagement(ses -> ses.sessionCreationPolicy((SessionCreationPolicy.STATELESS)))
+                .exceptionHandling(ex -> ex.authenticationEntryPoint((request, response, authException) -> {
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                }));
+
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
