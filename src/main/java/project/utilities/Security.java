@@ -31,7 +31,10 @@ public class Security {
 
     String[] UserMethods = {
             "/api/users/showprofile",
-            "/api/users/updateprofile"
+            "/api/users/updateprofile",
+            "/api/images/uploadaction",
+            "/api/images/uploaduser",
+            "/api/actions/addaction"
     };
 
     String[] AdminMethods = {
@@ -43,16 +46,17 @@ public class Security {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable().authorizeHttpRequests(auth -> auth
+
+        http.cors().and().csrf().disable().addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class).authorizeHttpRequests(auth -> auth
                         .requestMatchers(PublicMethods).permitAll()     //PUBLIC
                         .requestMatchers(AdminMethods).hasRole("ADMIN") //ADMIN
                         .requestMatchers(UserMethods).hasRole("USER"))  //USER
                 .sessionManagement(ses -> ses.sessionCreationPolicy((SessionCreationPolicy.STATELESS)))
                 .exceptionHandling(ex -> ex.authenticationEntryPoint((request, response, authException) -> {
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Nemate prava!");
                 }));
 
-        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
 
         return http.build();
     }

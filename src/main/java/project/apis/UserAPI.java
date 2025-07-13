@@ -1,7 +1,11 @@
-package project.user;
+package project.apis;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import project.classes.User;
+import project.dtos.UserLoginDTO;
+import project.dtos.UserProfileDTO;
+import project.repositories.UserRepository;
 import project.utilities.JWT;
 
 import java.util.Map;

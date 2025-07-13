@@ -1,4 +1,4 @@
-package project.donation;
+package project.dtos;
 
 import java.time.LocalDateTime;
 

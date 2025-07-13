@@ -1,8 +1,13 @@
-package project.donation;
+package project.apis;
 
 import org.springframework.web.bind.annotation.*;
-import project.user.*;
-import project.action.*;
+import project.classes.Action;
+import project.classes.Donation;
+import project.dtos.DonationDTO;
+import project.repositories.ActionRepository;
+import project.repositories.DonationRepository;
+import project.dtos.DonationRequestDTO;
+import project.repositories.UserRepository;
 
 import java.util.List;
 

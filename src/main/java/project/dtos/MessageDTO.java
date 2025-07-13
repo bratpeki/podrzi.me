@@ -1,4 +1,4 @@
-package project.message;
+package project.dtos;
 
 public class MessageDTO {
     private String messagetext;

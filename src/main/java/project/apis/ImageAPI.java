@@ -1,12 +1,12 @@
-package project.images;
+package project.apis;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import project.action.ActionRepository;
-import project.user.UserRepository;
+import project.repositories.ActionRepository;
+import project.repositories.UserRepository;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -23,14 +23,15 @@ public class ImageAPI {
         this.actionRepository = actionRepository;
         this.userRepository = userRepository;
     }
-    private static final String UPLOAD_FOLDER = "/home/root1/podrzi.me/uploads/images";
+    //private static final String UPLOAD_FOLDER = "/home/root1/podrzi.me/uploads/images";
+    private static final String UPLOAD_FOLDER = "C:\\Users\\Yorth\\IdeaProjects\\podrzi.me\\uploads\\images";
 
     @PostMapping("/uploadaction")
-    public Boolean UploadActionImage(@RequestParam String idAction, @RequestParam("file") MultipartFile filen) throws IOException {
+    public ResponseEntity<?> UploadActionImage(@RequestParam Integer idAction, @RequestParam("file") MultipartFile filen) throws IOException {
         String file = filen.getOriginalFilename().toLowerCase();
 
-        if (!file.endsWith(".jpg") || !file.endsWith(".png") || !file.endsWith(".jpeg") && filen.getSize() > 5000000)
-            return false;
+        if (!(file.endsWith(".jpg") || file.endsWith(".png") || file.endsWith(".jpeg")))
+            return ResponseEntity.badRequest().body("invalidfile");
 
         String folderPath = UPLOAD_FOLDER + "/actions/" + idAction + "/";
         Path dirPath = Paths.get(folderPath);
@@ -39,11 +40,11 @@ public class ImageAPI {
         Path filePath = dirPath.resolve(file);
         Files.copy(filen.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-        return true;
+        return ResponseEntity.ok("success");
     }
 
     @PostMapping("/uploaduser")
-    public Boolean UploadUserImage(@RequestParam String idUser, @RequestParam("file") MultipartFile filen) throws IOException {
+    public Boolean UploadUserImage(@RequestParam Integer idUser, @RequestParam("file") MultipartFile filen) throws IOException {
         String file = filen.getOriginalFilename().toLowerCase();
 
         if (!file.endsWith(".jpg") || !file.endsWith(".png") || !file.endsWith(".jpeg") && filen.getSize() > 5000000)

@@ -1,4 +1,4 @@
-package project.action;
+package project.dtos;
 
 public class ActionDTO {
     private Integer idAction;

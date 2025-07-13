@@ -1,13 +1,14 @@
-package project.user;
+package project.classes;
 
-public class UserLoginDTO {
+import jakarta.persistence.*;
+
+@Entity
+public class Admin {
+    @Id
+    @Column(name = "`username`", length = 40)
     private String username;
     private String password;
-
-    public UserLoginDTO(String username, String password) {
-        this.username = username;
-        this.password = password;
-    }
+    private Boolean owner;
 
     public String getUsername() {
         return username;
@@ -20,5 +21,11 @@ public class UserLoginDTO {
     }
     public void setPassword(String password) {
         this.password = password;
+    }
+    public Boolean getOwner() {
+        return owner;
+    }
+    public void setOwner(Boolean owner) {
+        this.owner = owner;
     }
 }

@@ -1,4 +1,4 @@
-package project.user;
+package project.dtos;
 
 import jakarta.persistence.Column;
 

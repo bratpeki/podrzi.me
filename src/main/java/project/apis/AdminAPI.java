@@ -1,7 +1,9 @@
-package project.admin;
+package project.apis;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import project.classes.Admin;
+import project.repositories.AdminRepository;
 import project.utilities.*;
 
 import java.util.Map;

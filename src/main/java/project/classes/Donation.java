@@ -1,7 +1,5 @@
-package project.donation;
+package project.classes;
 
-import project.user.*;
-import project.action.*;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;

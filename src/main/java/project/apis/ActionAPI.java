@@ -1,6 +1,10 @@
-package project.action;
+package project.apis;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import project.classes.Action;
+import project.dtos.ActionDTO;
+import project.repositories.ActionRepository;
 
 import java.util.List;
 
@@ -13,6 +17,12 @@ public class ActionAPI {
         this.actionRepository = actionRepository;
     }
 
+    @GetMapping("/getaction")
+    public ResponseEntity<?> GetAction(@RequestParam Integer id) {
+        Action a = actionRepository.findByidAction(id);
+        return ResponseEntity.ok(new ActionDTO(a.getName(), a.getGoal(), a.getCollected(), a.getDesc(), a.getPrimaryimage(), a.getIdAction()));
+    }
+
     @GetMapping("/getvisibleactions")
     public List<ActionDTO> GetVisibleActions() {
         List<Action> list = actionRepository.findAll().stream().filter(a->a.getVisible() == 1).toList();
@@ -20,14 +30,14 @@ public class ActionAPI {
     }
 
     @PostMapping("/addaction")
-    public String SetAction(@RequestBody Action action) {
+    public ResponseEntity<?> SetAction(@RequestBody Action action) {
         if (actionRepository.findByname(action.getName()) != null && actionRepository.findByname(action.getName()).getVisible() == 1)
-            return "taken";
+            return ResponseEntity.badRequest().body("taken");
 
         action.setCollected(0.0f);
         action.setVisible(1);
 
         actionRepository.save(action);
-        return "success";
+        return ResponseEntity.ok(action.getIdAction());
     }
 }

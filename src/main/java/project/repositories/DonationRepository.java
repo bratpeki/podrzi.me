@@ -1,6 +1,7 @@
-package project.donation;
+package project.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import project.classes.Donation;
 
 import java.util.List;
 

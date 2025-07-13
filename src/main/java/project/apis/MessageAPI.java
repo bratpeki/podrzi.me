@@ -1,12 +1,15 @@
-package project.message;
+package project.apis;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
+
+import project.classes.Message;
+import project.dtos.MessageDTO;
+import project.repositories.AdminRepository;
+import project.repositories.MessageRepository;
 import project.utilities.*;
 import java.util.regex.Pattern;
-
-import project.admin.*;
 
 @RestController
 @RequestMapping("/api/messages")

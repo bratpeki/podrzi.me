@@ -9,8 +9,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import project.admin.AdminRepository;
-import project.user.UserRepository;
+import project.repositories.AdminRepository;
+import project.repositories.UserRepository;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,20 +31,23 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
+        System.out.println("filtering");
         String token = request.getHeader("token");
-
+        System.out.println(token);
         if (jwt.validateToken(token)) {
             String username = jwt.extractUsername(token);
+            System.out.println(username);
 
             if (userRepository.findByusername(username) != null) {
                 List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-                authorities.add(new SimpleGrantedAuthority("USER"));
+                authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 
                 if (adminRepository.findByusername(username) != null)
-                    authorities.add(new SimpleGrantedAuthority("ADMIN"));
+                    authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
 
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                System.out.println(authentication);
             }
         }
 

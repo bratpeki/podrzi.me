@@ -1,4 +1,4 @@
-package project.action;
+package project.classes;
 
 import jakarta.persistence.*;
 

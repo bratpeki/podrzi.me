@@ -3,7 +3,7 @@ package project.utilities;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
-import project.user.UserRepository;
+import project.repositories.UserRepository;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
