@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import NavigationBar from './NavigationBar';
 import InfoFooter from './InfoFooter'
+import { AuthStateContext } from './components/UseAuthState';
+
 
 function ContactPage() {
+  const { authState, authDispatch } = useContext(AuthStateContext);
   const [formData, setFormData] = useState({
     ime: '',
     email: '',
@@ -30,6 +33,7 @@ function ContactPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+           'token' : authState.accessToken
         },
         body: JSON.stringify(payload),
         });

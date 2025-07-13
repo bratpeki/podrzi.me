@@ -27,10 +27,6 @@ function LoginPage() {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Autentifikacija neuspjesna!");
-      }
-
       const text = await response.text();
       if (text == "loginerror") {
         setResponseMessage("Neuspjesna prijava! Provjerite Vase podatke!");
