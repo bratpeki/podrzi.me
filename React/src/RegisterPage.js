@@ -28,10 +28,7 @@ function RegisterPage() {
     "displayname": displayName
   })
     });
-    if (!response.ok) {
-      throw new Error('Neuspjesna autentifikacija!');
-    }
-
+    
     const text = await response.text(); 
     if(text == "success"){
          const response = await fetch("http://podrzime.ddns.net:8080/api/users/userauth", {

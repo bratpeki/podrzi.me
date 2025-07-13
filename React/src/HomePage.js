@@ -45,12 +45,12 @@ function HomePage() {
           return (
             <Link
               key={index}
-              to="/actionView"
+              to={`/actionView/${action.name}`} //TODO: treba biti action.id
               state={{ action }}
               className="w-72 bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-200"
             >
               <img
-                src="https://via.placeholder.com/300x150?text=Akcija"
+                src="https://placehold.co/800x400?text=Akcija"
                 alt="Slika akcije"
                 className="w-full h-40 object-cover"
               />

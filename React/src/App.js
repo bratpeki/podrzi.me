@@ -41,7 +41,7 @@ function App() {
             position: "fixed",
             padding: "8px",
             zIndex: 999,
-            backgroundColor: "white",
+            backgroundColor: "",
           }}
         >
           Login state: {JSON.stringify(authState)}
@@ -57,7 +57,7 @@ function App() {
             <Route path="/contactUs" element={<ContactUsPage />} />
             <Route path="/toSPage" element={<ToSPage />} />
             <Route path="/profilePage" element={<ProfilePage />} />
-            <Route path="/actionView" element={<ActionViewPage />} />
+            <Route path="/actionView/:id" element={<ActionViewPage />} />
           </Routes>
         </Router>
       </AuthStateContext>
