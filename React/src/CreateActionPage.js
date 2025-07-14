@@ -8,6 +8,7 @@ function CreateActionPage() {
   const [goal, setGoal] = useState("");
   const [imageFiles, setImageFiles] = React.useState([]);
   const [imagePreviews, setImagePreviews] = React.useState([]);
+  const [primaryImage, setPrimaryImage] = React.useState(null);
   const [responseMessage, setResponseMessage] = useState("");
   const { authState, authDispatch } = useContext(AuthStateContext);
 
@@ -23,9 +24,9 @@ function CreateActionPage() {
           "token": authState.accessToken,
         },
         body: JSON.stringify({
-          name: name,
-          desc: description,
-          goal: goal,
+          "name": name,
+          "desc": description,
+          "goal": goal,
         }),
       });
       const text = await response.text();
@@ -47,6 +48,13 @@ const uploadImage = async (idAction, file) => {
    const formData = new FormData();
    formData.append('idAction', idAction);
    formData.append('file', file);
+   console.log(file)
+   console.log(primaryImage)
+   if(file == primaryImage){
+     formData.append('isPrimary', true)
+   }else{
+     formData.append('isPrimary', false)
+   }
     try {
       const response = await fetch('http://podrzime.ddns.net:8080/api/images/uploadaction', {
         method: 'POST',
@@ -68,29 +76,57 @@ const uploadImage = async (idAction, file) => {
   };
 
   const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    setImageFiles(files);
+    const newFiles = Array.from(e.target.files).filter(file =>
+      ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)
+    );
 
-    const previews = files.map((file) => URL.createObjectURL(file));
-    setImagePreviews(previews);
+    const newPreviews = newFiles.map(file => URL.createObjectURL(file));
+
+    setImageFiles(prevFiles => {
+      const combined = [...prevFiles, ...newFiles];
+      if (!primaryImage && newFiles.length > 0) {
+        setPrimaryImage(newFiles[0]);
+      }
+      return combined;
+    });
+
+    setImagePreviews(prevPreviews => [...prevPreviews, ...newPreviews]);
   };
 
   const handleDrop = (e) => {
     e.preventDefault();
-    const files = Array.from(e.dataTransfer.files).filter((file) =>
-      ["image/jpeg", "image/png", "image/jpg"].includes(file.type)
+
+    const newFiles = Array.from(e.dataTransfer.files).filter(file =>
+      ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)
     );
 
-    if (files.length === 0) return;
+    const newPreviews = newFiles.map(file => URL.createObjectURL(file));
 
-    setImageFiles(files);
-
-    const previews = files.map((file) => URL.createObjectURL(file));
-    setImagePreviews(previews);
+    setImageFiles(prevFiles => {
+      const combined = [...prevFiles, ...newFiles];
+      if (!primaryImage && newFiles.length > 0) {
+        setPrimaryImage(newFiles[0]);
+      }
+      return combined;
+    });
+    
+    setImagePreviews(prevPreviews => [...prevPreviews, ...newPreviews]);
   };
 
   const handleDragOver = (e) => {
     e.preventDefault();
+  };
+  
+  const removeImage = (fileToRemove) => {
+    setImageFiles(prev => prev.filter(file => file !== fileToRemove));
+
+    setImagePreviews(prev => {
+      const index = imageFiles.indexOf(fileToRemove);
+      if (index !== -1) URL.revokeObjectURL(prev[index]);
+      return prev.filter((_, i) => i !== index);
+    });
+
+    setPrimaryImage(prev => (prev === fileToRemove ? null : prev));
   };
 
   return (
@@ -98,7 +134,7 @@ const uploadImage = async (idAction, file) => {
       {/* Top navigation bar */}
       <nav className="w-full bg-white shadow-sm border-b flex items-center justify-between px-6 py-4">
         <div className="flex items-center gap-4">
-          <h1 className="text-2xl font-bold text-cyan-600">PODRZI.ME</h1>
+          <h1 className="text-3xl font-bold text-cyan-600">PODRZI.ME</h1>
         </div>
 
         {responseMessage && (
@@ -266,7 +302,7 @@ const uploadImage = async (idAction, file) => {
               onDrop={handleDrop}
               onDragOver={handleDragOver}
             >
-              <p className="mb-2">Select or drag & drop images to upload.</p>
+              <p className="mb-2">Izaberite slike ili ih prevucite u prozor.  Kliknite na sliku koju želite da bude primarna.</p>
               <input
                 type="file"
                 accept=".jpg,.jpeg,.png"
@@ -276,16 +312,33 @@ const uploadImage = async (idAction, file) => {
               />
 
               <div className="flex flex-wrap justify-center gap-4">
-                {imagePreviews.map((src, i) => (
+            {imagePreviews.map((src, i) => {
+              const file = imageFiles[i];
+              const isPrimary = file === primaryImage;
+
+              return (
+                <div key={i} className="relative inline-block">
                   <img
-                    key={i}
                     src={src}
                     alt={`Preview ${i + 1}`}
-                    className="max-h-40 object-contain border rounded"
+                    onClick={() => setPrimaryImage(file)}
+                    className={`cursor-pointer max-h-40 object-contain border rounded transition duration-150
+                      ${isPrimary ? 'ring-4 ring-blue-500 border-blue-400' : 'border-gray-300'}`}
                   />
-                ))}
-              </div>
-
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeImage(file);
+                    }}
+                    className="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full px-1 hover:bg-red-700"
+                    title="Remove"
+                  >
+                    ×
+                  </button>
+                </div>
+              );
+            })}
+            </div>
               <p className="text-xs text-gray-500 mt-2">
                 Max 5MB each. Only JPG, JPEG, PNG.
               </p>

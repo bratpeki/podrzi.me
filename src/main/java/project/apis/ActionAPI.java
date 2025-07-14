@@ -2,6 +2,7 @@ package project.apis;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import project.classes.Action;
 import project.classes.ActionOwner;
 import project.classes.ActionOwnerId;
@@ -47,13 +48,12 @@ public class ActionAPI {
 
         action.setCollected(0.0f);
         action.setVisible(1);
-
         actionRepository.save(action);
+        actionRepository.flush();
 
         ActionOwner ao = new ActionOwner();
         ao.setAction(action);
-        ao.setIdAO(new ActionOwnerId(action.getIdAction(), jwt.extractId(token.get("token"))));
-        ao.setUser(userRepository.findBydisplayname(jwt.extractUsername(token.get("token"))));
+        ao.setUser(userRepository.findByusername(jwt.extractUsername(token.get("token"))));
         actionOwnerRepository.save(ao);
 
         return ResponseEntity.ok(action.getIdAction());
@@ -63,6 +63,31 @@ public class ActionAPI {
     public ResponseEntity<?> SetPrimaryImage(@RequestHeader Map<String, String> token, @RequestParam String imagePath, @RequestParam Integer idAction) {
         Action a = actionRepository.findByidAction(idAction);
         a.setPrimaryimage(imagePath);
+        actionRepository.save(a);
+        return ResponseEntity.ok("success");
+    }
+
+    @PostMapping("/updateaction")
+    public ResponseEntity<?> UpdateAction(@RequestHeader Map<String, String> token, @RequestBody ActionDTO adto) {
+        ActionOwner ao = actionOwnerRepository.findByidAO_IdAction(adto.getIdAction());
+        if (ao.getUser().getUsername().equals(jwt.extractUsername(token.get("token")))  ) {
+            return ResponseEntity.badRequest().body("invalidtoken");
+        }
+
+        Action a  =  actionRepository.findByidAction(adto.getIdAction());
+
+        if (!adto.getName().equals(a.getName()))
+            a.setName(adto.getName());
+
+        if (!adto.getDesc().equals(a.getDesc()))
+            a.setDesc(adto.getDesc());
+
+        if (!adto.getGoal().equals(a.getGoal()))
+            a.setGoal(adto.getGoal());
+
+        if (!adto.getPrimaryimage().equals(a.getPrimaryimage()))
+            a.setPrimaryimage(adto.getPrimaryimage());
+
         actionRepository.save(a);
         return ResponseEntity.ok("success");
     }

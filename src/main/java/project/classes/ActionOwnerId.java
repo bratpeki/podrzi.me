@@ -8,9 +8,7 @@ import java.util.Objects;
 
 @Embeddable
 public class ActionOwnerId implements Serializable {
-    @Column(insertable = false, updatable = false)
     private Integer idAction;
-    @Column(insertable = false, updatable = false)
     private Integer idUser;
 
     public ActionOwnerId() {
