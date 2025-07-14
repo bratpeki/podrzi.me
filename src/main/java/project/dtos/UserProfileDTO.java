@@ -10,16 +10,24 @@ public class UserProfileDTO {
     private String desc;
     private String imagepath;
     private String username;
+    private String oldpassword = "";
 
-    public UserProfileDTO(String password, String email, String displayname, String desc, String imagepath,  String username) {
+    public UserProfileDTO(String password, String email, String displayname, String desc, String imagepath,  String username, String oldpassword) {
         this.password = password;
         this.email = email;
         this.displayname = displayname;
         this.desc = desc;
         this.imagepath = imagepath;
         this.username = username;
+        this.oldpassword = oldpassword;
     }
 
+    public String getOldpassword() {
+        return oldpassword;
+    }
+    public void setOldpassword(String oldpassword) {
+        this.oldpassword = oldpassword;
+    }
     public String getPassword() {
         return password;
     }

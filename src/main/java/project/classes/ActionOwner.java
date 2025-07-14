@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 @Entity
 public class ActionOwner {
     @EmbeddedId
-    private ActionOwnerId idAO;
+    private ActionOwnerId idAO = new ActionOwnerId();
 
     @ManyToOne
     @MapsId("idUser")
@@ -20,10 +20,10 @@ public class ActionOwner {
     @Column(columnDefinition ="TINYINT")
     private Boolean isCollab = false;
 
-    public Boolean getOwner() {
+    public Boolean getIsCollab() {
         return isCollab;
     }
-    public void setOwner(Boolean owner) {
+    public void setIsCollab(Boolean owner) {
         isCollab = owner;
     }
     public ActionOwnerId getIdAO() {
