@@ -204,7 +204,7 @@ return (
               <input
                 type={showOldPassword ?'text' : 'password'}
                 name="oldpassword"
-                value={formData.oldpassword}
+                value={formData.oldPassword}
                 onChange={handleChange}
                 className="w-full border rounded px-3 py-2"
               />
