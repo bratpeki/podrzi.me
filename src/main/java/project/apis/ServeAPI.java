@@ -29,7 +29,7 @@ public class ServeAPI {
 
     @GetMapping("/images/users/{id}/{filename}")
     public ResponseEntity<?> ServeUser(@PathVariable String id, @PathVariable String filename) throws IOException {
-        Path file = Paths.get("/home/root1/podrzi.me/uploads/images/actions/", id, filename);
+        Path file = Paths.get("/home/root1/podrzi.me/uploads/images/users/", id, filename);
         Resource resource = new UrlResource(file.toUri());
 
         String contentType = Files.probeContentType(file);

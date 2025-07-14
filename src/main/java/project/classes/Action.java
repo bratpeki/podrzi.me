@@ -2,6 +2,8 @@ package project.classes;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 public class Action {
     @Id

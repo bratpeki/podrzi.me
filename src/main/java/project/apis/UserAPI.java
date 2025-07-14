@@ -61,7 +61,7 @@ public class UserAPI {
     @GetMapping("/showprofile")
     public ResponseEntity<?> ShowProfile(@RequestHeader Map<String, String> token) {
         User user = userRepository.findByidUser(jwt.extractId(token.get("token")));
-        UserProfileDTO updto = new UserProfileDTO("",  user.getEmail(), user.getDisplayname(), user.getDesc(), user.getImagepath(), user.getUsername(), "");
+        UserProfileDTO updto = new UserProfileDTO("",  user.getEmail(), user.getDisplayname(), user.getDesc(), user.getImagepath(), user.getUsername(), "", user.getIdUser());
         return ResponseEntity.ok(updto);
     }
 

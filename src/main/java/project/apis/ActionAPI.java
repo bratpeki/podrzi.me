@@ -7,6 +7,7 @@ import project.classes.Action;
 import project.classes.ActionOwner;
 import project.classes.ActionOwnerId;
 import project.dtos.ActionDTO;
+import project.dtos.ActionOwnerDTO;
 import project.repositories.ActionOwnerRepository;
 import project.repositories.ActionRepository;
 import project.repositories.UserRepository;
@@ -32,13 +33,14 @@ public class ActionAPI {
     @GetMapping("/getaction")
     public ResponseEntity<?> GetAction(@RequestParam Integer idAction) {
         Action a = actionRepository.findByidAction(idAction);
-        return ResponseEntity.ok(new ActionDTO(a.getName(), a.getGoal(), a.getCollected(), a.getDesc(), a.getPrimaryimage(), a.getIdAction()));
+        List<ActionOwnerDTO> AOs = actionOwnerRepository.findAll().stream().filter(ao->ao.getAction().getIdAction().equals(idAction)).map(ao->new ActionOwnerDTO(ao.getUser().getIdUser(), ao.getAction().getIdAction(), ao.getIsCollab())).toList();
+        return ResponseEntity.ok(new ActionDTO(a.getName(), a.getGoal(), a.getCollected(), a.getDesc(), a.getPrimaryimage(), a.getIdAction(), AOs));
     }
 
     @GetMapping("/getvisibleactions")
     public List<ActionDTO> GetVisibleActions(@RequestHeader Map<String, String> token) {
         List<Action> list = actionRepository.findAll().stream().filter(a->a.getVisible() == 1).toList();
-        return list.stream().map(a->new ActionDTO(a.getName(), a.getGoal(), a.getCollected(), a.getDesc(), a.getPrimaryimage(), a.getIdAction())).toList();
+        return list.stream().map(a->new ActionDTO(a.getName(), a.getGoal(), a.getCollected(), a.getDesc(), a.getPrimaryimage(), a.getIdAction(), null)).toList();
     }
 
     @PostMapping("/addaction")
@@ -48,11 +50,13 @@ public class ActionAPI {
 
         action.setCollected(0.0f);
         action.setVisible(1);
+
         actionRepository.save(action);
         actionRepository.flush();
 
         ActionOwner ao = new ActionOwner();
         ao.setAction(action);
+        ao.setIsCollab(false);
         ao.setUser(userRepository.findByusername(jwt.extractUsername(token.get("token"))));
         actionOwnerRepository.save(ao);
 

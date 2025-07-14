@@ -3,6 +3,7 @@ package project.dtos;
 import jakarta.persistence.Column;
 
 public class UserProfileDTO {
+    private Integer idUser;
     private String password;
     private String email;
     private String displayname;
@@ -12,7 +13,7 @@ public class UserProfileDTO {
     private String username;
     private String oldpassword = "";
 
-    public UserProfileDTO(String password, String email, String displayname, String desc, String imagepath,  String username, String oldpassword) {
+    public UserProfileDTO(String password, String email, String displayname, String desc, String imagepath,  String username, String oldpassword, Integer idUser) {
         this.password = password;
         this.email = email;
         this.displayname = displayname;
@@ -20,8 +21,15 @@ public class UserProfileDTO {
         this.imagepath = imagepath;
         this.username = username;
         this.oldpassword = oldpassword;
+        this.idUser = idUser;
     }
 
+    public Integer getIdUser() {
+        return idUser;
+    }
+    public void setIdUser(Integer idUser) {
+        this.idUser = idUser;
+    }
     public String getOldpassword() {
         return oldpassword;
     }

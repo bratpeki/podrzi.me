@@ -53,23 +53,27 @@ public class ImageAPI {
     }
 
     @PostMapping("/uploaduser")
-    public Boolean UploadUserImage(@RequestParam Integer idUser, @RequestParam("file") MultipartFile filen) throws IOException {
+    public ResponseEntity<?> UploadUserImage(@RequestParam Integer idUser, @RequestParam("file") MultipartFile filen) throws IOException {
         String file = filen.getOriginalFilename();
         if (!(file.endsWith(".jpg") || file.endsWith(".png") || file.endsWith(".jpeg")))
-            return false;
+            return ResponseEntity.badRequest().body("invalidfile");
 
         String folderPath = UPLOAD_FOLDER + "/users/" + idUser + "/";
         Path dirPath = Paths.get(folderPath);
         Files.createDirectories(dirPath);
 
         Path filePath = dirPath.resolve(file);
+
+        if (!Files.exists(filePath))
+            Files.copy(filen.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
         Files.copy(filen.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-        User u = userRepository.findByidUser(idUser);
-        u.setImagepath(UPLOAD_LINK+"/users/"+idUser+"/"+file);
-        userRepository.save(u);
+       //    User u = userRepository.findByidUser(idUser);
+       //u.setImagepath(UPLOAD_LINK+"/users/"+idUser+"/"+file);
+        //userRepository.save(u);
 
-        return true;
+        return ResponseEntity.ok(UPLOAD_LINK+"/users/"+idUser+"/"+file);
     }
 
     @GetMapping("/getactionimages")
