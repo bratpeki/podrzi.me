@@ -25,21 +25,21 @@ public class DonationAPI {
     }
 
     @GetMapping("/getdonations")
-    public List<String> GetDonations() {
+    public List<String> getDonations() {
         List<Donation> list = donationRepository.findAll();
         return list.stream().map(Donation::getNameAmount).toList();
     }
 
     @GetMapping("/getdonationsuser")
-    public List<DonationDTO> GetDonationsUser(@RequestParam Integer idUser) {
+    public List<DonationDTO> getDonationsUser(@RequestParam Integer idUser) {
         List <Donation> donations = donationRepository.findByUser_idUser(idUser);
         return donations.stream().map(d ->
-                new DonationDTO(d.getIdDonation(), d.getAction().getIdAction(), d.getAction().getName(), d.getUser().getDisplayname(), d.getAmount(), d.getDonationTime())
+                new DonationDTO(d.getIdDonation(), d.getAction().getIdAction(), d.getAction().getName(), d.getUser().getDisplayName(), d.getAmount(), d.getDonationTime())
         ).toList();
     }
 
     @PostMapping("/adddonation")
-    public String AddDonation(@RequestBody DonationRequestDTO drdto) {
+    public String addDonation(@RequestBody DonationRequestDTO drdto) {
         Action action = actionRepository.findByidAction(drdto.getIdAction());
         action.setCollected(action.getCollected() + drdto.getAmount());
         actionRepository.save(action);

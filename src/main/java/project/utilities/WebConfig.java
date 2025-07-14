@@ -7,6 +7,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 
+import java.io.File;
+import java.io.IOException;
+
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
@@ -30,7 +33,13 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        String projectRoot = null;
+        try {
+            projectRoot = new File(".").getCanonicalPath();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:/home/root1/podrzi.me/uploads/");
+                .addResourceLocations("file:"+projectRoot+"/uploads/");
     }
 }

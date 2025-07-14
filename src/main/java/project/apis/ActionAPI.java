@@ -2,10 +2,8 @@ package project.apis;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import project.classes.Action;
 import project.classes.ActionOwner;
-import project.classes.ActionOwnerId;
 import project.dtos.ActionDTO;
 import project.dtos.ActionOwnerDTO;
 import project.repositories.ActionOwnerRepository;
@@ -31,20 +29,20 @@ public class ActionAPI {
     }
 
     @GetMapping("/getaction")
-    public ResponseEntity<?> GetAction(@RequestParam Integer idAction) {
+    public ResponseEntity<?> getAction(@RequestParam Integer idAction) {
         Action a = actionRepository.findByidAction(idAction);
         List<ActionOwnerDTO> AOs = actionOwnerRepository.findAll().stream().filter(ao->ao.getAction().getIdAction().equals(idAction)).map(ao->new ActionOwnerDTO(ao.getUser().getIdUser(), ao.getIsCollab())).toList();
-        return ResponseEntity.ok(new ActionDTO(a.getName(), a.getGoal(), a.getCollected(), a.getDesc(), a.getPrimaryimage(), a.getIdAction(), AOs));
+        return ResponseEntity.ok(new ActionDTO(a.getName(), a.getGoal(), a.getCollected(), a.getDesc(), a.getPrimaryImage(), a.getIdAction(), AOs));
     }
 
     @GetMapping("/getvisibleactions")
-    public List<ActionDTO> GetVisibleActions(@RequestHeader Map<String, String> token) {
+    public List<ActionDTO> getVisibleActions(@RequestHeader Map<String, String> token) {
         List<Action> list = actionRepository.findAll().stream().filter(a->a.getVisible() == 1).toList();
-        return list.stream().map(a->new ActionDTO(a.getName(), a.getGoal(), a.getCollected(), a.getDesc(), a.getPrimaryimage(), a.getIdAction(), null)).toList();
+        return list.stream().map(a->new ActionDTO(a.getName(), a.getGoal(), a.getCollected(), a.getDesc(), a.getPrimaryImage(), a.getIdAction(), null)).toList();
     }
 
     @PostMapping("/addaction")
-    public ResponseEntity<?> SetAction(@RequestHeader Map<String, String> token, @RequestBody Action action) {
+    public ResponseEntity<?> setAction(@RequestHeader Map<String, String> token, @RequestBody Action action) {
         if (actionRepository.findByname(action.getName()) != null && actionRepository.findByname(action.getName()).getVisible() == 1)
             return ResponseEntity.badRequest().body("taken");
 
@@ -64,15 +62,15 @@ public class ActionAPI {
     }
 
     @PostMapping("/setprimaryimage")
-    public ResponseEntity<?> SetPrimaryImage(@RequestHeader Map<String, String> token, @RequestParam String imagePath, @RequestParam Integer idAction) {
+    public ResponseEntity<?> setPrimaryImage(@RequestHeader Map<String, String> token, @RequestParam String imagePath, @RequestParam Integer idAction) {
         Action a = actionRepository.findByidAction(idAction);
-        a.setPrimaryimage(imagePath);
+        a.setPrimaryImage(imagePath);
         actionRepository.save(a);
         return ResponseEntity.ok("success");
     }
 
     @PostMapping("/updateaction")
-    public ResponseEntity<?> UpdateAction(@RequestHeader Map<String, String> token, @RequestBody ActionDTO adto) {
+    public ResponseEntity<?> updateAction(@RequestHeader Map<String, String> token, @RequestBody ActionDTO adto) {
         ActionOwner ao = actionOwnerRepository.findByidAO_IdAction(adto.getIdAction());
         if (ao.getUser().getUsername().equals(jwt.extractUsername(token.get("token")))  ) {
             return ResponseEntity.badRequest().body("invalidtoken");
@@ -89,8 +87,8 @@ public class ActionAPI {
         if (!adto.getGoal().equals(a.getGoal()))
             a.setGoal(adto.getGoal());
 
-        if (!adto.getPrimaryimage().equals(a.getPrimaryimage()))
-            a.setPrimaryimage(adto.getPrimaryimage());
+        if (!adto.getPrimaryImage().equals(a.getPrimaryImage()))
+            a.setPrimaryImage(adto.getPrimaryImage());
 
         actionRepository.save(a);
         return ResponseEntity.ok("success");

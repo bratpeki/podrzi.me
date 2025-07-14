@@ -2,8 +2,6 @@ package project.classes;
 
 import jakarta.persistence.*;
 
-import java.util.List;
-
 @Entity
 public class Action {
     @Id
@@ -17,7 +15,7 @@ public class Action {
     private String desc;
     @Column(name = "visible", columnDefinition = "TINYINT")
     private Integer visible;
-    private String primaryimage;
+    private String primaryImage;
 
     public Integer getVisible() {
         return visible;
@@ -55,10 +53,10 @@ public class Action {
     public void setGoal(Float goal) {
         this.goal = goal;
     }
-    public String getPrimaryimage() {
-        return primaryimage;
+    public String getPrimaryImage() {
+        return primaryImage;
     }
-    public void setPrimaryimage(String primaryimage) {
-        this.primaryimage = primaryimage;
+    public void setPrimaryImage(String primaryImage) {
+        this.primaryImage = primaryImage;
     }
 }

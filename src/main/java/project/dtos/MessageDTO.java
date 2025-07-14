@@ -1,21 +1,21 @@
 package project.dtos;
 
 public class MessageDTO {
-    private String messagetext;
+    private String messageText;
     private String email;
     private String name;
 
     public MessageDTO(String messagetext, String email, String name) {
-        this.messagetext = messagetext;
+        this.messageText = messagetext;
         this.email = email;
         this.name = name;
     }
 
-    public String getMessagetext() {
-        return messagetext;
+    public String getMessageText() {
+        return messageText;
     }
-    public void setMessagetext(String messagetext) {
-        this.messagetext = messagetext;
+    public void setMessageText(String messageText) {
+        this.messageText = messageText;
     }
     public String getEmail() {
         return email;

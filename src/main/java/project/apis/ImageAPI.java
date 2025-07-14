@@ -6,12 +6,13 @@ import org.springframework.web.multipart.MultipartFile;
 import project.repositories.ActionRepository;
 import project.repositories.UserRepository;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.List;
 import java.util.stream.Stream;
 import project.classes.Action;
-import project.classes.User;
+
 @RestController
 @RequestMapping("/api/images")
 public class ImageAPI {
@@ -22,12 +23,21 @@ public class ImageAPI {
         this.actionRepository = actionRepository;
         this.userRepository = userRepository;
     }
-    private static final String UPLOAD_FOLDER = "/home/root1/podrzi.me/uploads/images";
+    private static final String UPLOAD_FOLDER;
+
+    static {
+        try {
+            UPLOAD_FOLDER = new File(".").getCanonicalPath() + "/uploads/images";
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
     private static final String UPLOAD_LINK = "http://podrzime.ddns.net:8080/uploads/images";
-    //private static final String UPLOAD_FOLDER = "C:\\Users\\Yorth\\IdeaProjects\\podrzi.me\\uploads\\images";
+    //  private static final String UPLOAD_LINK = "http://localhost:8080/uploads/images";
 
     @PostMapping("/uploadaction")
-    public ResponseEntity<?> UploadActionImage(@RequestParam Integer idAction, @RequestParam("file") MultipartFile filen, @RequestParam Boolean isPrimary) throws IOException {
+    public ResponseEntity<?> uploadActionImage(@RequestParam Integer idAction, @RequestParam("file") MultipartFile filen, @RequestParam Boolean isPrimary) throws IOException {
         String file = filen.getOriginalFilename();
 
         if (!(file.endsWith(".jpg") || file.endsWith(".png") || file.endsWith(".jpeg")))
@@ -44,7 +54,7 @@ public class ImageAPI {
 
         if (isPrimary == true){
             Action a = actionRepository.findByidAction(idAction);
-            a.setPrimaryimage(UPLOAD_LINK+"/actions/"+idAction+"/"+file);
+            a.setPrimaryImage(UPLOAD_LINK+"/actions/"+idAction+"/"+file);
             actionRepository.save(a);
             actionRepository.flush();
         }
@@ -53,7 +63,7 @@ public class ImageAPI {
     }
 
     @PostMapping("/uploaduser")
-    public ResponseEntity<?> UploadUserImage(@RequestParam Integer idUser, @RequestParam("file") MultipartFile filen) throws IOException {
+    public ResponseEntity<?> uploadUserImage(@RequestParam Integer idUser, @RequestParam("file") MultipartFile filen) throws IOException {
         String file = filen.getOriginalFilename();
         if (!(file.endsWith(".jpg") || file.endsWith(".png") || file.endsWith(".jpeg")))
             return ResponseEntity.badRequest().body("invalidfile");
@@ -68,10 +78,6 @@ public class ImageAPI {
             Files.copy(filen.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
         Files.copy(filen.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-       //    User u = userRepository.findByidUser(idUser);
-       //u.setImagepath(UPLOAD_LINK+"/users/"+idUser+"/"+file);
-        //userRepository.save(u);
 
         return ResponseEntity.ok(UPLOAD_LINK+"/users/"+idUser+"/"+file);
     }

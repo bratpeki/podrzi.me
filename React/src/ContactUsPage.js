@@ -23,9 +23,9 @@ function ContactPage() {
     e.preventDefault();
     
     const payload={
-      name: formData.ime,
-      email:  formData.email,
-      messagetext:  formData.poruka,
+      "name": formData.ime,
+      "email":  formData.email,
+      "messageText":  formData.poruka,
     };
 
  try {

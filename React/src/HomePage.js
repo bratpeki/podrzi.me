@@ -60,7 +60,7 @@ function HomePage() {
               className="w-72 bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-200"
             >
               <img
-                src={action.primaryimage}
+                src={action.primaryImage}
                 alt="Slika akcije"
                 className="w-full h-40 object-cover"
               />

@@ -28,7 +28,7 @@ public class AdminAPI {
     }
 
     @PostMapping("/adminauth")
-    public ResponseEntity<?> AdminLogin(@RequestBody Admin admin) {
+    public ResponseEntity<?> adminLogin(@RequestBody Admin admin) {
         if (admin.getUsername().isBlank() && admin.getPassword().isBlank())
             return ResponseEntity.ok("loginerror");
         if (adminRepository.findByusername(admin.getUsername()) == null)

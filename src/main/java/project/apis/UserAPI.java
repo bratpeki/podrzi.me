@@ -42,17 +42,17 @@ public class UserAPI {
 
     @PostMapping("/adduser")
     public ResponseEntity<?> AddUser(@RequestBody User user) {
-        if (!Pattern.compile("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$").matcher(user.getEmail()).matches() || user.getEmail().isBlank() || user.getUsername().isBlank() || user.getDisplayname().isBlank())
-            return ResponseEntity.badRequest().body("invaliddataerror");
+        if (!Pattern.compile("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$").matcher(user.getEmail()).matches() || user.getEmail().isBlank() || user.getUsername().isBlank() || user.getDisplayName().isBlank())
+            return ResponseEntity.ok("invaliddataerror");
 
         if (userRepository.findByemail(user.getEmail()) != null)
-            return ResponseEntity.badRequest().body("emailerror");
+            return ResponseEntity.ok("emailerror");
 
         if (userRepository.findByusername(user.getUsername()) != null)
-            return ResponseEntity.badRequest().body("usernameerror");
+            return ResponseEntity.ok("usernameerror");
 
-        if (userRepository.findBydisplayname(user.getDisplayname()) != null)
-            return ResponseEntity.badRequest().body("displaynameerror");
+        if (userRepository.findBydisplayName(user.getDisplayName()) != null)
+            return ResponseEntity.ok("displaynameerror");
 
         userRepository.save(user);
         return ResponseEntity.ok("success");
@@ -61,7 +61,7 @@ public class UserAPI {
     @GetMapping("/showprofile")
     public ResponseEntity<?> ShowProfile(@RequestHeader Map<String, String> token) {
         User user = userRepository.findByidUser(jwt.extractId(token.get("token")));
-        UserProfileDTO updto = new UserProfileDTO("",  user.getEmail(), user.getDisplayname(), user.getDesc(), user.getImagepath(), user.getUsername(), "", user.getIdUser());
+        UserProfileDTO updto = new UserProfileDTO("",  user.getEmail(), user.getDisplayName(), user.getDesc(), user.getImagePath(), user.getUsername(), "", user.getIdUser());
         return ResponseEntity.ok(updto);
     }
 
@@ -77,8 +77,8 @@ public class UserAPI {
            user.setEmail(updto.getEmail());
        }
 
-       if (!(updto.getOldpassword() == null || updto.getPassword() == null || updto.getPassword().isBlank() || updto.getOldpassword().isBlank())) {
-           if (updto.getOldpassword().equals(user.getPassword()))
+       if (!(updto.getOldPassword() == null || updto.getPassword() == null || updto.getPassword().isBlank() || updto.getOldPassword().isBlank())) {
+           if (updto.getOldPassword().equals(user.getPassword()))
                user.setPassword(updto.getPassword());
            else
                return ResponseEntity.badRequest().body("passnotmatchingerror");
@@ -87,11 +87,11 @@ public class UserAPI {
         if (!(updto.getDesc() == null || updto.getDesc().isBlank()))
             user.setDesc(updto.getDesc());
 
-        if (!(updto.getDisplayname() == null || updto.getDisplayname().isBlank()))
-            user.setDisplayname(updto.getDisplayname());
+        if (!(updto.getDisplayName() == null || updto.getDisplayName().isBlank()))
+            user.setDisplayName(updto.getDisplayName());
 
-        if (!(updto.getImagepath() == null || updto.getImagepath().isBlank()))
-            user.setImagepath(updto.getImagepath());
+        if (!(updto.getImagePath() == null || updto.getImagePath().isBlank()))
+            user.setImagePath(updto.getImagePath());
 
        userRepository.save(user);
 

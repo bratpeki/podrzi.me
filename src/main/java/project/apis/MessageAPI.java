@@ -31,7 +31,7 @@ public class MessageAPI {
 
         Message mess = new Message();
         mess.setEmail(messDTO.getEmail());
-        mess.setMessagetext(messDTO.getMessagetext());
+        mess.setMessageText(messDTO.getMessageText());
         mess.setName(messDTO.getName());
 
         messageRepository.save(mess);

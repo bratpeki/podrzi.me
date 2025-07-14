@@ -28,11 +28,11 @@ function ProfilePage() {
 
 
         setUser({
-          imagepath: data.imagepath,
-          userName: data.username,
-          displayName: data.displayname,
-          email: data.email,
-          bio: data.desc,
+          "imagePath": data.imagePath,
+          "username": data.username,
+          "displayName": data.displayName,
+          "email": data.email,
+          "desc": data.desc,
         });
       } catch (err) {
         console.error('Greška pri učitavanju profila:', err);
@@ -66,21 +66,21 @@ function ProfilePage() {
 
           <div className="flex flex-col items-center space-y-4">
             <img
-              src={user.imagepath}
+              src={user.imagePath}
               alt="Profilna slika"
               className="w-32 h-32 rounded-full border-4 border-blue-500 shadow"
             />
 
             <div className="text-center space-y-1">
               <h2 className="text-xl font-semibold text-gray-800">{user.displayName}</h2>
-              <p className="text-gray-500">@{user.userName}</p>
+              <p className="text-gray-500">@{user.username}</p>
               <p className="text-gray-600 text-sm">{user.email}</p>
             </div>
 
             <div className="mt-4 w-full">
               <h3 className="text-lg font-medium text-gray-700 mb-2">Opis profila</h3>
               <p className="text-gray-700 bg-gray-100 rounded p-4">
-                {user.bio}
+                {user.desc}
               </p>
             </div>
 

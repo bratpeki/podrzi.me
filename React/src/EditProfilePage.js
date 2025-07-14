@@ -17,14 +17,14 @@ function EditProfilePage(){
 
 
     const [formData,setFormData]=useState({
-        idUser:'',
-        username: '',
-        email:'',
-        password:'',
-        oldpassword:'',
-        displayname:'',
-        desc:'',
-        imagepath:'',
+        "idUser":'',
+        "username": '',
+        "email":'',
+        "password":'',
+        "oldPassword":'',
+        "displayName":'',
+        "desc":'',
+        "imagePath":'',
     });
 
 
@@ -46,14 +46,14 @@ function EditProfilePage(){
                 const data=await res.json();
 
                 setFormData({
-                    idUser: data.idUser || '',
-                    username: data.username || '',
-                    email: data.email || '',
-                    oldpassword: '',
-                    password: '',
-                    displayname :data.displayname || '',
-                    desc: data.desc || '',
-                    imagepath: data.imagepath || '',
+                    "idUser": data.idUser || '',
+                    "username": data.username || '',
+                    "email": data.email || '',
+                    "oldPassword": '',
+                    "password": '',
+                    "displayName" :data.displayName || '',
+                    "desc": data.desc || '',
+                    "imagePath": data.imagePath || '',
                 });
             }catch(err){
                 console.error(err);
@@ -130,13 +130,13 @@ function EditProfilePage(){
       throw new Error("Greška pri uploadu slike.");
     }
 
-    formData.imagepath = await res.text(); // ili `await res.json()` ako API vraća JSON objekat
+    formData.imagePath = await res.text(); // ili `await res.json()` ako API vraća JSON objekat
 
    // console.log("Path od servera",path);
     
     setFormData((prev) => ({
       ...prev,
-      imagepath: formData.imagepath,
+      imagePath: formData.imagePath,
     }));
 
     return true;
@@ -164,10 +164,9 @@ return (
               <input
                 type="text"
                 name="displayname"
-                value={formData.displayname}
+                value={formData.displayName}
                 onChange={handleChange}
                 className="w-full border rounded px-3 py-2"
-                required
               />
             </div>
 

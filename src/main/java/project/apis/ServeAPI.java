@@ -5,6 +5,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 
@@ -12,9 +13,19 @@ import java.nio.file.*;
 @RequestMapping("/uploads")
 public class ServeAPI {
 
+    private static final String UPLOAD_FOLDER;
+
+    static {
+        try {
+            UPLOAD_FOLDER = new File(".").getCanonicalPath() + "/uploads/images";
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
     @GetMapping("/images/actions/{id}/{filename}")
     public ResponseEntity<?> ServeAction(@PathVariable String id, @PathVariable String filename) throws IOException {
-        Path file = Paths.get("/home/root1/podrzi.me/uploads/images/actions/", id, filename);
+        Path file = Paths.get(UPLOAD_FOLDER+"/actions/", id, filename);
         Resource resource = new UrlResource(file.toUri());
 
         String contentType = Files.probeContentType(file);
@@ -29,7 +40,7 @@ public class ServeAPI {
 
     @GetMapping("/images/users/{id}/{filename}")
     public ResponseEntity<?> ServeUser(@PathVariable String id, @PathVariable String filename) throws IOException {
-        Path file = Paths.get("/home/root1/podrzi.me/uploads/images/users/", id, filename);
+        Path file = Paths.get(UPLOAD_FOLDER+"/users/", id, filename);
         Resource resource = new UrlResource(file.toUri());
 
         String contentType = Files.probeContentType(file);

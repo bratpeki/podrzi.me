@@ -6,21 +6,21 @@ public class UserProfileDTO {
     private Integer idUser;
     private String password;
     private String email;
-    private String displayname;
+    private String displayName;
     @Column(name = "`desc`", length = 2000)
     private String desc;
-    private String imagepath;
+    private String imagePath;
     private String username;
-    private String oldpassword = "";
+    private String oldPassword = "";
 
-    public UserProfileDTO(String password, String email, String displayname, String desc, String imagepath,  String username, String oldpassword, Integer idUser) {
+    public UserProfileDTO(String password, String email, String displayName, String desc, String imagepath,  String username, String oldpassword, Integer idUser) {
         this.password = password;
         this.email = email;
-        this.displayname = displayname;
+        this.displayName = displayName;
         this.desc = desc;
-        this.imagepath = imagepath;
+        this.imagePath = imagepath;
         this.username = username;
-        this.oldpassword = oldpassword;
+        this.oldPassword = oldpassword;
         this.idUser = idUser;
     }
 
@@ -30,11 +30,11 @@ public class UserProfileDTO {
     public void setIdUser(Integer idUser) {
         this.idUser = idUser;
     }
-    public String getOldpassword() {
-        return oldpassword;
+    public String getOldPassword() {
+        return oldPassword;
     }
-    public void setOldpassword(String oldpassword) {
-        this.oldpassword = oldpassword;
+    public void setOldPassword(String oldPassword) {
+        this.oldPassword = oldPassword;
     }
     public String getPassword() {
         return password;
@@ -48,11 +48,11 @@ public class UserProfileDTO {
     public void setEmail(String email) {
         this.email = email;
     }
-    public String getDisplayname() {
-        return displayname;
+    public String getDisplayName() {
+        return displayName;
     }
-    public void setDisplayname(String displayname) {
-        this.displayname = displayname;
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
     public String getDesc() {
         return desc;
@@ -60,11 +60,11 @@ public class UserProfileDTO {
     public void setDesc(String desc) {
         this.desc = desc;
     }
-    public String getImagepath() {
-        return imagepath;
+    public String getImagePath() {
+        return imagePath;
     }
-    public void setImagepath(String imagepath) {
-        this.imagepath = imagepath;
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
     public String getUsername() {
         return username;

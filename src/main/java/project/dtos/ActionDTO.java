@@ -1,7 +1,5 @@
 package project.dtos;
 
-import project.classes.ActionOwner;
-
 import java.util.List;
 
 public class ActionDTO {
@@ -10,7 +8,7 @@ public class ActionDTO {
     private Float goal;
     private Float collected = 0f;
     private String desc;
-    private String primaryimage = "";
+    private String primaryImage = "";
     private List<ActionOwnerDTO> actionOwners;
 
     public ActionDTO(String name, Float goal, Float collected, String desc, String primaryimage, Integer idAction, List<ActionOwnerDTO> actionOwners) {
@@ -19,7 +17,7 @@ public class ActionDTO {
         this.goal = goal;
         this.collected = collected;
         this.desc = desc;
-        this.primaryimage = primaryimage;
+        this.primaryImage = primaryimage;
         this.actionOwners = actionOwners;
     }
 
@@ -59,10 +57,10 @@ public class ActionDTO {
     public void setDesc(String desc) {
         this.desc = desc;
     }
-    public String getPrimaryimage() {
-        return primaryimage;
+    public String getPrimaryImage() {
+        return primaryImage;
     }
-    public void setPrimaryimage(String primaryimage) {
-        this.primaryimage = primaryimage;
+    public void setPrimaryImage(String primaryImage) {
+        this.primaryImage = primaryImage;
     }
 }

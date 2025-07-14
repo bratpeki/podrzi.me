@@ -52,6 +52,6 @@ public class Donation {
         this.action = action;
     }
     public String getNameAmount() {
-        return action.getIdAction() + " " + action.getName() + " " + user.getDisplayname() + " " + amount.toString();
+        return action.getIdAction() + " " + action.getName() + " " + user.getDisplayName() + " " + amount.toString();
     }
 }

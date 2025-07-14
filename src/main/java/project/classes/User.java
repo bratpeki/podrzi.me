@@ -10,10 +10,10 @@ public class User {
     private String username;
     private String password;
     private String email;
-    private String displayname;
+    private String displayName;
     @Column(name = "`desc`", length = 2000)
     private String desc;
-    private String imagepath;
+    private String imagePath;
 
     public String getDesc() {
         return desc;
@@ -21,11 +21,11 @@ public class User {
     public void setDesc(String desc) {
         this.desc = desc;
     }
-    public String getDisplayname() {
-        return displayname;
+    public String getDisplayName() {
+        return displayName;
     }
-    public void setDisplayname(String displayname) {
-        this.displayname = displayname;
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
     public String getPassword() {
         return password;
@@ -45,11 +45,11 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
-    public String getImagepath() {
-        return imagepath;
+    public String getImagePath() {
+        return imagePath;
     }
-    public void setImagepath(String imagepath) {
-        this.imagepath = imagepath;
+    public void setImagePath(String imagepath) {
+        this.imagePath = imagepath;
     }
     public Integer getIdUser() {
         return idUser;

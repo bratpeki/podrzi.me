@@ -9,7 +9,7 @@ public class Message {
     private Integer idMessage;
 
     @Column(name = "`messagetext`", length = 500)
-    private String messagetext;
+    private String messageText;
     private String email;
     private String name;
 
@@ -19,11 +19,11 @@ public class Message {
     public void setIdMessage(Integer idMessage) {
         this.idMessage = idMessage;
     }
-    public String getMessagetext() {
-        return messagetext;
+    public String getMessageText() {
+        return messageText;
     }
-    public void setMessagetext(String messagetext) {
-        this.messagetext = messagetext;
+    public void setMessageText(String messagetext) {
+        this.messageText = messagetext;
     }
     public String getEmail() {
         return email;

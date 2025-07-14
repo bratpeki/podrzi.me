@@ -35,14 +35,18 @@ public class JWTFilter extends OncePerRequestFilter {
 
         if (jwt.validateToken(token)) {
             String username = jwt.extractUsername(token);
-            System.out.println("User " + username + " accessed " + request.getRequestURL());
 
             if (userRepository.findByusername(username) != null) {
                 List<SimpleGrantedAuthority> authorities = new ArrayList<>();
                 authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 
-                if (adminRepository.findByusername(username) != null)
-                    authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                System.out.println(authentication);
+            }
+            else if (adminRepository.findByusername(username) != null) {
+                List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+                authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
 
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
