@@ -45,6 +45,7 @@ public class Security {
 
             "/api/actions/addaction",
             "/api/actions/setprimaryimage",
+            "/api/actions/updateaction",
 
             "/api/donations/getdonationsuser"
     };

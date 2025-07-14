@@ -4,9 +4,9 @@ public class ActionDTO {
     private Integer idAction;
     private String name;
     private Float goal;
-    private Float collected;
+    private Float collected = 0f;
     private String desc;
-    private String primaryimage;
+    private String primaryimage = "";
 
     public ActionDTO(String name, Float goal, Float collected, String desc, String imagepath, Integer idAction) {
         this.idAction = idAction;
