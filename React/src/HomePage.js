@@ -1,29 +1,31 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import NavigationBar from './NavigationBar';
-import InfoFooter from './InfoFooter';
+import React, { useContext, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import NavigationBar from "./NavigationBar";
+import InfoFooter from "./InfoFooter";
 import { AuthStateContext } from "./components/UseAuthState";
 
 function HomePage() {
   const [actions, setActions] = useState([]);
   const { authState, authDispatch } = useContext(AuthStateContext);
-  
+
   useEffect(() => {
-      console.log("CreateActionPage", authState.accessToken);
-    fetch('http://podrzime.ddns.net:8080/api/actions/getvisibleactions', {
-        method: "GET",
-        headers: {
-            "token": authState.accessToken,
-        }
+    if (!authState.initialized) return;
+
+    console.log("CreateActionPage", authState.accessToken);
+    fetch("http://podrzime.ddns.net:8080/api/actions/getvisibleactions", {
+      method: "GET",
+      headers: {
+        token: authState.accessToken,
+      },
     })
       .then((res) => res.json())
       .then((data) => {
         setActions(data);
       })
       .catch((error) => {
-        console.error('Error fetching actions:', error);
+        console.error("Error fetching actions:", error);
       });
-  }, []);
+  }, [authState.initialized]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
@@ -32,7 +34,9 @@ function HomePage() {
 
       {/* Header */}
       <header className="text-center mt-10 mb-6 pt-10">
-        <h1 className="text-5xl font-bold text-gray-800">Pregled aktivnih akcija</h1>
+        <h1 className="text-5xl font-bold text-gray-800">
+          Pregled aktivnih akcija
+        </h1>
       </header>
 
       <hr className="w-1/4 mx-auto my-4 border-gray-400" />
@@ -61,7 +65,9 @@ function HomePage() {
                 className="w-full h-40 object-cover"
               />
               <div className="p-4">
-                <h3 className="text-lg font-semibold text-gray-800">{action.name}</h3>
+                <h3 className="text-lg font-semibold text-gray-800">
+                  {action.name}
+                </h3>
                 <p className="text-gray-600 text-sm">{action.desc}</p>
                 <p className="text-sm text-gray-600 mt-1">
                   Cilj: {action.goal.toLocaleString()}€
@@ -70,14 +76,14 @@ function HomePage() {
                 <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
                   <div
                     className={`h-2.5 rounded-full ${
-                      progress < 50 ? 'bg-orange-400' : 'bg-green-500'
+                      progress < 50 ? "bg-orange-400" : "bg-green-500"
                     }`}
                     style={{ width: `${progress}%` }}
                   />
                 </div>
                 <p
                   className={`mt-1 text-sm font-medium ${
-                    progress < 50 ? 'text-orange-500' : 'text-green-600'
+                    progress < 50 ? "text-orange-500" : "text-green-600"
                   }`}
                 >
                   {progress}% prikupljeno
