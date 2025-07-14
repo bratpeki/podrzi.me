@@ -203,7 +203,7 @@ return (
               <label className="block text-sm text-gray-700">Stara lozinka</label>
               <input
                 type={showOldPassword ?'text' : 'password'}
-                name="oldpassword"
+                name="oldPassword"
                 value={formData.oldPassword}
                 onChange={handleChange}
                 className="w-full border rounded px-3 py-2"
