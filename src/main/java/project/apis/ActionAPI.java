@@ -33,7 +33,7 @@ public class ActionAPI {
     @GetMapping("/getaction")
     public ResponseEntity<?> GetAction(@RequestParam Integer idAction) {
         Action a = actionRepository.findByidAction(idAction);
-        List<ActionOwnerDTO> AOs = actionOwnerRepository.findAll().stream().filter(ao->ao.getAction().getIdAction().equals(idAction)).map(ao->new ActionOwnerDTO(ao.getUser().getIdUser(), ao.getAction().getIdAction(), ao.getIsCollab())).toList();
+        List<ActionOwnerDTO> AOs = actionOwnerRepository.findAll().stream().filter(ao->ao.getAction().getIdAction().equals(idAction)).map(ao->new ActionOwnerDTO(ao.getUser().getIdUser(), ao.getIsCollab())).toList();
         return ResponseEntity.ok(new ActionDTO(a.getName(), a.getGoal(), a.getCollected(), a.getDesc(), a.getPrimaryimage(), a.getIdAction(), AOs));
     }
 
