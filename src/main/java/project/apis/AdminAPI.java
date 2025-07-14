@@ -21,8 +21,6 @@ public class AdminAPI {
 
     @PostMapping("/addadmin")
     public ResponseEntity<?> addAdmin(@RequestParam Map<String, String> token, @RequestBody Admin admin) {
-        if (!jwt.validateToken(token.get("token")))
-            return ResponseEntity.badRequest().body("invalidtoken");
 
         admin.setOwner(false);
         adminRepository.save(admin);

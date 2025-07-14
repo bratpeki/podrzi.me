@@ -7,8 +7,9 @@ public class Action {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idAction;
-    private Float goal;
-    private Float collected;
+    private Float goal = 0f;
+    @Column(columnDefinition = "FLOAT DEFAULT 0")
+    private Float collected = 0f;
     private String name;
     @Column(name = "`desc`", length = 10000)
     private String desc;

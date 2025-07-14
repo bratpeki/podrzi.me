@@ -24,11 +24,12 @@ public class ImageAPI {
         this.userRepository = userRepository;
     }
     private static final String UPLOAD_FOLDER = "/home/root1/podrzi.me/uploads/images";
+    private static final String UPLOAD_LINK = "http://podrzime.ddns.net/uploads/images";
     //private static final String UPLOAD_FOLDER = "C:\\Users\\Yorth\\IdeaProjects\\podrzi.me\\uploads\\images";
 
     @PostMapping("/uploadaction")
     public ResponseEntity<?> UploadActionImage(@RequestParam Integer idAction, @RequestParam("file") MultipartFile filen) throws IOException {
-        String file = filen.getOriginalFilename().toLowerCase();
+        String file = filen.getOriginalFilename();
 
         if (!(file.endsWith(".jpg") || file.endsWith(".png") || file.endsWith(".jpeg")))
             return ResponseEntity.badRequest().body("invalidfile");
@@ -45,8 +46,7 @@ public class ImageAPI {
 
     @PostMapping("/uploaduser")
     public Boolean UploadUserImage(@RequestParam Integer idUser, @RequestParam("file") MultipartFile filen) throws IOException {
-        String file = filen.getOriginalFilename().toLowerCase();
-
+        String file = filen.getOriginalFilename();
         if (!(file.endsWith(".jpg") || file.endsWith(".png") || file.endsWith(".jpeg")))
             return false;
 
@@ -57,65 +57,20 @@ public class ImageAPI {
         Path filePath = dirPath.resolve(file);
         Files.copy(filen.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
+        userRepository.findByidUser(idUser).setImagepath(UPLOAD_LINK+"/users/"+idUser+"/"+file);
+
         return true;
     }
 
-    @GetMapping("/getuserimage")
-    public ResponseEntity<Resource> GetUserImage(@RequestParam Integer idUser) throws IOException {
-        Path path = Paths.get(UPLOAD_FOLDER + "/users/" + idUser + "/");
-        if (!Files.exists(path))
-            return ResponseEntity.notFound().build();
-
-        String file = userRepository.findByidUser(idUser).getImagepath();
-        Resource res = new UrlResource(path.toUri());
-
-        String content = Files.probeContentType(path);
-        if (content == null)
-            content = "application/octet-stream";
-
-        return ResponseEntity.ok().contentType(MediaType.parseMediaType(content)).body(res);
-    }
-
-    @GetMapping("/getactionprimary")
-    public ResponseEntity<Resource> GetActionPrimary(@RequestParam Integer idAction) throws IOException {
-        Path path = Paths.get(UPLOAD_FOLDER + "/actions/" + idAction + "/");
-        if (!Files.exists(path))
-            return ResponseEntity.notFound().build();
-
-        String file = actionRepository.findByidAction(idAction).getPrimaryimage();
-        Resource res = new UrlResource(path.toUri());
-
-        String content = Files.probeContentType(path);
-        if (content == null)
-            content = "application/octet-stream";
-
-        return ResponseEntity.ok().contentType(MediaType.parseMediaType(content)).body(res);
-    }
-
-@   GetMapping("/getactionimages")
+    @GetMapping("/getactionimages")
     public ResponseEntity<List<String>> GetActionImages(@RequestParam Integer idAction) throws IOException {
         Path path = Paths.get(UPLOAD_FOLDER + "/actions/" + idAction + "/");
         if (!Files.exists(path))
             return ResponseEntity.notFound().build();
 
         Stream<Path> files = Files.list(path);
-        List<String> urls = files.filter(Files::isRegularFile).map(p -> {
-            String filename = path.getFileName().toString();
-            return "http://localhost:8080/api/uploads/images/actions/"+idAction+"/"+filename;
-        }).toList();
+        List<String> urls = files.filter(Files::isRegularFile).map(p -> UPLOAD_LINK + "/actions/" + idAction + "/" + p.getFileName().toString()).toList();
 
         return ResponseEntity.ok(urls);
-    }
-
-    @GetMapping("/getactionimage")
-    public ResponseEntity<Resource> GetActionImage(@RequestParam String url) throws IOException {
-        Path path = Paths.get(url.replace("http://localhost:8080/api", "").toString());
-        Resource res = new UrlResource(path.toUri());
-
-        String content = Files.probeContentType(path);
-        if (content == null)
-            content = "application/octet-stream";
-
-        return ResponseEntity.ok().contentType(MediaType.parseMediaType(content)).body(res);
     }
 }

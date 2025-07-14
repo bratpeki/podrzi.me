@@ -14,6 +14,7 @@ import project.repositories.UserRepository;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -30,13 +31,10 @@ public class JWTFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
-        System.out.println("filtering");
         String token = request.getHeader("token");
         System.out.println(token);
         if (jwt.validateToken(token)) {
             String username = jwt.extractUsername(token);
-            System.out.println(username);
 
             if (userRepository.findByusername(username) != null) {
                 List<SimpleGrantedAuthority> authorities = new ArrayList<>();
