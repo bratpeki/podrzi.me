@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import NavigationBar from './NavigationBar';
 import InfoFooter from './InfoFooter';
 import { AuthStateContext } from './components/UseAuthState';
-import { useDropzone } from 'react-dropzone';
+//import { useDropzone } from 'react-dropzone';
 
 
 function EditProfilePage(){

@@ -7,9 +7,7 @@ import { AuthStateContext } from "./components/UseAuthState";
 function HomePage() {
   const [actions, setActions] = useState([]);
   const { authState, authDispatch } = useContext(AuthStateContext);
-
-
-
+  
   useEffect(() => {
       console.log("CreateActionPage", authState.accessToken);
     fetch('http://podrzime.ddns.net:8080/api/actions/getvisibleactions', {

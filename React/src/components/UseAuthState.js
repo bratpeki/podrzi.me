@@ -13,6 +13,7 @@ function authStateReducer(state, action) {
 
   switch (action.type) {
     case "authCheck": {
+      console.info("authCheck action");
       const localStorageAccessToken = localStorage.getItem(
         localStorageKey,
         null
@@ -48,6 +49,7 @@ export function useAuth() {
   );
 
   useEffect(() => {
+    console.info("authCheck useEffect");
     authDispatch({
       type: "authCheck",
     });
