@@ -3,20 +3,26 @@ import { useNavigate } from 'react-router-dom';
 import NavigationBar from './NavigationBar';
 import InfoFooter from './InfoFooter';
 import { AuthStateContext } from './components/UseAuthState';
-import { useDropzone } from 'react-dropzone';
+//import { useDropzone } from 'react-dropzone';
 
-
+//api/images/uploaduser <=za sliku korisnika 
 function EditProfilePage(){
 
     const { authState }=useContext(AuthStateContext);
     const [imageFile, setImageFile] = React.useState([]);
     const [previewImage, setPreviewImage] = React.useState([]);
-    
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [passwordError, setPasswordError] = useState('');
+    const [showOldPassword,setShowOldPassword]= useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+
+
     const [formData,setFormData]=useState({
         username: '',
         email:'',
         password:'',
-        displayName:'',
+        oldpassword:'',
+        displayname:'',
         desc:'',
         imagepath:'',
     });
@@ -42,8 +48,9 @@ function EditProfilePage(){
                 setFormData({
                     username: data.username || '',
                     email: data.email || '',
+                    oldpassword: '',
                     password: '',
-                    displayName :data.displayname || '',
+                    displayname :data.displayname || '',
                     desc: data.desc || '',
                     imagepath: data.imagepath || '',
                 });
@@ -128,16 +135,70 @@ return (
               />
             </div>
 
-            <div>
+
+            <div className='relative'>
+              <label className="block text-sm text-gray-700">Stara lozinka</label>
+              <input
+                type={showOldPassword ?'text' : 'password'}
+                name="oldpassword"
+                value={formData.oldpassword}
+                onChange={handleChange}
+                className="w-full border rounded px-3 py-2"
+                required
+              />
+               <button
+                type="button"
+                onClick={() => setShowOldPassword(!showOldPassword)}
+                className="absolute right-2 top-[30px] text-gray-500 hover:text-gray-800"
+              >
+                 {showOldPassword ? '🙈' : '👁'}
+               </button>
+            </div>
+
+
+            <div className='relative'>
               <label className="block text-sm text-gray-700">Nova lozinka</label>
               <input
-                type="password"
+                type={showNewPassword ? 'text' : "password"}
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
                 className="w-full border rounded px-3 py-2"
               />
+              <button
+                type="button"
+                onClick={() => setShowNewPassword(!showNewPassword)}
+                className="absolute right-2 top-[30px] text-gray-500 hover:text-gray-800"
+              >
+                {showNewPassword ? '🙈' : '👁'}
+               </button>
             </div>
+
+          
+
+            <div>
+              <label className="block text-sm text-gray-700">Potvrdi novu lozinku</label>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => {
+                            const value = e.target.value;
+                            setConfirmPassword(value);
+
+                           if (value === formData.password) {
+                                    setPasswordError('');
+                                   // Ako su iste, proslijedi validnu lozinku
+                                    handleChange({ target: { name: 'password', value } });
+                            } else {
+                                     setPasswordError('Lozinke se ne poklapaju');
+                                   }
+                }}
+                  className="w-full border rounded px-3 py-2"
+              />
+                {passwordError && (
+                    <p className="text-red-600 text-sm mt-1">{passwordError}</p>
+                )}
+              </div>
 
             <button
               type="submit"
