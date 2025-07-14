@@ -9,8 +9,7 @@ import { AuthStateContext } from './components/UseAuthState';
 function EditProfilePage(){
 
     const { authState }=useContext(AuthStateContext);
-    const [imageFile, setImageFile] = React.useState([]);
-    const [previewImage, setPreviewImage] = React.useState([]);
+    const [profileImage, setProfileImage] = useState(null);
     const [confirmPassword, setConfirmPassword] = useState('');
     const [passwordError, setPasswordError] = useState('');
     const [showOldPassword,setShowOldPassword]= useState(false);
@@ -18,6 +17,7 @@ function EditProfilePage(){
 
 
     const [formData,setFormData]=useState({
+        idUser:'',
         username: '',
         email:'',
         password:'',
@@ -46,6 +46,7 @@ function EditProfilePage(){
                 const data=await res.json();
 
                 setFormData({
+                    idUser: data.idUser || '',
                     username: data.username || '',
                     email: data.email || '',
                     oldpassword: '',
@@ -73,6 +74,12 @@ function EditProfilePage(){
     const handleSubmit=async (e)=>{
         e.preventDefault();
 
+           // Prvo uploaduj sliku ako postoji
+        if (profileImage) {
+            const success = await handleImageUpload();
+          if (!success) return; // prekini ako upload nije uspio
+        }
+        
         try{
             const res=await fetch('http://podrzime.ddns.net:8080/api/users/updateprofile',{
                 method :'POST',
@@ -83,8 +90,15 @@ function EditProfilePage(){
                 body:JSON.stringify(formData),
             });
 
-            if(!res.ok)
-                throw new Error('Greška prilikom ažuriranja profila');
+              const result = await res.text();
+
+        if (!res.ok) {
+            if (result === "passnotmatchingerror") {
+            alert("Stara lozinka nije tačna.");
+             return;
+           }
+            throw new Error('Greška prilikom ažuriranja profila');
+          }
 
             alert('Profil uspješno ažuriran');
             navigate('/profilePage')
@@ -93,6 +107,50 @@ function EditProfilePage(){
             alert('Greška prilikom ažuriranja podataka');
         }
     };
+
+
+
+
+  const handleImageUpload = async () => {
+  if (!profileImage || !formData.idUser) return;
+
+  const formDataImg = new FormData();
+  formDataImg.append("file", profileImage);
+  formDataImg.append("idUser",formData.idUser)
+  try {
+    const res = await fetch("http://podrzime.ddns.net:8080/api/images/uploaduser", {
+      method: "POST",
+      headers: {
+        token: authState.accessToken,
+      },
+      body: formDataImg,
+    });
+
+    if (!res.ok) {
+      throw new Error("Greška pri uploadu slike.");
+    }
+
+    formData.imagepath = await res.text(); // ili `await res.json()` ako API vraća JSON objekat
+
+   // console.log("Path od servera",path);
+    
+    setFormData((prev) => ({
+      ...prev,
+      imagepath: formData.imagepath,
+    }));
+
+    return true;
+  } catch (err) {
+    console.error("Upload slike nije uspio:", err);
+    alert("Greška pri slanju slike.");
+    return false;
+  }
+  };
+
+
+
+
+
 
 return (
     <div className="min-h-screen bg-gray-100 flex flex-col justify-between">
@@ -125,14 +183,20 @@ return (
             </div>
 
             <div>
-              <label className="block text-sm text-gray-700">URL slike</label>
-              <input
-                type="text"
-                name="imagepath"
-                value={formData.imagepath}
-                onChange={handleChange}
-                className="w-full border rounded px-3 py-2"
-              />
+             <label className="block text-sm text-gray-700">Profilna slika</label>
+               <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setProfileImage(e.target.files[0])}
+                  className="w-full border rounded px-3 py-2"
+                />
+                {profileImage && (
+                  <img
+                  src={URL.createObjectURL(profileImage)}
+                  alt="Preview"
+                  className="mt-2 max-h-40 rounded"
+                />
+               )}
             </div>
 
 
@@ -144,7 +208,6 @@ return (
                 value={formData.oldpassword}
                 onChange={handleChange}
                 className="w-full border rounded px-3 py-2"
-                required
               />
                <button
                 type="button"
@@ -202,7 +265,12 @@ return (
 
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+               disabled={formData.password && formData.password !== confirmPassword}
+               className={`w-full py-2 rounded transition ${
+                  formData.password && formData.password !== confirmPassword
+                   ? 'bg-gray-400 cursor-not-allowed'
+                   : 'bg-blue-600 text-white hover:bg-blue-700'
+                }`}
             >
               Sačuvaj promjene
             </button>

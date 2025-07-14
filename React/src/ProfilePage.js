@@ -28,7 +28,7 @@ function ProfilePage() {
 
 
         setUser({
-          image: data.imagepath,
+          imagepath: data.imagepath,
           userName: data.username,
           displayName: data.displayname,
           email: data.email,
@@ -66,7 +66,7 @@ function ProfilePage() {
 
           <div className="flex flex-col items-center space-y-4">
             <img
-              src={user.image}
+              src={user.imagepath}
               alt="Profilna slika"
               className="w-32 h-32 rounded-full border-4 border-blue-500 shadow"
             />
