@@ -1,61 +1,83 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useParams } from 'react-router-dom';
+import { useContext, useState, useEffect  } from "react";
 import NavigationBar from './NavigationBar';
 import InfoFooter from './InfoFooter';
+import { AuthStateContext } from "./components/UseAuthState";
+import ImageGallery from './components/ImageGallery.js';
 
 function ActionViewPage() {
-  const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const { action } = location.state || {};
+  const [currentAction, setCurrentAction] = useState('');
+  const [actionImages, setImages] = useState([]);
+  const { authState, authDispatch } = useContext(AuthStateContext);
 
-  if (!action) {
-    return (
-      <div className="p-8 text-center text-xl text-red-600">
-        Greška: Akcija nije pronađena.
-        <br />
-        <button
-          onClick={() => navigate(-1)}
-          className="mt-4 bg-gray-700 text-white px-4 py-2 rounded"
-        >
-          Nazad
-        </button>
-      </div>
-    );
+  useEffect(() => {
+  if (!action) return;
+
+  fetch("http://podrzime.ddns.net:8080/api/actions/getaction?idAction=" + action.idAction, {
+    method: "GET",
+    headers: {
+      "token": authState.accessToken,
+    }
+  })
+    .then(res => res.json())
+    .then(data => {
+      setCurrentAction(data);
+    })
+    .catch(err => {
+      console.error("Failed to fetch action:", err);
+    });
+
+     fetch("http://podrzime.ddns.net:8080/api/images/getactionimages?idAction=" + action.idAction, {
+    method: "GET",
+    headers: {
+      "token": authState.accessToken,
+    }
+  })
+    .then(res => res.json())
+    .then(data => {
+      setImages(data);
+    })
+    .catch(err => {
+      console.error("Failed to fetch action:", err);
+    });
+  }, [action, authState.accessToken]);
+  if (!currentAction) {
+  return <div className="p-8 text-center text-gray-500">Učitavanje akcije...</div>;
   }
-
-  const progress = Math.min(100, (action.collected / action.goal) * 100).toFixed(0);
-
+  const progress = Math.min(100, (currentAction.collected / currentAction.goal) * 100).toFixed(0);
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
       <NavigationBar showSearch={false} />
-
       <main className="flex-grow px-6 pt-28 pb-16 max-w-6xl mx-auto">
-        <h1 className="text-4xl font-bold text-gray-800 mb-8">{action.name}</h1>
+               {/* edit button */}
+         <button
+           className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-4 rounded float-right"
+           onClick={() => alert("Dodaj funkcionalnost donacije ovde")}
+        >
+           Ažuriraj
+         </button>
+        <h1 className="text-4xl font-bold text-gray-800 mb-8">{currentAction.name}</h1>
 
-        {/*Two-column layout */}
+        {/* Two-column layout */}
         <div className="flex flex-col md:flex-row gap-10">
           {/* Left: Image */}
-          <div className="md:w-2/3">
-            <img
-              src="https://placehold.co/800x400?text=Akcija"
-              alt="Slika akcije"
-              className="w-full rounded-lg shadow"
-            />
-
-            <p className="text-lg text-gray-700 mt-6">{action.desc}</p>
+          <div className="md:w-3/3">
+            <ImageGallery images={actionImages} />
           </div>
 
           {/* Right: Details */}
-          <div className="md:max-w-2/3 bg-white shadow-lg rounded-lg p-6 flex flex-col justify-between">
+          <div className="md:max-w-2/3 w-2/3 bg-white shadow-lg rounded-lg p-6 flex flex-col justify-between">
             {/* Amount info */}
             <div>
               <p className="text-xl font-bold text-gray-700 mb-2">
-                {action.collected.toLocaleString()}€ prikupljeno
+                {currentAction.collected.toLocaleString()}€ prikupljeno
               </p>
               <p className="text-sm text-gray-600 mb-4">
-                od ciljanih {action.goal.toLocaleString()}€
+                od ciljanih {currentAction.goal.toLocaleString()}€
               </p>
 
               {/* Progress bar */}
@@ -77,7 +99,7 @@ function ActionViewPage() {
 
               {/* Backers */}
               <p className="text-md font-medium text-gray-700 mb-6">
-                👥 Broj podržavalaca: <span className="font-bold">{action.backers || 0}</span>
+                👥 Broj podržavalaca: <span className="font-bold">{currentAction.backers || 0}</span>
               </p>
             </div>
 
@@ -90,6 +112,7 @@ function ActionViewPage() {
             </button>
           </div>
         </div>
+        <p className="text-lg text-gray-700 mt-6">{currentAction.desc}</p>
       </main>
 
       <InfoFooter />

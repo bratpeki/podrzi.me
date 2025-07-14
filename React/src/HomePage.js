@@ -15,7 +15,7 @@ function HomePage() {
     fetch("http://podrzime.ddns.net:8080/api/actions/getvisibleactions", {
       method: "GET",
       headers: {
-        token: authState.accessToken,
+        "token": authState.accessToken,
       },
     })
       .then((res) => res.json())
@@ -45,7 +45,7 @@ function HomePage() {
       </h2>
 
       {/* Cards Grid */}
-      <div className="flex flex-wrap justify-center gap-6 px-6 pb-16">
+      <div className="flex flex-wrap justify-center gap-6 px-15 pb-16 max-w-7xl mx-auto">
         {actions.map((action, index) => {
           const progress = Math.min(
             100,
@@ -55,7 +55,7 @@ function HomePage() {
           return (
             <Link
               key={index}
-              to={`/actionView/${action.name}`} //TODO: treba biti action.id
+              to={`/actionView/${action.idAction}`} 
               state={{ action }}
               className="w-72 bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-200"
             >
