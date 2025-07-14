@@ -1,6 +1,7 @@
 import { useEffect, createContext, useReducer } from "react";
 
 const initialAuthStateContext = {
+  initialized: false,
   loggedIn: false,
   accessToken: null,
 };
@@ -25,7 +26,12 @@ function authStateReducer(state, action) {
           accessToken: null,
         };
 
-      return { ...state, loggedIn: true, accessToken: localStorageAccessToken };
+      return {
+        ...state,
+        loggedIn: true,
+        accessToken: localStorageAccessToken,
+        initialized: true,
+      };
     }
     case "login": {
       const { accessToken } = action.payload;
