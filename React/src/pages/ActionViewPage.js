@@ -60,7 +60,8 @@ function ActionViewPage() {
                {/* edit button */}
          <Link
            className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-4 rounded float-right"
-           to="/editAction"
+           to={`/editAction/${currentAction.idAction}`}
+           state={{ action }}
         >
            Ažuriraj
          </Link>
