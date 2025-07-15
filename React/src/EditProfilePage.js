@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import NavigationBar from './NavigationBar';
 import InfoFooter from './InfoFooter';
 import { AuthStateContext } from './components/UseAuthState';
-//import { useDropzone } from 'react-dropzone';
 
 //api/images/uploaduser <=za sliku korisnika 
 function EditProfilePage(){
@@ -91,20 +90,26 @@ function EditProfilePage(){
             });
 
               const result = await res.text();
+              
+        
+            if (result === "wrongPasswordError" ) {
+               throw new Error("Stara lozinka nije tačna.");
+            }
 
-        if (!res.ok) {
-            if (result === "passnotmatchingerror") {
-            alert("Stara lozinka nije tačna.");
-             return;
-           }
-            throw new Error('Greška prilikom ažuriranja profila');
-          }
+            if(result==="passNotMatchingError"){
+              throw new Error("Niste unijeli staru i novu lozinku kako treba")
+            }
 
-            alert('Profil uspješno ažuriran');
-            navigate('/profilePage')
+            if (!res.ok) {
+             throw new Error("Greška prilikom ažuriranja profila");
+            }else{
+               alert('Profil uspješno ažuriran');
+               navigate('/profilePage')
+            }
+
         }catch(err){
             console.error(err);
-            alert('Greška prilikom ažuriranja podataka');
+            alert(err);
         }
     };
 
@@ -163,7 +168,7 @@ return (
               <label className="block text-sm text-gray-700">Display name</label>
               <input
                 type="text"
-                name="displayname"
+                name="displayName"
                 value={formData.displayName}
                 onChange={handleChange}
                 className="w-full border rounded px-3 py-2"
@@ -213,7 +218,7 @@ return (
                 onClick={() => setShowOldPassword(!showOldPassword)}
                 className="absolute right-2 top-[30px] text-gray-500 hover:text-gray-800"
               >
-                 {showOldPassword ? '🙈' : '👁'}
+                 {showOldPassword ? '🍆' : '👁'}
                </button>
             </div>
 
@@ -232,7 +237,7 @@ return (
                 onClick={() => setShowNewPassword(!showNewPassword)}
                 className="absolute right-2 top-[30px] text-gray-500 hover:text-gray-800"
               >
-                {showNewPassword ? '🙈' : '👁'}
+                {showNewPassword ? '🍆' : '👁'}
                </button>
             </div>
 
