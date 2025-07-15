@@ -1,6 +1,6 @@
 import React, { useState, useContext, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { AuthStateContext } from "./components/UseAuthState";
+import { AuthStateContext } from "../components/UseAuthState";
 
 function CreateActionPage() {
   const [name, setName] = useState("");

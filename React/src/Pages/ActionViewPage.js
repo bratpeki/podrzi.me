@@ -1,10 +1,10 @@
 import React from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useContext, useState, useEffect  } from "react";
-import NavigationBar from './components/NavigationHeader.js';
-import InfoFooter from './components/InfoFooter.js';
-import { AuthStateContext } from "./components/UseAuthState";
-import ImageGallery from './components/ImageGallery.js';
+import NavigationBar from '../components/NavigationHeader.js';
+import InfoFooter from '../components/InfoFooter.js';
+import { AuthStateContext } from "../components/UseAuthState.js";
+import ImageGallery from '../components/ImageGallery.js';
 
 function ActionViewPage() {
   const location = useLocation();

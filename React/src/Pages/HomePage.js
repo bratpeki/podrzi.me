@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
-import { AuthStateContext } from "./components/UseAuthState";
-import NavigationBar from "./components/NavigationHeader";
-import InfoFooter from "./components/InfoFooter";
-import ActionCard from "./components/ActionCard"; 
+import { AuthStateContext } from "../components/UseAuthState";
+import NavigationBar from "../components/NavigationHeader";
+import InfoFooter from "../components/InfoFooter";
+import ActionCard from "../components/ActionCard"; 
 
 function HomePage() {
   const [actions, setActions] = useState([]);

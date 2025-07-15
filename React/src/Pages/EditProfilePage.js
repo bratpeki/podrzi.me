@@ -1,8 +1,8 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import NavigationBar from './components/NavigationHeader';
-import InfoFooter from './components/InfoFooter';
-import { AuthStateContext } from './components/UseAuthState';
+import NavigationBar from '../components/NavigationHeader';
+import InfoFooter from '../components/InfoFooter';
+import { AuthStateContext } from '../components/UseAuthState';
 
 //api/images/uploaduser <=za sliku korisnika 
 function EditProfilePage(){

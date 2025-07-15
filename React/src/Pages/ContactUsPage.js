@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
-import NavigationBar from './components/NavigationHeader';
-import InfoFooter from './components/InfoFooter'
-import { AuthStateContext } from './components/UseAuthState';
+import NavigationBar from '../components/NavigationHeader';
+import InfoFooter from '../components/InfoFooter'
+import { AuthStateContext } from '../components/UseAuthState';
 
 
 function ContactPage() {

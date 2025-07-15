@@ -1,6 +1,6 @@
 import React from 'react';
-import NavigationBar from './components/NavigationHeader';
-import InfoFooter from './components/InfoFooter'
+import NavigationBar from '../components/NavigationHeader';
+import InfoFooter from '../components/InfoFooter'
 
 
 function AboutUsPage() {

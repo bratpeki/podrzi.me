@@ -1,17 +1,17 @@
 import logo from "./logo.svg";
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import LoginPage from "./LoginPage";
-import RegisterPage from "./RegisterPage";
-import HomePage from "./HomePage";
-import CreateActionPage from "./CreateActionPage";
-import AboutUsPage from "./AboutUsPage";
-import ContactUsPage from "./ContactUsPage";
-import ToSPage from "./ToSPage";
-import ProfilePage from "./ProfilePage";
-import ActionViewPage from "./ActionViewPage";
-import EditProfilePage from "./EditProfilePage";
-import EditActionPage from "./EditActionPage";
+import LoginPage from "./Pages/LoginPage";
+import RegisterPage from "./Pages/RegisterPage";
+import HomePage from "./Pages/HomePage";
+import CreateActionPage from "./Pages/CreateActionPage";
+import AboutUsPage from "./Pages/AboutUsPage";
+import ContactUsPage from "./Pages/ContactUsPage";
+import ToSPage from "./Pages/ToSPage";
+import ProfilePage from "./Pages/ProfilePage";
+import ActionViewPage from "./Pages/ActionViewPage";
+import EditProfilePage from "./Pages/EditProfilePage";
+import EditActionPage from "./Pages/EditActionPage";
 import { AuthStateContext, useAuth } from "./components/UseAuthState";
 import { useEffect } from "react";
 

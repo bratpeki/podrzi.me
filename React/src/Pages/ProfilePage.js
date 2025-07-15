@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
-import NavigationBar from './components/NavigationHeader';
-import InfoFooter from './components/InfoFooter';
-import { AuthStateContext } from './components/UseAuthState';
+import NavigationBar from '../components/NavigationHeader';
+import InfoFooter from '../components/InfoFooter';
+import { AuthStateContext } from '../components/UseAuthState';
 import { useNavigate } from 'react-router-dom';
 
 function ProfilePage() {
