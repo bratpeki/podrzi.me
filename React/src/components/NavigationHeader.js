@@ -3,7 +3,7 @@ import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthStateContext } from "./UseAuthState";
 
-function NavigationBar({ showSearch = true }) {
+function NavigationBar({ showSearch = true, showCreate = true, showProfile = true, showNotification = true, showLogout = true}) {
   const { authState, authDispatch } = useContext(AuthStateContext);
   const navigate = useNavigate();
 
@@ -34,18 +34,26 @@ function NavigationBar({ showSearch = true }) {
 
       {/* Right: Nav links */}
       <div className="space-x-6">
+        {showCreate &&
         <Link to="/createAction" className="hover:underline">
           Kreiraj akciju
         </Link>
+        }
+        {showProfile &&
         <Link to="/profilePage" className="hover:underline">
           Profil
         </Link>
+        } 
+        {showNotification &&
         <Link to="/notifications" className="hover:underline">
           Notifikacije
         </Link>
+        }
+        {showLogout &&
         <button className="hover:underline" onClick={logout}>
           Odjavi se
         </button>
+        }
       </div>
     </nav>
   );

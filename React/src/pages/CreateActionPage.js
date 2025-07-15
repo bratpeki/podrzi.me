@@ -2,6 +2,7 @@ import React, { useState, useContext, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthStateContext } from "../components/UseAuthState";
 import InfoFooter from "../components/InfoFooter";
+import NavigationBar from "../components/NavigationHeader";
 
 function CreateActionPage() {
   const [name, setName] = useState("");
@@ -133,32 +134,10 @@ const uploadImage = async (idAction, file) => {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800">
       {/* Top navigation bar */}
-      <nav className="w-full bg-white shadow-sm border-b flex items-center justify-between px-6 py-4">
-        <Link to="/home" className="flex items-center gap-4">
-          <h1 className="text-3xl font-bold text-cyan-600">PODRZI.ME</h1>
-        </Link>
-
-        {responseMessage && (
-          <p className="text-center text-sm text-red-600 mb-2">
-            {responseMessage}
-          </p>
-        )}
-
-        <div className="flex items-center gap-3">
-          <button className="text-sm text-gray-400 border border-gray-300 px-3 py-1 rounded hover:text-black hover:border-black">
-            Preview
-          </button>
-          <button
-            onClick={handleCreate}
-            className="bg-black text-white text-sm px-4 py-2 rounded hover:bg-gray-900"
-          >
-            Sačuvaj
-          </button>
-        </div>
-      </nav>
+      <NavigationBar showSearch={false} showCreate={false}/>
 
       {/* Page content */}
-      <div className="max-w-5xl mx-auto py-10 px-6 space-y-16">
+      <div className="max-w-5xl mx-auto py-20 px-6 space-y-16">
         {/* Section: Start with the basics */}
         <section>
           <h2 className="text-2xl font-semibold mb-1">Start with the basics</h2>
@@ -299,7 +278,7 @@ const uploadImage = async (idAction, file) => {
             </div>
 
             <div
-              className="bg-white p-6 shadow border rounded text-center border-2 border-dashed border-gray-300"
+              className="bg-white p-6 shadow rounded text-center border-2 border-dashed border-gray-300"
               onDrop={handleDrop}
               onDragOver={handleDragOver}
             >
@@ -370,6 +349,19 @@ const uploadImage = async (idAction, file) => {
               />
             </div>
           </div>
+        </section>
+        <section className="pb-8">
+          {responseMessage && (
+          <p className="text-center text-xl  text-red-600 mb-2">
+            {responseMessage}
+          </p>
+        )}
+         <button
+            onClick={handleCreate}
+            className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-4 px-10 rounded float-right"
+          >
+            Sačuvaj
+          </button>
         </section>
       </div>
       <InfoFooter></InfoFooter>

@@ -51,7 +51,7 @@ function App() {
             <Route path="/profilePage" element={<ProfilePage />} />
             <Route path="/actionView/:id" element={<ActionViewPage />} />
             <Route path="/editProfilePage/" element={<EditProfilePage />} />
-            <Route path="/editAction/" element={<EditActionPage />} />
+            <Route path="/editAction/:id" element={<EditActionPage />} />
           </Routes>
         </Router>
       </AuthStateContext>
