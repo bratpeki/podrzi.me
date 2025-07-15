@@ -1,7 +1,7 @@
 // src/components/NavigationBar.js
 import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { AuthStateContext } from "./components/UseAuthState";
+import { AuthStateContext } from "./UseAuthState";
 
 function NavigationBar({ showSearch = true }) {
   const { authState, authDispatch } = useContext(AuthStateContext);

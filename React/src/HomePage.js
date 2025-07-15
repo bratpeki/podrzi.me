@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import NavigationBar from "./NavigationBar";
-import InfoFooter from "./InfoFooter";
+import NavigationBar from "./components/NavigationHeader";
+import InfoFooter from "./components/InfoFooter";
 import { AuthStateContext } from "./components/UseAuthState";
 
 function HomePage() {

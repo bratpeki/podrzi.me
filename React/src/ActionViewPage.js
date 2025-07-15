@@ -1,8 +1,8 @@
 import React from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useContext, useState, useEffect  } from "react";
-import NavigationBar from './NavigationBar';
-import InfoFooter from './InfoFooter';
+import NavigationBar from './components/NavigationHeader.js';
+import InfoFooter from './components/InfoFooter.js';
 import { AuthStateContext } from "./components/UseAuthState";
 import ImageGallery from './components/ImageGallery.js';
 

@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import NavigationBar from './NavigationBar';
-import InfoFooter from './InfoFooter';
+import NavigationBar from './components/NavigationHeader';
+import InfoFooter from './components/InfoFooter';
 import { AuthStateContext } from './components/UseAuthState';
 //import { useDropzone } from 'react-dropzone';
 

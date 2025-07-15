@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
-import NavigationBar from './NavigationBar';
-import InfoFooter from './InfoFooter';
+import NavigationBar from './components/NavigationHeader';
+import InfoFooter from './components/InfoFooter';
 import { AuthStateContext } from './components/UseAuthState';
 import { useNavigate } from 'react-router-dom';
 

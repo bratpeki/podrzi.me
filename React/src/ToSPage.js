@@ -1,6 +1,6 @@
 import React from 'react';
-import NavigationBar from './NavigationBar';
-import InfoFooter from './InfoFooter'
+import NavigationBar from './components/NavigationHeader';
+import InfoFooter from './components/InfoFooter'
 
 
 function TermsOfServicePage() {
