@@ -1,9 +1,9 @@
 import { useEffect, createContext, useReducer } from "react";
 
 const initialAuthStateContext = {
-  initialized: false,
-  loggedIn: false,
-  accessToken: null,
+  initialized: false, // Postaje true kada se može raditi sa tokenom (kad je inicijalizovan)
+  loggedIn: false,    // Ako korisnik nije gost
+  accessToken: null   // Šalje se sa svakim zahtjevom u fetch-u ("token": authState.accessToken)
 };
 
 const localStorageKey = "accessToken";

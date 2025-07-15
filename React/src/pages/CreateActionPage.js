@@ -110,14 +110,14 @@ const uploadImage = async (idAction, file) => {
       }
       return combined;
     });
-    
+
     setImagePreviews(prevPreviews => [...prevPreviews, ...newPreviews]);
   };
 
   const handleDragOver = (e) => {
     e.preventDefault();
   };
-  
+
   const removeImage = (fileToRemove) => {
     setImageFiles(prev => prev.filter(file => file !== fileToRemove));
 
