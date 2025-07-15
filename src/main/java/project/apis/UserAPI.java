@@ -95,14 +95,9 @@ public class UserAPI {
         if (!(updto.getImagePath() == null || updto.getImagePath().isBlank()))
             user.setImagePath(updto.getImagePath());
 
-        System.out.println(user.getPassword());
-        System.out.println(updto.getOldPassword());
         if (updto.getOldPassword().equals(user.getPassword())) {
             user.setPassword(newPassword);
             userRepository.save(user);
-
-            System.out.println(user.getPassword());
-            System.out.println(updto.getOldPassword());
             return ResponseEntity.ok("success");
         }
         else {
