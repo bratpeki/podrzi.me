@@ -3,10 +3,9 @@ import NavigationBar from '../components/NavigationHeader';
 import InfoFooter from '../components/InfoFooter'
 
 
-function AboutUsPage() {
+function AboutPage() {
   return (
 
-    
     <div className="min-h-screen bg-gray-100 flex flex-col justify-between">
      <NavigationBar showSearch={false} />
       <div className="flex-grow flex flex-col items-center px-4 pt-12 pb-24">
@@ -49,4 +48,4 @@ function AboutUsPage() {
   );
 }
 
-export default AboutUsPage;
+export default AboutPage;

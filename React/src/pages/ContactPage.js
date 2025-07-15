@@ -21,7 +21,7 @@ function ContactPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     const payload={
       "name": formData.ime,
       "email":  formData.email,
@@ -50,8 +50,7 @@ function ContactPage() {
           console.error('Greška pri konekciji sa serverom:', error);
           alert('Došlo je do greške pri slanju.');
         }
-      }; 
-    
+      };
 
   return (
       <div className="bg-gray-100 flex flex-col min-h-screen justify-between">

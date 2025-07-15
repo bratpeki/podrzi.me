@@ -5,7 +5,7 @@ import InfoFooter from "../components/InfoFooter";
 import { AuthStateContext } from "../components/UseAuthState";
 
 function EditActionPage(){
-    
+
     return(
         <div>
             <h1>

@@ -21,7 +21,7 @@ function ProfilePage() {
           },
         });
 
-        if (!res.ok) 
+        if (!res.ok)
           throw new Error('Neuspješan dohvatanje profila');
 
         const data = await res.json();

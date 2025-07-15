@@ -4,7 +4,7 @@ import NavigationBar from '../components/NavigationHeader';
 import InfoFooter from '../components/InfoFooter';
 import { AuthStateContext } from '../components/UseAuthState';
 
-//api/images/uploaduser <=za sliku korisnika 
+//api/images/uploaduser <= za sliku korisnika
 function EditProfilePage(){
 
     const { authState }=useContext(AuthStateContext);

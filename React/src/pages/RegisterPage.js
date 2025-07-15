@@ -28,8 +28,8 @@ function RegisterPage() {
     "displayName": displayName
   })
     });
-    
-    const text = await response.text(); 
+
+    const text = await response.text();
     if(text == "success"){
          const response = await fetch("http://podrzime.ddns.net:8080/api/users/userauth", {
         method: "POST",
