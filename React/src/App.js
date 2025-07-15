@@ -11,6 +11,7 @@ import ToSPage from "./ToSPage";
 import ProfilePage from "./ProfilePage";
 import ActionViewPage from "./ActionViewPage";
 import EditProfilePage from "./EditProfilePage";
+import EditActionPage from "./EditActionPage";
 import { AuthStateContext, useAuth } from "./components/UseAuthState";
 import { useEffect } from "react";
 
@@ -50,6 +51,7 @@ function App() {
             <Route path="/profilePage" element={<ProfilePage />} />
             <Route path="/actionView/:id" element={<ActionViewPage />} />
             <Route path="/editProfilePage/" element={<EditProfilePage />} />
+            <Route path="/editAction/" element={<EditActionPage />} />
           </Routes>
         </Router>
       </AuthStateContext>

@@ -28,9 +28,13 @@ function LoginPage() {
       });
 
       const text = await response.text();
-      if (text == "loginerror") {
+      if (text == "missingInfoError") {
         setResponseMessage("Neuspjesna prijava! Provjerite Vase podatke!");
-      } else {
+      }else if(text == "usernameError"){
+        setResponseMessage("Korisničko ime ne postoji!");
+      }else if (text == "passwordError"){
+        setResponseMessage("Lozinka je pogrešna!");
+      }else {
         authDispatch({
           type: "login",
           payload: {

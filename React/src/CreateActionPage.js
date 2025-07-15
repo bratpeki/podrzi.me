@@ -30,7 +30,7 @@ function CreateActionPage() {
         }),
       });
       const text = await response.text();
-      if (text == "taken") {
+      if (text == "nameTakenError") {
         setResponseMessage("Ime akcije zauzeto");
       } else {
         setResponseMessage("Uploadujemo!");

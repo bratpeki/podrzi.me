@@ -10,6 +10,7 @@ function RegisterPage() {
   const [username, setUsername] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPass, setConfirmPass] = useState('');
   const [responseMessage, setResponseMessage] = useState('');
   const { authState, authDispatch } = useContext(AuthStateContext);
 
@@ -50,16 +51,16 @@ function RegisterPage() {
         });
        navigate('/home')
     }
-    else if (text == "emailerror"){
+    else if (text == "emailError"){
       setResponseMessage('E-Mail je vec zauzet! Molimo Vas unesite drugu E-Mail adresu!');
     }
-    else if (text == "invaliddataerror"){
+    else if (text == "invalidDataError"){
       setResponseMessage('Podaci nisu validni! Molimo provjerite podatke ponovo!');
     }
-    else if (text == "usernameerror"){
+    else if (text == "usernameError"){
       setResponseMessage('Korisnicko ime je vec zauzeto! Molimo Vas unesite drugo korisnicko ime!')
     }
-    else if (text == "displaynameerror"){
+    else if (text == "displayNameError"){
       setResponseMessage('Prikazno ime je vec zauzeto! Molimo Vas unesite drugo prikazno ime!')
     }
 }catch (error) {
@@ -121,6 +122,8 @@ function RegisterPage() {
         <input
           type="password"
           placeholder="Potrvdi lozinku"
+          value={confirmPass}
+          onChange={(e) => setConfirmPass(e.target.value)}
           className="w-full mb-10 p-2 border border-cyan-600 rounded"
           required
         />

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useContext, useState, useEffect  } from "react";
 import NavigationBar from './NavigationBar';
 import InfoFooter from './InfoFooter';
@@ -54,12 +54,12 @@ function ActionViewPage() {
       <NavigationBar showSearch={false} />
       <main className="flex-grow px-6 pt-28 pb-16 max-w-6xl mx-auto">
                {/* edit button */}
-         <button
+         <Link
            className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-4 rounded float-right"
-           onClick={() => alert("Dodaj funkcionalnost donacije ovde")}
+           to="/editAction"
         >
            Ažuriraj
-         </button>
+         </Link>
         <h1 className="text-4xl font-bold text-gray-800 mb-8">{currentAction.name}</h1>
 
         {/* Two-column layout */}
