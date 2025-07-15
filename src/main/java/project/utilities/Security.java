@@ -21,6 +21,7 @@ public class Security {
     public static String[] PublicMethods = {
             "/api/users/adduser",
             "/api/users/userauth",
+            "/api/users/getnamebyid",
 
             "/api/messages/send",
 

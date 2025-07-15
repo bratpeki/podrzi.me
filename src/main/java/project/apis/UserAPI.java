@@ -104,4 +104,12 @@ public class UserAPI {
             return ResponseEntity.ok("wrongPasswordError");
         }
     }
+
+    @GetMapping("/getnamebyid")
+    public ResponseEntity<?> GetNameByiD(@RequestParam Integer idUser) {
+        if (userRepository.findByidUser(idUser) != null)
+            return ResponseEntity.ok(userRepository.findByidUser(idUser).getDisplayName());
+        else
+            return ResponseEntity.ok("invalidUserError");
+    }
 }
