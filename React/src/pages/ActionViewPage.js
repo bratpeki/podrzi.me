@@ -55,7 +55,7 @@ function ActionViewPage() {
     <div className="min-h-screen flex flex-col bg-gray-100">
 
       <NavigationBar showSearch={false} />
-      
+
       <main className="flex-grow px-6 pt-28 pb-16 max-w-6xl mx-auto">
                {/* edit button */}
          <Link

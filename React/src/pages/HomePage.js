@@ -5,9 +5,12 @@ import InfoFooter from "../components/InfoFooter";
 import ActionCard from "../components/ActionCard";
 
 function HomePage() {
+
   const [actions, setActions] = useState([]);
   const { authState } = useContext(AuthStateContext);
 
+  // Razlog za upotrebu efekta je da se rendering desi bez da čeka inicijalizaciju tokena
+  // https://react.dev/learn/synchronizing-with-effects
   useEffect(() => {
     if (!authState.initialized) return;
 
@@ -24,7 +27,10 @@ function HomePage() {
       .catch((error) => {
         console.error("Error fetching actions:", error);
       });
-  }, [authState.initialized, authState.accessToken]);
+    },
+    // Ako se ijedan promjeni, useEffect se ponovo poziva
+    [authState.initialized, authState.accessToken]
+  );
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">

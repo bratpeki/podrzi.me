@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { AuthStateContext } from "../components/UseAuthState";
 
 function RegisterPage() {
+
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
@@ -11,6 +12,7 @@ function RegisterPage() {
   const [password, setPassword] = useState('');
   const [confirmPass, setConfirmPass] = useState('');
   const [responseMessage, setResponseMessage] = useState('');
+
   const { authState, authDispatch } = useContext(AuthStateContext);
 
  const handleRegister = async () => {
@@ -41,7 +43,7 @@ function RegisterPage() {
           "password": password,
         }),
       });
-      const text1 = await response.text(); 
+      const text1 = await response.text();
       authDispatch({
           type: "login",
           payload: {
@@ -108,7 +110,7 @@ function RegisterPage() {
           onChange={(e) => setDisplayName(e.target.value)}
           required
         />
-       
+
         <input
           type="password"
           placeholder="Lozinka"
