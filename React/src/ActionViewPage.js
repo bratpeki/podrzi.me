@@ -14,6 +14,7 @@ function ActionViewPage() {
   const [actionImages, setImages] = useState([]);
   const { authState, authDispatch } = useContext(AuthStateContext);
 
+  //cekanje da se ucita stranica do kraja da se ne bi action bio null
   useEffect(() => {
   if (!action) return;
 
@@ -49,9 +50,12 @@ function ActionViewPage() {
   return <div className="p-8 text-center text-gray-500">Učitavanje akcije...</div>;
   }
   const progress = Math.min(100, (currentAction.collected / currentAction.goal) * 100).toFixed(0);
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
+
       <NavigationBar showSearch={false} />
+      
       <main className="flex-grow px-6 pt-28 pb-16 max-w-6xl mx-auto">
                {/* edit button */}
          <Link

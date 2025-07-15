@@ -1,4 +1,3 @@
-// src/LoginPage.js
 import React, { useContext, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthStateContext } from "./components/UseAuthState";
