@@ -77,9 +77,11 @@ public class UserAPI {
            user.setEmail(updto.getEmail());
        }
 
+        String newPassword = "";
+
        if (!(updto.getOldPassword() == null || updto.getPassword() == null || updto.getPassword().isBlank() || updto.getOldPassword().isBlank())) {
            if (updto.getOldPassword().equals(user.getPassword()))
-               user.setPassword(updto.getPassword());
+               newPassword = updto.getPassword();
            else
                return ResponseEntity.ok("passNotMatchingError");
        }
@@ -93,8 +95,14 @@ public class UserAPI {
         if (!(updto.getImagePath() == null || updto.getImagePath().isBlank()))
             user.setImagePath(updto.getImagePath());
 
+        System.out.println(user.getPassword());
+        System.out.println(updto.getOldPassword());
         if (updto.getOldPassword().equals(user.getPassword())) {
+            user.setPassword(newPassword);
             userRepository.save(user);
+
+            System.out.println(user.getPassword());
+            System.out.println(updto.getOldPassword());
             return ResponseEntity.ok("success");
         }
         else {
