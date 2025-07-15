@@ -27,7 +27,7 @@ public class MessageAPI {
     @PostMapping("/send")
     private ResponseEntity<?> SendMessage(@RequestBody MessageDTO messDTO) {
         if (!Pattern.compile("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$").matcher(messDTO.getEmail()).matches())
-            return ResponseEntity.badRequest().body("emailerror");
+            return ResponseEntity.ok("emailError");
 
         Message mess = new Message();
         mess.setEmail(messDTO.getEmail());

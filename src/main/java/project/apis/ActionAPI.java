@@ -36,15 +36,15 @@ public class ActionAPI {
     }
 
     @GetMapping("/getvisibleactions")
-    public List<ActionDTO> getVisibleActions(@RequestHeader Map<String, String> token) {
+    public ResponseEntity<?> getVisibleActions(@RequestHeader Map<String, String> token) {
         List<Action> list = actionRepository.findAll().stream().filter(a->a.getVisible() == 1).toList();
-        return list.stream().map(a->new ActionDTO(a.getName(), a.getGoal(), a.getCollected(), a.getDesc(), a.getPrimaryImage(), a.getIdAction(), null)).toList();
+        return ResponseEntity.ok(list.stream().map(a->new ActionDTO(a.getName(), a.getGoal(), a.getCollected(), a.getDesc(), a.getPrimaryImage(), a.getIdAction(), null)).toList());
     }
 
     @PostMapping("/addaction")
     public ResponseEntity<?> setAction(@RequestHeader Map<String, String> token, @RequestBody Action action) {
         if (actionRepository.findByname(action.getName()) != null && actionRepository.findByname(action.getName()).getVisible() == 1)
-            return ResponseEntity.badRequest().body("taken");
+            return ResponseEntity.ok("nameTakenError");
 
         action.setCollected(0.0f);
         action.setVisible(1);
@@ -73,7 +73,7 @@ public class ActionAPI {
     public ResponseEntity<?> updateAction(@RequestHeader Map<String, String> token, @RequestBody ActionDTO adto) {
         ActionOwner ao = actionOwnerRepository.findByidAO_IdAction(adto.getIdAction());
         if (ao.getUser().getUsername().equals(jwt.extractUsername(token.get("token")))  ) {
-            return ResponseEntity.badRequest().body("invalidtoken");
+            return ResponseEntity.ok("invalidUserError");
         }
 
         Action a  =  actionRepository.findByidAction(adto.getIdAction());

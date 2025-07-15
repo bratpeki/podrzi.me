@@ -20,8 +20,7 @@ public class AdminAPI {
     }
 
     @PostMapping("/addadmin")
-    public ResponseEntity<?> addAdmin(@RequestParam Map<String, String> token, @RequestBody Admin admin) {
-
+    public ResponseEntity<?> addAdmin(@RequestBody Admin admin) {
         admin.setOwner(false);
         adminRepository.save(admin);
         return ResponseEntity.ok("success");
@@ -30,11 +29,11 @@ public class AdminAPI {
     @PostMapping("/adminauth")
     public ResponseEntity<?> adminLogin(@RequestBody Admin admin) {
         if (admin.getUsername().isBlank() && admin.getPassword().isBlank())
-            return ResponseEntity.ok("loginerror");
+            return ResponseEntity.ok("invalidDataError");
         if (adminRepository.findByusername(admin.getUsername()) == null)
-            return ResponseEntity.ok("loginerror");
+            return ResponseEntity.ok("usernameError");
         if (!admin.getPassword().equals(adminRepository.findByusername(admin.getUsername()).getPassword()))
-            return ResponseEntity.ok("loginerror");
+            return ResponseEntity.ok("passwordError");
 
         String token = jwt.generateToken(admin.getUsername());
         return ResponseEntity.ok(token);

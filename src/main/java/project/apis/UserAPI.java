@@ -30,11 +30,11 @@ public class UserAPI {
     @PostMapping("/userauth")
     public ResponseEntity<?> LoginUser(@RequestBody UserLoginDTO uldto) {
         if (uldto.getUsername().isBlank() && uldto.getPassword().isBlank())
-            return ResponseEntity.ok("loginerror");
+            return ResponseEntity.ok("missingInfoError");
         if (userRepository.findByusername(uldto.getUsername()) == null)
-            return ResponseEntity.ok("loginerror");
+            return ResponseEntity.ok("usernameError");
         if (!uldto.getPassword().equals(userRepository.findByusername(uldto.getUsername()).getPassword()))
-            return ResponseEntity.ok("loginerror");
+            return ResponseEntity.ok("passwordError");
 
         String jwtt = jwt.generateToken(uldto.getUsername());
         return ResponseEntity.ok(jwtt);
@@ -43,16 +43,16 @@ public class UserAPI {
     @PostMapping("/adduser")
     public ResponseEntity<?> AddUser(@RequestBody User user) {
         if (!Pattern.compile("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$").matcher(user.getEmail()).matches() || user.getEmail().isBlank() || user.getUsername().isBlank() || user.getDisplayName().isBlank())
-            return ResponseEntity.ok("invaliddataerror");
+            return ResponseEntity.ok("invalidDataError");
 
         if (userRepository.findByemail(user.getEmail()) != null)
-            return ResponseEntity.ok("emailerror");
+            return ResponseEntity.ok("emailError");
 
         if (userRepository.findByusername(user.getUsername()) != null)
-            return ResponseEntity.ok("usernameerror");
+            return ResponseEntity.ok("usernameError");
 
         if (userRepository.findBydisplayName(user.getDisplayName()) != null)
-            return ResponseEntity.ok("displaynameerror");
+            return ResponseEntity.ok("displayNameError");
 
         userRepository.save(user);
         return ResponseEntity.ok("success");
@@ -69,7 +69,7 @@ public class UserAPI {
     public ResponseEntity<?> ShowProfile(@RequestHeader Map<String, String> token, @RequestBody UserProfileDTO updto) {
         String email = updto.getEmail();
         if (!Pattern.compile("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$").matcher(email).matches())
-            return ResponseEntity.badRequest().body("invalidemail");
+            return ResponseEntity.ok("invalidEmailError");
 
        User user = userRepository.findByidUser(jwt.extractId(token.get("token")));
 
@@ -81,7 +81,7 @@ public class UserAPI {
            if (updto.getOldPassword().equals(user.getPassword()))
                user.setPassword(updto.getPassword());
            else
-               return ResponseEntity.badRequest().body("passnotmatchingerror");
+               return ResponseEntity.ok("passNotMatchingError");
        }
 
         if (!(updto.getDesc() == null || updto.getDesc().isBlank()))
@@ -93,8 +93,12 @@ public class UserAPI {
         if (!(updto.getImagePath() == null || updto.getImagePath().isBlank()))
             user.setImagePath(updto.getImagePath());
 
-       userRepository.save(user);
-
-        return ResponseEntity.ok("success");
+        if (updto.getOldPassword().equals(user.getPassword())) {
+            userRepository.save(user);
+            return ResponseEntity.ok("success");
+        }
+        else {
+            return ResponseEntity.ok("wrongPasswordError");
+        }
     }
 }

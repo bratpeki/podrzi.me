@@ -41,7 +41,7 @@ public class ImageAPI {
         String file = filen.getOriginalFilename();
 
         if (!(file.endsWith(".jpg") || file.endsWith(".png") || file.endsWith(".jpeg")))
-            return ResponseEntity.badRequest().body("invalidfile");
+            return ResponseEntity.badRequest().body("invalidFileError");
 
         String folderPath = UPLOAD_FOLDER + "/actions/" + idAction + "/";
         Path dirPath = Paths.get(folderPath);
@@ -56,7 +56,6 @@ public class ImageAPI {
             Action a = actionRepository.findByidAction(idAction);
             a.setPrimaryImage(UPLOAD_LINK+"/actions/"+idAction+"/"+file);
             actionRepository.save(a);
-            actionRepository.flush();
         }
 
         return ResponseEntity.ok("success");
@@ -66,7 +65,7 @@ public class ImageAPI {
     public ResponseEntity<?> uploadUserImage(@RequestParam Integer idUser, @RequestParam("file") MultipartFile filen) throws IOException {
         String file = filen.getOriginalFilename();
         if (!(file.endsWith(".jpg") || file.endsWith(".png") || file.endsWith(".jpeg")))
-            return ResponseEntity.badRequest().body("invalidfile");
+            return ResponseEntity.badRequest().body("invalidFileError");
 
         String folderPath = UPLOAD_FOLDER + "/users/" + idUser + "/";
         Path dirPath = Paths.get(folderPath);

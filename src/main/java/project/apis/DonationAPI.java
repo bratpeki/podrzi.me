@@ -1,5 +1,6 @@
 package project.apis;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.classes.Action;
 import project.classes.Donation;
@@ -25,21 +26,20 @@ public class DonationAPI {
     }
 
     @GetMapping("/getdonations")
-    public List<String> getDonations() {
+    public ResponseEntity<?> getDonations() {
         List<Donation> list = donationRepository.findAll();
-        return list.stream().map(Donation::getNameAmount).toList();
+        return ResponseEntity.ok(list.stream().map(Donation::getNameAmount).toList());
     }
 
     @GetMapping("/getdonationsuser")
-    public List<DonationDTO> getDonationsUser(@RequestParam Integer idUser) {
+    public ResponseEntity<?> getDonationsUser(@RequestParam Integer idUser) {
         List <Donation> donations = donationRepository.findByUser_idUser(idUser);
-        return donations.stream().map(d ->
-                new DonationDTO(d.getIdDonation(), d.getAction().getIdAction(), d.getAction().getName(), d.getUser().getDisplayName(), d.getAmount(), d.getDonationTime())
-        ).toList();
+        return ResponseEntity.ok(donations.stream().map(d ->
+                new DonationDTO(d.getIdDonation(), d.getAction().getIdAction(), d.getAction().getName(), d.getUser().getDisplayName(), d.getAmount(), d.getDonationTime())).toList());
     }
 
     @PostMapping("/adddonation")
-    public String addDonation(@RequestBody DonationRequestDTO drdto) {
+    public ResponseEntity<?> addDonation(@RequestBody DonationRequestDTO drdto) {
         Action action = actionRepository.findByidAction(drdto.getIdAction());
         action.setCollected(action.getCollected() + drdto.getAmount());
         actionRepository.save(action);
@@ -51,6 +51,6 @@ public class DonationAPI {
         donation.setDonationTime(drdto.getDonationTime());
 
         donationRepository.save(donation);
-        return "Donirano!";
+        return ResponseEntity.ok("success");
     }
 }
