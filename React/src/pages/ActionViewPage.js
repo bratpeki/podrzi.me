@@ -13,10 +13,12 @@ function ActionViewPage() {
   const [currentAction, setCurrentAction] = useState('');
   const [actionImages, setImages] = useState([]);
   const { authState, authDispatch } = useContext(AuthStateContext);
+ 
 
   //cekanje da se ucita stranica do kraja da se ne bi action bio null
   useEffect(() => {
   if (!action) return;
+
 
   fetch("http://podrzime.ddns.net:8080/api/actions/getaction?idAction=" + action.idAction, {
     method: "GET",
@@ -31,7 +33,6 @@ function ActionViewPage() {
     .catch(err => {
       console.error("Failed to fetch action:", err);
     });
-
      fetch("http://podrzime.ddns.net:8080/api/images/getactionimages?idAction=" + action.idAction, {
     method: "GET",
     headers: {
@@ -50,6 +51,47 @@ function ActionViewPage() {
   return <div className="p-8 text-center text-gray-500">Učitavanje akcije...</div>;
   }
   const progress = Math.min(100, (currentAction.collected / currentAction.goal) * 100).toFixed(0);
+
+
+
+  //Funkcija za prikaz
+  //TODO:Gabi mora uradit dio za prikazivanje vise kolaboranata nakon izmjene baze
+  const  showCollaborations=()=>{
+
+    const owner=currentAction.actionOwners.filter(o => !o.isCollab);
+    const collaborators=currentAction.actionOwners.filter(o=>o.isCollab);
+    
+    if(!currentAction || !currentAction.actionOwners || currentAction.actionOwners.length===0){
+      return null;
+    }
+
+
+      if(collaborators.length>0){
+        return(
+            <div className="mt-10 p-4 bg-white rounded shadow">
+              <h2 className="text-x1 font-extrabold text-gray-800 mb-2">Kolaboratori</h2>
+              <ul className='list-disc p1-5'>
+                {
+                  collaborators.map(owner=>(<li key={owner.idUser}>{owner.displayName}</li>))
+                }
+              </ul>
+            </div>
+        );
+      }else{
+        return(
+            <div className="mt-10 p-4 bg-white rounded shadow">
+              <h2 className="text-x1 font-serif text-gray-800 mb-2">Vlasnik</h2>
+              <ul className='list-none p1-0'>
+                {
+                  owner.map(owner=>(<li key={owner.idUser}>{owner.displayName}</li>))
+                }
+              </ul>
+            </div>
+        );
+      }
+  };
+
+
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
@@ -115,6 +157,7 @@ function ActionViewPage() {
             >
               Doniraj
             </button>
+              {showCollaborations()}
           </div>
         </div>
         <p className="text-lg text-gray-700 mt-6">{currentAction.desc}</p>
