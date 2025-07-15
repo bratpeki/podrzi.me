@@ -6,7 +6,7 @@ public class DonationRequestDTO {
     private Integer idAction;
     private Integer idUser;
     private Float amount;
-    private LocalDateTime donationTime;
+    private LocalDateTime donationTime = LocalDateTime.now();
 
     public DonationRequestDTO(LocalDateTime donationTime, Float amount, Integer idUser, Integer idAction) {
         this.donationTime = donationTime;

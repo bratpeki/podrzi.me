@@ -41,7 +41,7 @@ public class ImageAPI {
         String file = filen.getOriginalFilename();
 
         if (!(file.endsWith(".jpg") || file.endsWith(".png") || file.endsWith(".jpeg")))
-            return ResponseEntity.badRequest().body("invalidFileError");
+            return ResponseEntity.ok("invalidFileError");
 
         String folderPath = UPLOAD_FOLDER + "/actions/" + idAction + "/";
         Path dirPath = Paths.get(folderPath);
@@ -65,7 +65,7 @@ public class ImageAPI {
     public ResponseEntity<?> uploadUserImage(@RequestParam Integer idUser, @RequestParam("file") MultipartFile filen) throws IOException {
         String file = filen.getOriginalFilename();
         if (!(file.endsWith(".jpg") || file.endsWith(".png") || file.endsWith(".jpeg")))
-            return ResponseEntity.badRequest().body("invalidFileError");
+            return ResponseEntity.ok("invalidFileError");
 
         String folderPath = UPLOAD_FOLDER + "/users/" + idUser + "/";
         Path dirPath = Paths.get(folderPath);
@@ -82,10 +82,10 @@ public class ImageAPI {
     }
 
     @GetMapping("/getactionimages")
-    public ResponseEntity<List<String>> GetActionImages(@RequestParam Integer idAction) throws IOException {
+    public ResponseEntity<?> GetActionImages(@RequestParam Integer idAction) throws IOException {
         Path path = Paths.get(UPLOAD_FOLDER + "/actions/" + idAction + "/");
         if (!Files.exists(path))
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.ok("noActionError");
 
         Stream<Path> files = Files.list(path);
         List<String> urls = files.filter(Files::isRegularFile).map(p -> UPLOAD_LINK + "/actions/" + idAction + "/" + p.getFileName().toString()).toList();

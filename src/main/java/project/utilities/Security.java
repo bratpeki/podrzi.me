@@ -30,6 +30,7 @@ public class Security {
             "/api/actions/getaction",
 
             "/api/donations/adddonation",
+            "/api/donations/getdonationsuser",
 
             "/api/admins/adminauth",
 
@@ -45,9 +46,9 @@ public class Security {
 
             "/api/actions/addaction",
             "/api/actions/setprimaryimage",
-            "/api/actions/updateaction",
+            "/api/actions/updateaction"
 
-            "/api/donations/getdonationsuser"
+
     };
 
     public static String[] AdminMethods = {
