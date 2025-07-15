@@ -1,6 +1,7 @@
 import React, { useState, useContext, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthStateContext } from "../components/UseAuthState";
+import InfoFooter from "../components/InfoFooter";
 
 function CreateActionPage() {
   const [name, setName] = useState("");
@@ -133,9 +134,9 @@ const uploadImage = async (idAction, file) => {
     <div className="min-h-screen bg-gray-50 text-gray-800">
       {/* Top navigation bar */}
       <nav className="w-full bg-white shadow-sm border-b flex items-center justify-between px-6 py-4">
-        <div className="flex items-center gap-4">
+        <Link to="/home" className="flex items-center gap-4">
           <h1 className="text-3xl font-bold text-cyan-600">PODRZI.ME</h1>
-        </div>
+        </Link>
 
         {responseMessage && (
           <p className="text-center text-sm text-red-600 mb-2">
@@ -371,6 +372,7 @@ const uploadImage = async (idAction, file) => {
           </div>
         </section>
       </div>
+      <InfoFooter></InfoFooter>
     </div>
   );
 }
