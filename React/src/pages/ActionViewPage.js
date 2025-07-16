@@ -5,6 +5,7 @@ import NavigationBar from '../components/NavigationHeader.js';
 import InfoFooter from '../components/InfoFooter.js';
 import { AuthStateContext } from "../components/UseAuthState.js";
 import ImageGallery from '../components/ImageGallery.js';
+import { apiRequest } from '../utility/FetchAPI.js';
 
 function ActionViewPage() {
   const location = useLocation();
@@ -19,27 +20,16 @@ function ActionViewPage() {
   useEffect(() => {
   if (!action) return;
 
-
-  fetch("http://podrzime.ddns.net:8080/api/actions/getaction?idAction=" + action.idAction, {
-    method: "GET",
-    headers: {
-      "token": authState.accessToken,
-    }
-  })
-    .then(res => res.json())
+  apiRequest("actions/getaction?idAction=" + action.idAction,"GET",authState.accessToken)
+    .then(res => res)
     .then(data => {
       setCurrentAction(data);
     })
     .catch(err => {
       console.error("Failed to fetch action:", err);
     });
-     fetch("http://podrzime.ddns.net:8080/api/images/getactionimages?idAction=" + action.idAction, {
-    method: "GET",
-    headers: {
-      "token": authState.accessToken,
-    }
-  })
-    .then(res => res.json())
+     apiRequest("images/getactionimages?idAction=" + action.idAction,"GET",authState.accessToken)
+    .then(res => res)
     .then(data => {
       setImages(data);
     })
