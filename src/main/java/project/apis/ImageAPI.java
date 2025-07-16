@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 import project.classes.Action;
+import project.utilities.JWT;
 
 @RestController
 @RequestMapping("/api/images")
@@ -22,11 +23,13 @@ public class ImageAPI {
     private final ActionRepository actionRepository;
     private final UserRepository userRepository;
     private final ActionOwnerRepository actionOwnerRepository;
+    private final JWT jwt;
 
-    public ImageAPI(ActionRepository actionRepository, UserRepository userRepository, ActionOwnerRepository actionOwnerIdRepository) {
+    public ImageAPI(ActionRepository actionRepository, UserRepository userRepository, ActionOwnerRepository actionOwnerIdRepository, JWT jwt) {
         this.actionRepository = actionRepository;
         this.userRepository = userRepository;
         this.actionOwnerRepository = actionOwnerIdRepository;
+        this.jwt = jwt;
     }
     private static final String UPLOAD_FOLDER;
 
@@ -43,7 +46,7 @@ public class ImageAPI {
 
     @PostMapping("/removeactionimage")
     public ResponseEntity<?> removeActionImage(@RequestHeader Map<String, String> token, @RequestParam Integer idAction, @RequestParam String url, @RequestParam Boolean isPrimary) {
-        if (!actionOwnerRepository.findByidAO_IdAction(idAction).getUser().getUsername().equals(token.get("token")))
+        if (!actionOwnerRepository.findByidAO_IdAction(idAction).getUser().getUsername().equals(jwt.extractUsername(token.get("token"))))
             return ResponseEntity.ok("invalidUserError");
 
         String folderPath = UPLOAD_FOLDER + "/actions/" + idAction + "/";
