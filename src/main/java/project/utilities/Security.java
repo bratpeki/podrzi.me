@@ -29,6 +29,7 @@ public class Security {
 
             "/api/actions/getvisibleactions",
             "/api/actions/getaction",
+            "/api/images/getprimaryimage",
 
             "/api/donations/adddonation",
             "/api/donations/getdonationsuser",
@@ -42,8 +43,8 @@ public class Security {
             "/api/users/showprofile",
             "/api/users/updateprofile",
 
-            "/api/images/uploadaction",
-            "/api/images/uploaduser",
+            "/api/images/uploadactionimage",
+            "/api/images/uploaduserimage",
 
             "/api/actions/addaction",
             "/api/actions/setprimaryimage",

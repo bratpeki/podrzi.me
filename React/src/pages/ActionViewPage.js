@@ -45,7 +45,7 @@ function ActionViewPage() {
 
 
   //Funkcija za prikaz
-  //TODO:Gabi mora uradit dio za prikazivanje vise kolaboranata nakon izmjene baze
+
   const  showCollaborations=()=>{
 
     const owner=currentAction.actionOwners.filter(o => !o.isCollab);
@@ -55,30 +55,42 @@ function ActionViewPage() {
       return null;
     }
 
-
-      if(collaborators.length>0){
         return(
             <div className="mt-10 p-4 bg-white rounded shadow">
-              <h2 className="text-x1 font-extrabold text-gray-800 mb-2">Kolaboratori</h2>
-              <ul className='list-disc p1-5'>
+            <h2 className="text-x1 font-extrabold text-gray-800 mb-2">Vlasnik</h2>
+              <ul className='list-none p-0 space-y-2'>
                 {
-                  collaborators.map(owner=>(<li key={owner.idUser}>{owner.displayName}</li>))
+                  owner.map(owner=>(
+                  <li key={owner.idUser} className="flex items-center gap-3">
+                    <img 
+                    src={owner.imagePath}
+                    alt={owner.displayName}
+                    className="w-8 h-8 rounded-full object-cover border"
+                    />
+                    <span>{owner.displayName}</span>   
+                  </li>))
                 }
               </ul>
-            </div>
-        );
-      }else{
-        return(
-            <div className="mt-10 p-4 bg-white rounded shadow">
-              <h2 className="text-x1 font-serif text-gray-800 mb-2">Vlasnik</h2>
-              <ul className='list-none p1-0'>
+          {collaborators.length >0 &&(
+            <>
+            <h2 className="text-x1 font-extrabold text-gray-800 mb-2">Kolaboratori</h2>
+              <ul className='list-none p-0 space-y-2'>
                 {
-                  owner.map(owner=>(<li key={owner.idUser}>{owner.displayName}</li>))
+                  collaborators.map(owner=>
+                    (<li key={owner.idUser} className="flex items-center gap-3">
+                      <img
+                      src={owner.imagePath}
+                      alt={owner.displayName}
+                      className="w-8 h-8 rounded-full object-cover border"
+                      />
+                      <span>{owner.displayName}</span>
+                      </li>))
                 }
               </ul>
+              </>
+          )}
             </div>
         );
-      }
   };
 
 

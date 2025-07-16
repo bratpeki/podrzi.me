@@ -89,7 +89,7 @@ public class ActionAPI {
         if (!adto.getGoal().equals(a.getGoal()))
             a.setGoal(adto.getGoal());
 
-        if (!adto.getPrimaryImage().equals(a.getPrimaryImage()))
+        if (!(adto.getPrimaryImage().equals(a.getPrimaryImage()) || (adto.getPrimaryImage() == null && adto.getPrimaryImage().isBlank()) ))
             a.setPrimaryImage(adto.getPrimaryImage());
 
         actionRepository.save(a);
