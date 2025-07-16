@@ -1,6 +1,7 @@
 import React, {useContext, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthStateContext } from "../components/UseAuthState";
+import { apiRequest } from '../utility/FetchAPI';
 
 function RegisterPage() {
 
@@ -17,21 +18,14 @@ function RegisterPage() {
 
  const handleRegister = async () => {
   try {
-    const url = 'http://podrzime.ddns.net:8080/api/users/adduser'
-    const response = await fetch(url, {
-      method: 'POST',
-    headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    "email": email,
-    "username": username,
-    "password": password,
-    "displayName": displayName
-  })
+    const response = await apiRequest("users/adduser",'POST',null,{
+      "email": email,
+      "username": username,
+      "password": password,
+      "displayName": displayName
     });
-
-    const text = await response.text();
+    
+    const text = await response;
     if(text == "success"){
          const response = await fetch("http://podrzime.ddns.net:8080/api/users/userauth", {
         method: "POST",
