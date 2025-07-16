@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { AuthStateContext } from "../components/UseAuthState";
 import InfoFooter from "../components/InfoFooter";
 import NavigationBar from "../components/NavigationHeader";
+import { apiRequest } from "../utility/FetchAPI";
 
 function CreateActionPage() {
   const [name, setName] = useState("");
@@ -18,20 +19,12 @@ function CreateActionPage() {
 
   const handleCreate = async () => {
     try {
-      const url = "http://podrzime.ddns.net:8080/api/actions/addaction";
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "token": authState.accessToken,
-        },
-        body: JSON.stringify({
+      const response = await apiRequest("actions/addaction","POST",authState.accessToken,{
           "name": name,
           "desc": description,
           "goal": goal,
-        }),
       });
-      const text = await response.text();
+      const text = await response;
       if (text == "nameTakenError") {
         setResponseMessage("Ime akcije zauzeto");
       } else {
@@ -58,15 +51,8 @@ const uploadImage = async (idAction, file) => {
      formData.append('isPrimary', false)
    }
     try {
-      const response = await fetch('http://podrzime.ddns.net:8080/api/images/uploadaction', {
-        method: 'POST',
-        headers:{
-          "token":authState.accessToken
-        },
-        body: formData,
-      });
-
-      if (response.ok) {
+      const response = await apiRequest("images/uploadaction","POST",authState.accessToken,formData)
+      if (response) {
         setResponseMessage('Akcija i slika su uspešno sačuvane!');
       } else {
         setResponseMessage('Akcija je sačuvana, ali upload slike nije uspeo.');
