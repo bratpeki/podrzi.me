@@ -7,6 +7,7 @@ import { useLocation } from 'react-router-dom';
 import { AuthStateContext } from "../components/UseAuthState";
 import NavigationBar from "../components/NavigationHeader";
 import InfoFooter from "../components/InfoFooter";
+import { apiRequest } from "../utility/FetchAPI";
 
 function ViewDonationsPage() {
 
@@ -23,36 +24,23 @@ function ViewDonationsPage() {
 		const fetchDons = async () => {
 		  try {
 			  // TODO: Deprekacija, valjda mijenjamo await fetch sa apiRequest
-			  const res = await fetch("http://podrzime.ddns.net:8080/api/donations/getdonationsuser?idUser=" + idUser, {
+			  const res = await apiRequest("donations/getdonationsuser?idUser=" + idUser,"GET",authState.accessToken);
 			  // const res = await fetch("http://podrzime.ddns.net:8080/api/donations/getdonationsuser?idUser=48", {
-			  method: 'GET',
-			  headers: {
-				'Content-Type': 'application/json',
-				'token': authState.accessToken,
-			  }
-			});
-
-			const responseBodyText = await res.text();
+			const responseBodyText = await res;
 
 			if (responseBodyText === "wrongUserError") {
 				setResponseMessage("Korisnik nije prepoznat!");
 				throw new Error("Korisnik nije prepoznat!");
 			}
 
-			const data = JSON.parse(responseBodyText);
+			const data = responseBodyText;
 			// Za potrebe testiranja mnogo elemenata
 			// Ispašće upozorenje za mnogo identičnih key-eva, ali to nam je nebitno
 			// for ( let i = 0; i < 20; i++ ) data.push(data[0]);
 
 			for (let i = 0; i < data.length; i++) {
-				let resImg = await fetch(
-					"http://podrzime.ddns.net:8080/api/images/getprimaryimage?idAction=" + data[i].idAction,
-					{
-						method: 'GET',
-						'token': authState.accessToken,
-					}
-				);
-				let imgResponse = await resImg.text();
+				let resImg = await apiRequest("images/getprimaryimage?idAction=" + data[i].idAction,"GET",authState.accessToken);
+				let imgResponse = await resImg;
 				data[i].img = imgResponse;
 			}
 
