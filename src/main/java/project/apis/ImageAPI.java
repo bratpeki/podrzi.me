@@ -5,11 +5,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import project.repositories.ActionRepository;
 import project.repositories.UserRepository;
+import project.repositories.ActionOwnerRepository;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.*;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 import project.classes.Action;
 
@@ -18,10 +21,12 @@ import project.classes.Action;
 public class ImageAPI {
     private final ActionRepository actionRepository;
     private final UserRepository userRepository;
+    private final ActionOwnerRepository actionOwnerRepository;
 
-    public ImageAPI(ActionRepository actionRepository, UserRepository userRepository) {
+    public ImageAPI(ActionRepository actionRepository, UserRepository userRepository, ActionOwnerRepository actionOwnerIdRepository) {
         this.actionRepository = actionRepository;
         this.userRepository = userRepository;
+        this.actionOwnerRepository = actionOwnerIdRepository;
     }
     private static final String UPLOAD_FOLDER;
 
@@ -36,7 +41,31 @@ public class ImageAPI {
     private static final String UPLOAD_LINK = "http://podrzime.ddns.net:8080/uploads/images";
     //  private static final String UPLOAD_LINK = "http://localhost:8080/uploads/images";
 
-    @PostMapping("/uploadaction")
+    @PostMapping("/removeactionimage")
+    public ResponseEntity<?> removeActionImage(@RequestHeader Map<String, String> token, @RequestParam Integer idAction, @RequestParam String url, @RequestParam Boolean isPrimary) {
+        if (!actionOwnerRepository.findByidAO_IdAction(idAction).getUser().getUsername().equals(token.get("token")))
+            return ResponseEntity.ok("invalidUserError");
+
+        String folderPath = UPLOAD_FOLDER + "/actions/" + idAction + "/";
+        Path dirPath = Paths.get(folderPath);
+
+        String filen = Paths.get(URI.create(url).getPath()).getFileName().toString();
+        Path filePath = Paths.get(folderPath, filen);
+
+        if (isPrimary == true)
+            return ResponseEntity.ok("primaryImageError");
+        else {
+            try {
+                Files.deleteIfExists(filePath);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return ResponseEntity.ok("success");
+        }
+
+    }
+
+    @PostMapping("/uploadactionimage")
     public ResponseEntity<?> uploadActionImage(@RequestParam Integer idAction, @RequestParam("file") MultipartFile filen, @RequestParam Boolean isPrimary) throws IOException {
         String file = filen.getOriginalFilename();
 
@@ -61,7 +90,7 @@ public class ImageAPI {
         return ResponseEntity.ok("success");
     }
 
-    @PostMapping("/uploaduser")
+    @PostMapping("/uploaduserimage")
     public ResponseEntity<?> uploadUserImage(@RequestParam Integer idUser, @RequestParam("file") MultipartFile filen) throws IOException {
         String file = filen.getOriginalFilename();
         if (!(file.endsWith(".jpg") || file.endsWith(".png") || file.endsWith(".jpeg")))
@@ -91,5 +120,10 @@ public class ImageAPI {
         List<String> urls = files.filter(Files::isRegularFile).map(p -> UPLOAD_LINK + "/actions/" + idAction + "/" + p.getFileName().toString()).toList();
 
         return ResponseEntity.ok(urls);
+    }
+
+    @GetMapping("/getprimaryimage")
+    public ResponseEntity<?> GetPrimaryImage(@RequestParam Integer idAction) {
+        return ResponseEntity.ok(actionRepository.findByidAction(idAction).getPrimaryImage());
     }
 }

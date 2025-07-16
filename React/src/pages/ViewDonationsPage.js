@@ -74,11 +74,11 @@ function ViewDonationsPage() {
     <div className="min-h-screen flex flex-col bg-gray-100">
 
       {/* Navigation Bar */}
-    <NavigationBar showSearch={true} />
+    <NavigationBar showSearch={false} />
 
       <header className="text-center mt-12 mb-6 pt-10">
         <h1 className="text-5xl font-bold text-gray-800">
-          Pregled doniranim akcija
+          Pregled doniranim akcijama
         </h1>
       </header>
 
