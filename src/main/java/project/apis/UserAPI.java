@@ -73,36 +73,26 @@ public class UserAPI {
 
        User user = userRepository.findByidUser(jwt.extractId(token.get("token")));
 
-       if (!(updto.getEmail() == null || updto.getEmail().isBlank())) {
+        if (updto.getOldPassword() == null || updto.getOldPassword().isBlank())
+            return ResponseEntity.ok("missingOldPasswordError");
+
+       if (updto.getEmail() != null && !updto.getEmail().isBlank())
            user.setEmail(updto.getEmail());
-       }
 
-        String newPassword = "";
-
-       if (!(updto.getOldPassword() == null || updto.getPassword() == null || updto.getPassword().isBlank() || updto.getOldPassword().isBlank())) {
-           if (updto.getOldPassword().equals(user.getPassword()))
-               newPassword = updto.getPassword();
-           else
-               return ResponseEntity.ok("passNotMatchingError");
-       }
-
-        if (!(updto.getDesc() == null || updto.getDesc().isBlank()))
+        if (updto.getDesc() != null && !updto.getDesc().isBlank())
             user.setDesc(updto.getDesc());
 
-        if (!(updto.getDisplayName() == null || updto.getDisplayName().isBlank()))
+        if (updto.getDisplayName() != null && !updto.getDisplayName().isBlank())
             user.setDisplayName(updto.getDisplayName());
 
-        if (!(updto.getImagePath() == null || updto.getImagePath().isBlank()))
+        if (updto.getImagePath() != null && !updto.getImagePath().isBlank())
             user.setImagePath(updto.getImagePath());
 
-        if (updto.getOldPassword().equals(user.getPassword())) {
-            user.setPassword(newPassword);
-            userRepository.save(user);
-            return ResponseEntity.ok("success");
-        }
-        else {
-            return ResponseEntity.ok("wrongPasswordError");
-        }
+        if (updto.getPassword() != null && !updto.getPassword().isBlank())
+            user.setPassword(updto.getPassword());
+
+        userRepository.save(user);
+        return ResponseEntity.ok("success");
     }
 
     @GetMapping("/getnamebyid")
