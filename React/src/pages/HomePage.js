@@ -3,6 +3,7 @@ import { AuthStateContext } from "../components/UseAuthState";
 import NavigationBar from "../components/NavigationHeader";
 import InfoFooter from "../components/InfoFooter";
 import ActionCard from "../components/ActionCard";
+import { apiRequest } from "../utility/FetchAPI";
 
 function HomePage() {
 
@@ -13,14 +14,8 @@ function HomePage() {
   // https://react.dev/learn/synchronizing-with-effects
   useEffect(() => {
     if (!authState.initialized) return;
-
-    fetch("http://podrzime.ddns.net:8080/api/actions/getvisibleactions", {
-      method: "GET",
-      headers: {
-        "token": authState.accessToken,
-      },
-    })
-      .then((res) => res.json())
+    apiRequest("actions/getvisibleactions","GET",authState.accessToken)
+      .then((res) => res)
       .then((data) => {
         setActions(data);
       })

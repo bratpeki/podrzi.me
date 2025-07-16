@@ -50,15 +50,17 @@ function EditActionPage() {
       .then(data => {
         setImageFiles(data);
         setImagePreviews(data);
+        setPrimaryImage(imageFiles[0])
       })
       .catch(err => {
         console.error("Failed to fetch action:", err);
       });
     }, [action, authState.accessToken]);
-
+    
     if (!currentAction) {
     return <div className="p-8 text-center text-gray-500">Učitavanje akcije...</div>;
     }
+
 
   const handleUpdate = async () => {
     try {
@@ -93,6 +95,10 @@ function EditActionPage() {
   };
 
 const uploadImage = async (idAction, file) => {
+   if (imageFiles.includes(file)){
+    console.log("slika vec postoji")
+    return;
+   }
    const formData = new FormData();
    formData.append('idAction', idAction);
    formData.append('file', file);

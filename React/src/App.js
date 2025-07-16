@@ -12,6 +12,7 @@ import ProfilePage from "./pages/ProfilePage";
 import ActionViewPage from "./pages/ActionViewPage";
 import EditProfilePage from "./pages/EditProfilePage";
 import EditActionPage from "./pages/EditActionPage";
+import ViewDonationsPage from "./pages/ViewDonationsPage";
 import { AuthStateContext, useAuth } from "./components/UseAuthState";
 import { useEffect } from "react";
 
@@ -52,6 +53,7 @@ function App() {
             <Route path="/actionView/:id" element={<ActionViewPage />} />
             <Route path="/editProfilePage/" element={<EditProfilePage />} />
             <Route path="/editAction/:id" element={<EditActionPage />} />
+            <Route path="/viewDonations/" element={<ViewDonationsPage />} />
           </Routes>
         </Router>
       </AuthStateContext>

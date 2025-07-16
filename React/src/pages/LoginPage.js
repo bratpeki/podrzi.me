@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthStateContext } from "../components/UseAuthState";
+import { apiRequest } from "../utility/FetchAPI";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -13,20 +14,12 @@ function LoginPage() {
 
   const handleLogin = async () => {
     try {
-      const url = `http://podrzime.ddns.net:8080/api/users/userauth`;
-
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          "username": username,
-          "password": password,
-        }),
+      const response = await apiRequest("users/userauth", "POST", authState.accessToken, {
+        "username" : username,
+        "password" : password,
       });
 
-      const text = await response.text();
+      const text = await response;
       if (text == "missingInfoError") {
         setResponseMessage("Neuspjesna prijava! Provjerite Vase podatke!");
       }else if(text == "usernameError"){

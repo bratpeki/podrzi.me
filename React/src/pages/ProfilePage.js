@@ -33,6 +33,7 @@ function ProfilePage() {
           "displayName": data.displayName,
           "email": data.email,
           "desc": data.desc,
+			"idUser": data.idUser
         });
       } catch (err) {
         console.error('Greška pri učitavanju profila:', err);
@@ -84,14 +85,24 @@ function ProfilePage() {
               </p>
             </div>
 
-            <div className="mt-6 w-full text-right">
+            <div className="mt-6 w-full flex justify-between">
+
+              <button
+				  onClick={ () => navigate('/viewDonations', {state:{idUser:user.idUser}}) }
+                 className="bg-blue-600 text-white px-4 py-2 mr-4 rounded hover:bg-blue-700 transition"
+                >
+                 Pregled donacija
+              </button>
+
               <button
                  onClick={() => navigate('/EditProfilePage')}
                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
                 >
                  Uredi profil
               </button>
+
             </div>
+
           </div>
         </div>
       </div>
