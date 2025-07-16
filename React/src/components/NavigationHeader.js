@@ -3,6 +3,7 @@ import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthStateContext } from "./UseAuthState";
 
+// TODO: Preimenovati
 function NavigationBar({ showSearch = true, showCreate = true, showProfile = true, showNotification = true, showLogout = true}) {
   const { authState, authDispatch } = useContext(AuthStateContext);
   const navigate = useNavigate();
