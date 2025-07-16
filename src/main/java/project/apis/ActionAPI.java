@@ -89,10 +89,17 @@ public class ActionAPI {
         if (!adto.getGoal().equals(a.getGoal()))
             a.setGoal(adto.getGoal());
 
-        if (!(adto.getPrimaryImage().equals(a.getPrimaryImage()) || (adto.getPrimaryImage() == null && adto.getPrimaryImage().isBlank()) ))
-            a.setPrimaryImage(adto.getPrimaryImage());
+        if (adto.getPrimaryImage() != null)
+            if (!(adto.getPrimaryImage().equals(a.getPrimaryImage()) || adto.getPrimaryImage().isBlank()))
+                a.setPrimaryImage(adto.getPrimaryImage());
 
         actionRepository.save(a);
         return ResponseEntity.ok("success");
     }
+
+    @GetMapping("/validateuser")
+    public ResponseEntity<?> ValidateUser(@RequestHeader Map<String, String> token, @RequestParam Integer idAction) {
+        return ResponseEntity.ok(actionOwnerRepository.findByidAO_IdAction(idAction).getUser().getUsername().equals(jwt.extractUsername(token.get("token"))));
+    }
+
 }
