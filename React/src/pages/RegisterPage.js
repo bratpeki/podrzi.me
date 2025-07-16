@@ -24,20 +24,14 @@ function RegisterPage() {
       "password": password,
       "displayName": displayName
     });
-    
+
     const text = await response;
     if(text == "success"){
-         const response = await fetch("http://podrzime.ddns.net:8080/api/users/userauth", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          "username": username,
-          "password": password,
-        }),
-      });
-      const text1 = await response.text();
+        const response = await apiRequest("users/userauth", "POST", authState.accessToken, {
+                "username" : username,
+                "password" : password,
+              });
+      const text1 = await response;
       authDispatch({
           type: "login",
           payload: {
