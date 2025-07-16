@@ -45,6 +45,7 @@ public class Security {
 
             "/api/images/uploadactionimage",
             "/api/images/uploaduserimage",
+            "/api/images/removeactionimage",
 
             "/api/actions/addaction",
             "/api/actions/setprimaryimage",
