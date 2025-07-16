@@ -14,10 +14,10 @@ function EditActionPage() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [goal, setGoal] = useState("");
-  const [imageFiles, setImageFiles] = React.useState([]);
-  const [newImageFiles, setNewImageFiles] = React.useState([]);
-  const [imagePreviews, setImagePreviews] = React.useState([]);
-  const [primaryImage, setPrimaryImage] = React.useState(null);
+  const [imageFiles, setImageFiles] = useState([]);
+  const [newImageFiles, setNewImageFiles] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
+  const [primaryImage, setPrimaryImage] = useState(null);
   const [responseMessage, setResponseMessage] = useState("");
   const { authState, authDispatch } = useContext(AuthStateContext);
 
