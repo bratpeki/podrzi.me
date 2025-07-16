@@ -123,7 +123,7 @@ function EditProfilePage(){
   formDataImg.append("file", profileImage);
   formDataImg.append("idUser",formData.idUser)
   try {
-    const res = await fetch("http://podrzime.ddns.net:8080/api/images/uploaduser", {
+    const res = await fetch("http://podrzime.ddns.net:8080/api/images/uploaduserimage", {
       method: "POST",
       headers: {
         token: authState.accessToken,
