@@ -51,7 +51,7 @@ const uploadImage = async (idAction, file) => {
      formData.append('isPrimary', false)
    }
     try {
-      const response = await apiRequest("images/uploadaction","POST",authState.accessToken,formData)
+      const response = await apiRequest("images/uploadactionimage","POST",authState.accessToken,formData)
       if (response) {
         setResponseMessage('Akcija i slika su uspešno sačuvane!');
       } else {

@@ -36,6 +36,7 @@ function EditActionPage() {
         setName(data.name);
         setDescription(data.desc);
         setGoal(data.goal);
+        setPrimaryImage(data.primaryImage)
       })
       .catch(err => {
         console.error("Failed to fetch action:", err);
@@ -50,7 +51,6 @@ function EditActionPage() {
       .then(data => {
         setImageFiles(data);
         setImagePreviews(data);
-        setPrimaryImage(imageFiles[0])
       })
       .catch(err => {
         console.error("Failed to fetch action:", err);
@@ -110,7 +110,7 @@ const uploadImage = async (idAction, file) => {
      formData.append('isPrimary', false)
    }
     try {
-      const response = await fetch('http://podrzime.ddns.net:8080/api/images/uploadaction', {
+      const response = await fetch('http://podrzime.ddns.net:8080/api/images/uploadactionimage', {
         method: 'POST',
         headers:{
           "token":authState.accessToken
@@ -171,16 +171,57 @@ const uploadImage = async (idAction, file) => {
     e.preventDefault();
   };
 
-  const removeImage = (fileToRemove) => {
-    setImageFiles(prev => prev.filter(file => file !== fileToRemove));
-
-    setImagePreviews(prev => {
-      const index = imageFiles.indexOf(fileToRemove);
-      if (index !== -1) URL.revokeObjectURL(prev[index]);
-      return prev.filter((_, i) => i !== index);
+  const removeImage = async (fileToRemove) => {
+      // Find the matching image object by comparing names
+    const matchedFile = imageFiles.find(file => {
+      return (file.name && fileToRemove.name && file.name === fileToRemove.name) ||
+            (file === fileToRemove); // fallback if direct reference works
     });
 
+    if (!matchedFile) {
+      console.error("File to remove not found in imageFiles");
+      return;
+    }
+
+    const urlToRemove = matchedFile.url || matchedFile; // fallback if it's just a string
+    try {
+        const formData = new FormData();
+        formData.append('idAction', currentAction.idAction);
+        formData.append('url', urlToRemove);
+        if(fileToRemove == primaryImage){
+          formData.append('isPrimary', true)
+        }else{
+          formData.append('isPrimary', false)
+        }
+      const response = await fetch('http://podrzime.ddns.net:8080/api/images/removeactionimage', {
+        method: 'POST',
+        headers:{
+          "token":authState.accessToken
+        },
+        body:formData
+      });
+      const text = await response.text();
+      if(text == "primaryImageError"){
+        setResponseMessage("Ne možete ukloniti primarnu sliku");
+      }
+      else if (text =="InvalidUserError"){
+        setResponseMessage("Pogrešan korisnik");
+      }
+      else{
+      setImageFiles(prev => prev.filter(file => file !== fileToRemove));
+
+      setImagePreviews(prev => {
+        const index = imageFiles.indexOf(fileToRemove);
+        if (index !== -1) URL.revokeObjectURL(prev[index]);
+        return prev.filter((_, i) => i !== index);
+      });
+
     setPrimaryImage(prev => (prev === fileToRemove ? null : prev));
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      setResponseMessage('Došlo je do greške pri uploadu slike.');
+    }
   };
 
   return (
