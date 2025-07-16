@@ -1,11 +1,12 @@
-import React, { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavigationBar from '../components/NavigationHeader';
 import InfoFooter from '../components/InfoFooter';
 import { AuthStateContext } from '../components/UseAuthState';
 import { apiRequest } from '../utility/FetchAPI';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
-//api/images/uploaduser <= za sliku korisnika
 function EditProfilePage(){
 
     const { authState }=useContext(AuthStateContext);
@@ -14,7 +15,7 @@ function EditProfilePage(){
     const [passwordError, setPasswordError] = useState('');
     const [showOldPassword,setShowOldPassword]= useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
-
+    const MySwal = withReactContent(Swal); //Za notifikacije
 
     const [formData,setFormData]=useState({
         "idUser":'',
@@ -34,7 +35,7 @@ function EditProfilePage(){
         const fetchProfile=async ()=>{
             try{
                 const res = await apiRequest("users/showprofile","GET",authState.accessToken);
-                if(!res) throw new Error('Greška pri dohvatanju profila');
+                if(!res) throw new String('Greška pri dohvatanju profila');
 
                 const data= await res;
 
@@ -78,62 +79,68 @@ function EditProfilePage(){
             const result = await res;
               
         
-            if (result === "wrongPasswordError" ) {
-               throw new Error("Stara lozinka nije tačna.");
+            if (result === "missingOldPasswordError" ) {
+               throw new String("Niste unjeli staru lozinku");
             }
 
-            if(result==="passNotMatchingError"){
-              throw new Error("Niste unijeli staru i novu lozinku kako treba")
+            if(result ==="invalidOldPassword"){
+              throw new String("Stara lozinka nije tačna.");
             }
 
-            if (!res) {
-             throw new Error("Greška prilikom ažuriranja profila");
+            if (!res && result==="success") {
+             throw new String("Greška prilikom ažuriranja profila");
             }else{
-               alert('Profil uspješno ažuriran');
+               await MySwal.fire({
+                        title: 'Uspješno!',
+                        text: 'Profil je ažuriran.',
+                        icon: 'success',
+                        confirmButtonText: 'OK',
+                    });
                navigate('/profilePage')
             }
 
         }catch(err){
-            console.error(err);
-            alert(err);
+                await MySwal.fire({
+                       title: 'Greška!',
+                       text: err || 'Nepoznata greška.',
+                       icon: 'error',
+                       confirmButtonText: 'U redu',
+                    });
         }
     };
 
 
+    const handleImageUpload = async () => {
+         if (!profileImage || !formData.idUser) return;
 
+          const formDataImg = new FormData();
+          formDataImg.append("file", profileImage);
+          formDataImg.append("idUser",formData.idUser)
+        try {
+             const res = await apiRequest("images/uploaduserimage","POST",authState.accessToken,formDataImg);
+            if (!res) {
+              throw new String("Greška pri uploadu slike.");
+            }  
 
-  const handleImageUpload = async () => {
-  if (!profileImage || !formData.idUser) return;
-
-  const formDataImg = new FormData();
-  formDataImg.append("file", profileImage);
-  formDataImg.append("idUser",formData.idUser)
-  try {
-    const res = await apiRequest("images/uploaduserimage","POST",authState.accessToken,formDataImg);
-    if (!res) {
-      throw new Error("Greška pri uploadu slike.");
-    }
-
-    formData.imagePath = await res; // ili `await res.json()` ako API vraća JSON objekat
-
-   // console.log("Path od servera",path);
+          formData.imagePath = await res; 
     
-    setFormData((prev) => ({
-      ...prev,
-      imagePath: formData.imagePath,
-    }));
-
-    return true;
-  } catch (err) {
-    console.error("Upload slike nije uspio:", err);
-    alert("Greška pri slanju slike.");
-    return false;
-  }
-  };
-
-
-
-
+          setFormData((prev) => ({
+              ...prev,
+              imagePath: formData.imagePath,
+            }));
+              return true;
+          } 
+           catch (err) {
+                console.error("Upload slike nije uspio:", err);
+                   await MySwal.fire({
+                         title: 'Greška!',
+                         text: err || 'Greška pri slanju slike.',
+                         icon: 'error',
+                        confirmButtonText: 'U redu',
+                      });
+           return false;
+          }
+        };
 
 
 return (
@@ -197,7 +204,7 @@ return (
                 onClick={() => setShowOldPassword(!showOldPassword)}
                 className="absolute right-2 top-[30px] text-gray-500 hover:text-gray-800"
               >
-                 {showOldPassword ? '🍆' : '👁'}
+                 {showOldPassword ? '🔓' : '🔐'}
                </button>
             </div>
 
@@ -216,11 +223,9 @@ return (
                 onClick={() => setShowNewPassword(!showNewPassword)}
                 className="absolute right-2 top-[30px] text-gray-500 hover:text-gray-800"
               >
-                {showNewPassword ? '🍆' : '👁'}
+                {showNewPassword ? '🔓' : '🔐'}
                </button>
             </div>
-
-
 
             <div>
               <label className="block text-sm text-gray-700">Potvrdi novu lozinku</label>
@@ -238,14 +243,13 @@ return (
                             } else {
                                      setPasswordError('Lozinke se ne poklapaju');
                                    }
-                }}
+                          }}
                   className="w-full border rounded px-3 py-2"
               />
-                {passwordError && (
+                 {passwordError && (
                     <p className="text-red-600 text-sm mt-1">{passwordError}</p>
-                )}
+                  )}
               </div>
-
             <button
               type="submit"
                disabled={formData.password && formData.password !== confirmPassword}
@@ -260,8 +264,8 @@ return (
           </form>
         </div>
       </div>
-      <InfoFooter />
-    </div>
+    <InfoFooter />
+  </div>
   );
 }
 export default EditProfilePage;
