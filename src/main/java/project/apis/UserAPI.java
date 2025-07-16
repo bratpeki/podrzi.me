@@ -91,6 +91,9 @@ public class UserAPI {
         if (updto.getPassword() != null && !updto.getPassword().isBlank())
             user.setPassword(updto.getPassword());
 
+        if (!updto.getOldPassword().equals(user.getPassword()))
+            return ResponseEntity.ok("invalidOldPassword");
+
         userRepository.save(user);
         return ResponseEntity.ok("success");
     }
