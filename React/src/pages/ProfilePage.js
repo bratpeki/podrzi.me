@@ -3,6 +3,7 @@ import NavigationBar from '../components/NavigationHeader';
 import InfoFooter from '../components/InfoFooter';
 import { AuthStateContext } from '../components/UseAuthState';
 import { useNavigate } from 'react-router-dom';
+import { apiRequest } from '../utility/FetchAPI';
 
 function ProfilePage() {
   const { authState } = useContext(AuthStateContext);
@@ -13,19 +14,11 @@ function ProfilePage() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await fetch('http://podrzime.ddns.net:8080/api/users/showprofile', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'token': authState.accessToken,
-          },
-        });
-
-        if (!res.ok)
+        const res = await apiRequest("users/showprofile","GET",authState.accessToken);
+        if (!res)
           throw new Error('Neuspješan dohvatanje profila');
 
-        const data = await res.json();
-
+        const data = await res;
 
         setUser({
           "imagePath": data.imagePath,
@@ -33,7 +26,7 @@ function ProfilePage() {
           "displayName": data.displayName,
           "email": data.email,
           "desc": data.desc,
-			"idUser": data.idUser
+			    "idUser": data.idUser
         });
       } catch (err) {
         console.error('Greška pri učitavanju profila:', err);

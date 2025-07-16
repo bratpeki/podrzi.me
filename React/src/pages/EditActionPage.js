@@ -3,7 +3,9 @@ import { useNavigate, useLocation, Link } from "react-router-dom";
 import { AuthStateContext } from "../components/UseAuthState";
 import InfoFooter from "../components/InfoFooter";
 import NavigationBar from "../components/NavigationHeader";
+import { apiRequest } from "../utility/FetchAPI";
 
+//TODO : REMOVE NOVE SLIKE, NOVA SLIKA KAO PRIMARNA
 function EditActionPage() {
   const location = useLocation();
   const { action } = location.state || {};
@@ -13,6 +15,7 @@ function EditActionPage() {
   const [description, setDescription] = useState("");
   const [goal, setGoal] = useState("");
   const [imageFiles, setImageFiles] = React.useState([]);
+  const [newImageFiles, setNewImageFiles] = React.useState([]);
   const [imagePreviews, setImagePreviews] = React.useState([]);
   const [primaryImage, setPrimaryImage] = React.useState(null);
   const [responseMessage, setResponseMessage] = useState("");
@@ -24,13 +27,8 @@ function EditActionPage() {
     useEffect(() => {
     if (!action) return;
   
-    fetch("http://podrzime.ddns.net:8080/api/actions/getaction?idAction=" + action.idAction, {
-      method: "GET",
-      headers: {
-        "token": authState.accessToken,
-      }
-    })
-      .then(res => res.json())
+    apiRequest("actions/getaction?idAction=" + action.idAction,"GET",authState.accessToken)
+      .then(res => res)
       .then(data => {
         setCurrentAction(data);
         setName(data.name);
@@ -41,13 +39,8 @@ function EditActionPage() {
       .catch(err => {
         console.error("Failed to fetch action:", err);
       });
-       fetch("http://podrzime.ddns.net:8080/api/images/getactionimages?idAction=" + action.idAction, {
-      method: "GET",
-      headers: {
-        "token": authState.accessToken,
-      }
-    })
-      .then(res => res.json())
+    apiRequest("images/getactionimages?idAction=" + action.idAction,"GET",authState.accessToken)
+      .then(res => res)
       .then(data => {
         setImageFiles(data);
         setImagePreviews(data);
@@ -64,27 +57,19 @@ function EditActionPage() {
 
   const handleUpdate = async () => {
     try {
-      const url = "http://podrzime.ddns.net:8080/api/actions/updateaction";
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "token": authState.accessToken,
-        },
-        body: JSON.stringify({
-          "idAction":parseInt(currentAction.idAction),
+      const response = await apiRequest("actions/updateaction","POST",authState.accessToken,{
+        "idAction":parseInt(currentAction.idAction),
           "name": name,
           "desc": description,
           "goal": goal,
           "primaryImage": primaryImage
-        }),
-      });
-      const text = await response.text();
+      })
+      const text = await response;
       if (text == "nameTakenError") {
         setResponseMessage("Ime akcije zauzeto");
       } else {
         setResponseMessage("Uploadujemo!");
-          for (const file of imageFiles){
+          for (const file of newImageFiles){
             uploadImage(currentAction.idAction,file);
           }
       }
@@ -110,15 +95,8 @@ const uploadImage = async (idAction, file) => {
      formData.append('isPrimary', false)
    }
     try {
-      const response = await fetch('http://podrzime.ddns.net:8080/api/images/uploadactionimage', {
-        method: 'POST',
-        headers:{
-          "token":authState.accessToken
-        },
-        body: formData,
-      });
-
-      if (response.ok) {
+      const response = await apiRequest("images/uploadactionimage","POST",authState.accessToken,formData)
+      if (response) {
         setResponseMessage('Akcija i slika su uspešno sačuvane!');
       } else {
         setResponseMessage('Akcija je sačuvana, ali upload slike nije uspeo.');
@@ -136,7 +114,7 @@ const uploadImage = async (idAction, file) => {
 
     const newPreviews = newFiles.map(file => URL.createObjectURL(file));
 
-    setImageFiles(prevFiles => {
+    setNewImageFiles(prevFiles => {
       const combined = [...prevFiles, ...newFiles];
       if (!primaryImage && newFiles.length > 0) {
         setPrimaryImage(newFiles[0]);
@@ -156,7 +134,7 @@ const uploadImage = async (idAction, file) => {
 
     const newPreviews = newFiles.map(file => URL.createObjectURL(file));
 
-    setImageFiles(prevFiles => {
+    setNewImageFiles(prevFiles => {
       const combined = [...prevFiles, ...newFiles];
       if (!primaryImage && newFiles.length > 0) {
         setPrimaryImage(newFiles[0]);
@@ -193,14 +171,8 @@ const uploadImage = async (idAction, file) => {
         }else{
           formData.append('isPrimary', false)
         }
-      const response = await fetch('http://podrzime.ddns.net:8080/api/images/removeactionimage', {
-        method: 'POST',
-        headers:{
-          "token":authState.accessToken
-        },
-        body:formData
-      });
-      const text = await response.text();
+      const response = await apiRequest("images/removeactionimage","POST",authState.accessToken,formData)
+      const text = await response;
       if(text == "primaryImageError"){
         setResponseMessage("Ne možete ukloniti primarnu sliku");
       }

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import NavigationBar from '../components/NavigationHeader';
 import InfoFooter from '../components/InfoFooter';
 import { AuthStateContext } from '../components/UseAuthState';
+import { apiRequest } from '../utility/FetchAPI';
 
 //api/images/uploaduser <= za sliku korisnika
 function EditProfilePage(){
@@ -32,17 +33,10 @@ function EditProfilePage(){
     useEffect(()=>{
         const fetchProfile=async ()=>{
             try{
-                const res =await fetch('http://podrzime.ddns.net:8080/api/users/showprofile',{
-                    method: 'GET',
-                    headers:{
-                        'Content-Type':'application/json',
-                        'token':authState.accessToken,
-                    },
-                });
+                const res = await apiRequest("users/showprofile","GET",authState.accessToken);
+                if(!res) throw new Error('Greška pri dohvatanju profila');
 
-                if(!res.ok) throw new Error('Greška pri dohvatanju profila');
-
-                const data=await res.json();
+                const data= await res;
 
                 setFormData({
                     "idUser": data.idUser || '',
@@ -80,16 +74,8 @@ function EditProfilePage(){
         }
         
         try{
-            const res=await fetch('http://podrzime.ddns.net:8080/api/users/updateprofile',{
-                method :'POST',
-                headers: {
-                    'Content-Type':'application/json',
-                    'token':authState.accessToken,
-                },
-                body:JSON.stringify(formData),
-            });
-
-              const result = await res.text();
+            const res = apiRequest("users/updateprofile","POST",authState.accessToken,formData);
+            const result = await res;
               
         
             if (result === "wrongPasswordError" ) {
@@ -100,7 +86,7 @@ function EditProfilePage(){
               throw new Error("Niste unijeli staru i novu lozinku kako treba")
             }
 
-            if (!res.ok) {
+            if (!res) {
              throw new Error("Greška prilikom ažuriranja profila");
             }else{
                alert('Profil uspješno ažuriran');
@@ -123,19 +109,12 @@ function EditProfilePage(){
   formDataImg.append("file", profileImage);
   formDataImg.append("idUser",formData.idUser)
   try {
-    const res = await fetch("http://podrzime.ddns.net:8080/api/images/uploaduserimage", {
-      method: "POST",
-      headers: {
-        token: authState.accessToken,
-      },
-      body: formDataImg,
-    });
-
-    if (!res.ok) {
+    const res = await apiRequest("images/uploaduserimage","POST",authState.accessToken,formDataImg);
+    if (!res) {
       throw new Error("Greška pri uploadu slike.");
     }
 
-    formData.imagePath = await res.text(); // ili `await res.json()` ako API vraća JSON objekat
+    formData.imagePath = await res; // ili `await res.json()` ako API vraća JSON objekat
 
    // console.log("Path od servera",path);
     
