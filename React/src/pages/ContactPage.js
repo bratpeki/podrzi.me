@@ -3,9 +3,13 @@ import NavigationBar from '../components/NavigationHeader';
 import InfoFooter from '../components/InfoFooter'
 import { AuthStateContext } from '../components/UseAuthState';
 import { apiRequest } from '../utility/FetchAPI';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
 
 function ContactPage() {
   const { authState, authDispatch } = useContext(AuthStateContext);
+  const notification = withReactContent(Swal); 
   const [formData, setFormData] = useState({
     ime: '',
     email: '',
@@ -31,16 +35,30 @@ function ContactPage() {
  try {
       const response = await apiRequest("messages/send","POST",authState.accessToken, payload)
         if (response) {
-          alert('Hvala što ste nas kontaktirali!');
+                       await notification.fire({
+                       title: 'Uspješno!',
+                       text: 'Hvala što ste nas kontaktirali!',
+                       icon: 'success',
+                       confirmButtonText: 'U redu',
+                    });
           setFormData({ ime: '', email: '', poruka: '' });
           } else {
-            const errorText = await response;
-            alert('Greška prilikom slanja poruke.');
-            console.error('Greška:', errorText);
+           // const errorText = await response; Za debugovanje
+                      await notification.fire({
+                       title: 'Greška!',
+                       text: 'Greška prilikom slanja poruke.',
+                       icon: 'error',
+                       confirmButtonText: 'U redu',
+                    });
           }
         } catch (error) {
-          console.error('Greška pri konekciji sa serverom:', error);
-          alert('Došlo je do greške pri slanju.');
+          //console.error('Greška pri konekciji sa serverom:', error);
+                 await notification.fire({
+                       title: 'Greška!',
+                       text: error ||'Došlo je do greške pri slanju.', //Error poslije izbacit (ostaviti za debug)
+                       icon: 'error',
+                       confirmButtonText: 'U redu',
+                    });
         }
       };
 
