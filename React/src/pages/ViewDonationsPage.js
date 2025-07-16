@@ -7,7 +7,6 @@ import { useLocation } from 'react-router-dom';
 import { AuthStateContext } from "../components/UseAuthState";
 import NavigationBar from "../components/NavigationHeader";
 import InfoFooter from "../components/InfoFooter";
-import ActionCard from "../components/ActionCard";
 
 function ViewDonationsPage() {
 
@@ -35,8 +34,8 @@ function ViewDonationsPage() {
 			const responseBodyText = await res.text();
 
 			if (responseBodyText === "wrongUserError") {
-				throw new Error("Korisnik nije prepoznat!");
 				setResponseMessage("Korisnik nije prepoznat!");
+				throw new Error("Korisnik nije prepoznat!");
 			}
 
 			const data = JSON.parse(responseBodyText);
@@ -53,7 +52,7 @@ function ViewDonationsPage() {
 		};
 
     if (authState?.accessToken) fetchDons();
-	}, [authState]);
+	}, [authState, idUser]);
 
   return (
 
