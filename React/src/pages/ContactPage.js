@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import NavigationBar from '../components/NavigationHeader';
 import InfoFooter from '../components/InfoFooter'
 import { AuthStateContext } from '../components/UseAuthState';
-
+import { apiRequest } from '../utility/FetchAPI';
 
 function ContactPage() {
   const { authState, authDispatch } = useContext(AuthStateContext);
@@ -29,20 +29,12 @@ function ContactPage() {
     };
 
  try {
-      const response = await fetch('http://podrzime.ddns.net:8080/api/messages/send', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-           'token' : authState.accessToken
-        },
-        body: JSON.stringify(payload),
-        });
-
-        if (response.ok) {
+      const response = await apiRequest("messages/send","POST",authState.accessToken, payload)
+        if (response) {
           alert('Hvala što ste nas kontaktirali!');
           setFormData({ ime: '', email: '', poruka: '' });
           } else {
-            const errorText = await response.text();
+            const errorText = await response;
             alert('Greška prilikom slanja poruke.');
             console.error('Greška:', errorText);
           }
