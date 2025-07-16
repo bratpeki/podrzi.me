@@ -78,13 +78,6 @@ function LoginPage() {
         >
           Prijavi se
         </button>
-
-        <button
-          onClick={() => navigate("/home")}
-          className="w-full bg-gray-600 text-white py-2 rounded hover:bg-gray-700 mb-4"
-        >
-          Prijavi se kao gost
-        </button>
         {responseMessage && (
           <p className="text-center text-sm text-red-600 mb-2">
             {responseMessage}

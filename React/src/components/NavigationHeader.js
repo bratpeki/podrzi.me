@@ -35,26 +35,33 @@ function NavigationBar({ showSearch = true, showCreate = true, showProfile = tru
 
       {/* Right: Nav links */}
       <div className="space-x-6">
-        {showCreate &&
+        {authState.accessToken != null && showCreate &&
         <Link to="/createAction" className="hover:underline">
           Kreiraj akciju
         </Link>
         }
-        {showProfile &&
+          {authState.accessToken != null && showProfile &&
         <Link to="/profilePage" className="hover:underline">
           Profil
         </Link>
         } 
-        {showNotification &&
+        {authState.accessToken != null && showNotification &&
         <Link to="/notifications" className="hover:underline">
           Notifikacije
         </Link>
         }
-        {showLogout &&
-        <button className="hover:underline" onClick={logout}>
-          Odjavi se
-        </button>
-        }
+          {authState.accessToken != null && showLogout &&
+          <button className="hover:underline" onClick={logout}>
+              Odjavi se
+          </button>
+      }
+          {authState.accessToken == null && showLogout &&
+          <button className="hover:underline" onClick={logout}>
+              Prijavi se
+          </button>
+      }
+
+
       </div>
     </nav>
   );

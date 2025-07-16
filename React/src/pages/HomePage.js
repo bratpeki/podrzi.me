@@ -24,7 +24,7 @@ function HomePage() {
       });
     },
     // Ako se ijedan promjeni, useEffect se ponovo poziva
-    [authState.initialized, authState.accessToken]
+    [authState.initialized]
   );
 
   return (

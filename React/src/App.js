@@ -1,5 +1,6 @@
 import logo from "./logo.svg";
 import "./App.css";
+import { useNavigate } from 'react-router-dom';
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -17,14 +18,19 @@ import { AuthStateContext, useAuth } from "./components/UseAuthState";
 import { useEffect } from "react";
 
 function Home() {
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+
+    navigate('/home');
+    }, []);
   return (
+
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p className="text-4xl font-extrabold text-red-500">PNEIS</p>
-        <p>
-          EDITUJ <code>KURAC</code> PA SACUVAJ I PONOVO UCITAJ!
-        </p>
         <Link to="/login" className="App-link">
           ULOGUJ SE BRALEEEE
         </Link>
@@ -35,6 +41,7 @@ function Home() {
 
 function App() {
   const { authState, authDispatch } = useAuth();
+
 
   return (
     <>

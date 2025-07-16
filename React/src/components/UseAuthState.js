@@ -15,8 +15,7 @@ function authStateReducer(state, action) {
   switch (action.type) {
     case "authCheck": {
       const localStorageAccessToken = localStorage.getItem(
-        localStorageKey,
-        null
+        localStorageKey
       );
 
       if (!localStorageAccessToken)
@@ -24,6 +23,7 @@ function authStateReducer(state, action) {
           ...state,
           loggedIn: false,
           accessToken: null,
+          initialized: true,
         };
 
       return {
