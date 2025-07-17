@@ -42,6 +42,9 @@ public class Security {
     public static String[] UserMethods = {
             "/api/users/showprofile",
             "/api/users/updateprofile",
+            "/api/users/getusers",
+
+            "/api/reviews/addreview",
 
             "/api/images/uploadactionimage",
             "/api/images/uploaduserimage",
@@ -56,7 +59,6 @@ public class Security {
     };
 
     public static String[] AdminMethods = {
-            "/api/users/getusers",
 
             "/api/messages/getall",
 

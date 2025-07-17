@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.classes.Action;
 import project.classes.ActionOwner;
+import project.classes.User;
 import project.dtos.ActionDTO;
 import project.dtos.ActionOwnerDTO;
 import project.repositories.ActionOwnerRepository;
@@ -102,4 +103,15 @@ public class ActionAPI {
         return ResponseEntity.ok(actionOwnerRepository.findByidAO_IdAction(idAction).getUser().getUsername().equals(jwt.extractUsername(token.get("token"))));
     }
 
+    @PostMapping("/removeaction")
+    public ResponseEntity<?> removeAction(@RequestHeader Map<String, String> token, @RequestParam Integer idAction, @RequestParam String password) {
+        User u = userRepository.findByidUser(jwt.extractId(token.get("token")));
+        if (u.getPassword().equals(password)) {
+            Action a = actionRepository.findByidAction(idAction);
+            actionRepository.delete(a);
+            return ResponseEntity.ok("success");
+        }
+        else
+            return ResponseEntity.ok("wrongPasswordError");
+    }
 }
