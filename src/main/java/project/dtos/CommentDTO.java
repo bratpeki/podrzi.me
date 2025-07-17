@@ -8,13 +8,15 @@ public class CommentDTO {
     private LocalDateTime created;
     private Integer idUser;
     private String displayName;
+    private String imagePath;
 
-    public CommentDTO(String text, Integer idAction, LocalDateTime created, Integer idUser, String displayName) {
+    public CommentDTO(String text, Integer idAction, LocalDateTime created, Integer idUser, String displayName, String imagePath) {
         this.text = text;
         this.idAction = idAction;
         this.created = created;
         this.idUser = idUser;
         this.displayName = displayName;
+        this.imagePath = imagePath;
     }
 
     public String getText() {
@@ -46,5 +48,11 @@ public class CommentDTO {
     }
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+    public String getImagePath() {
+        return imagePath;
+    }
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 }
