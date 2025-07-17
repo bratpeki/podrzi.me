@@ -191,7 +191,7 @@ function ActionViewPage() {
             {/* Donate button */}
             <button
               className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-4 rounded w-full"
-              onClick={() => alert("Dodaj funkcionalnost donacije ovde")}
+              onClick={() => navigate(`/donate/${currentAction.idAction}`, { state: { action: currentAction } })}
             >
               Doniraj
             </button>
