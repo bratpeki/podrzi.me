@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthStateContext } from "../components/UseAuthState";
+import NavigationBar from "../components/NavigationHeader";
 import { apiRequest } from "../utility/FetchAPI";
 
 function LoginPage() {
@@ -42,7 +43,9 @@ function LoginPage() {
   };
 
   return (
+
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-start pt-10">
+      <NavigationBar showSearch = {false} showCreate={false} showProfile={false} showNotification={false} showLogout={false}/>
       <h1 className="text-4xl font-bold text-cyan-600 mb-8">PODRZI.ME</h1>
 
       <div className="w-full max-w-md bg-white p-8 shadow-md rounded border">

@@ -24,7 +24,7 @@ public class UserAPI {
 
     @GetMapping("/getusers")
     public ResponseEntity<?> GetUsers() {
-        return ResponseEntity.ok(userRepository.findAll());
+        return ResponseEntity.ok(userRepository.findAll().stream().map(u->u.getDisplayName()).toList());
     }
 
     @PostMapping("/userauth")
@@ -88,11 +88,11 @@ public class UserAPI {
         if (updto.getImagePath() != null && !updto.getImagePath().isBlank())
             user.setImagePath(updto.getImagePath());
 
-        if (updto.getPassword() != null && !updto.getPassword().isBlank())
-            user.setPassword(updto.getPassword());
-
         if (!updto.getOldPassword().equals(user.getPassword()))
             return ResponseEntity.ok("invalidOldPassword");
+
+        if (updto.getPassword() != null && !updto.getPassword().isBlank())
+            user.setPassword(updto.getPassword());
 
         userRepository.save(user);
         return ResponseEntity.ok("success");

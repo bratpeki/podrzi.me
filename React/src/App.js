@@ -28,13 +28,7 @@ function Home() {
   return (
 
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p className="text-4xl font-extrabold text-red-500">PNEIS</p>
-        <Link to="/login" className="App-link">
-          ULOGUJ SE BRALEEEE
-        </Link>
-      </header>
+
     </div>
   );
 }

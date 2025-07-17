@@ -14,7 +14,7 @@ function NavigationBar({ showSearch = true, showCreate = true, showProfile = tru
   };
 
   return (
-    <nav className="bg-gray-800 fixed top-0 w-full p-4 flex items-center justify-between text-white shadow-md z-50">
+    <nav className="bg-gray-800 fixed top-0 w-full p-4 flex items-center justify-between text-white shadow-md z-50 h-20">
       {/* Left: Search bar or placeholder */}
       <div className="w-1/3">
         {showSearch && (

@@ -2,6 +2,7 @@ import React, {useContext, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthStateContext } from "../components/UseAuthState";
 import { apiRequest } from '../utility/FetchAPI';
+import NavigationBar from "../components/NavigationHeader";
 
 function RegisterPage() {
 
@@ -60,6 +61,7 @@ function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-start pt-10">
+        <NavigationBar showSearch = {false} showCreate={false} showProfile={false} showNotification={false} showLogout={false}/>
       <h1 className="text-4xl font-bold text-cyan-600 mb-8">PODRZI.ME</h1>
 
       <div className="w-full max-w-md bg-white p-8 shadow-md rounded border">
@@ -133,7 +135,7 @@ function RegisterPage() {
             Policu privatnosti
           </a>{' '}
           i{' '}
-          <a href="#" className="text-blue-600 underline">
+          <a href="/tos" className="text-blue-600 underline">
             Uslove koriscenja
           </a>
           .
