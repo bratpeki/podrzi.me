@@ -8,7 +8,7 @@ public class DonationDTO {
     private String actionName;
     private String userDisplayName;
     private Float amount;
-    private LocalDateTime donationTime;
+    private LocalDateTime donationTime = LocalDateTime.now();
 
     public DonationDTO(Integer idDonation, Integer idAction, String actionName, String userDisplayName, Float amount, LocalDateTime donationTime) {
         this.idDonation = idDonation;

@@ -19,7 +19,7 @@ public class Donation {
     private User user;
 
     private Float amount;
-    private LocalDateTime donationTime;
+    private LocalDateTime donationTime = LocalDateTime.now();
 
     public Integer getIdDonation() {
         return idDonation;

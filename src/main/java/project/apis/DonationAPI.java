@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.classes.Action;
 import project.classes.Donation;
+import project.classes.User;
 import project.dtos.DonationDTO;
 import project.repositories.ActionRepository;
 import project.repositories.DonationRepository;
@@ -11,6 +12,7 @@ import project.dtos.DonationRequestDTO;
 import project.repositories.UserRepository;
 import project.utilities.JWT;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -46,16 +48,22 @@ public class DonationAPI {
     }
 
     @PostMapping("/adddonation")
-    public ResponseEntity<?> addDonation(@RequestBody DonationRequestDTO drdto) {
+    public ResponseEntity<?> addDonation(@RequestHeader Map<String, String> token, @RequestBody DonationRequestDTO drdto) {
+        User u;
+        if (token.get("token") != null)
+            u = userRepository.findByusername(jwt.extractUsername(token.get("token")));
+        else
+            u = userRepository.findByidUser(58); // GUEST
         Action action = actionRepository.findByidAction(drdto.getIdAction());
+
         action.setCollected(action.getCollected() + drdto.getAmount());
         actionRepository.save(action);
 
         Donation donation = new Donation();
         donation.setAction(action);
-        donation.setUser(userRepository.findByidUser(drdto.getIdUser()));
+        donation.setUser(u);
         donation.setAmount(drdto.getAmount());
-        donation.setDonationTime(drdto.getDonationTime());
+        donation.setDonationTime(LocalDateTime.now());
 
         donationRepository.save(donation);
         return ResponseEntity.ok("success");
