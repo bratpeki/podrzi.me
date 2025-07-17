@@ -3,11 +3,12 @@ import { Link } from "react-router-dom";
 
 function ActionCard({ action }) {
   const progress = Math.min(100, (action.collected / action.goal) * 100).toFixed(0);
+  const id = action.idAction;
 
   return (
     <Link
       to={`/actionView/${action.idAction}`}
-      state={{ action }}
+      state={{id}}
       className="w-72 bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-200"
     >
       <img

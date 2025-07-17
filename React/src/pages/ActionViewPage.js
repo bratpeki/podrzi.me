@@ -11,7 +11,7 @@ import { jwtDecode } from "jwt-decode";
 function ActionViewPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { action } = location.state || {};
+  const { id } = location.state || {};
   const [currentAction, setCurrentAction] = useState("");
   const [actionImages, setImages] = useState([]);
   const { authState, authDispatch } = useContext(AuthStateContext);
@@ -20,10 +20,10 @@ function ActionViewPage() {
 
   //cekanje da se ucita stranica do kraja da se ne bi action bio null
   useEffect(() => {
-    if (!action) return;
+    if (!id) return;
 
     apiRequest(
-      "actions/getaction?idAction=" + action.idAction,
+      "actions/getaction?idAction=" + id,
       "GET",
       authState.accessToken
     )
@@ -51,7 +51,7 @@ function ActionViewPage() {
       });
 
     apiRequest(
-      "images/getactionimages?idAction=" + action.idAction,
+      "images/getactionimages?idAction=" + id,
       "GET",
       authState.accessToken
     )
@@ -64,7 +64,7 @@ function ActionViewPage() {
       });
 
     //setOwner(apiRequest("actions/validateuser?idAction="+action.idAction,"GET",authState.accessToken));
-  }, [action, authState.accessToken]);
+  }, [id, authState.accessToken]);
   if (!currentAction) {
     return (
       <div className="p-8 text-center text-gray-500">Učitavanje akcije...</div>
@@ -137,7 +137,7 @@ function ActionViewPage() {
           <Link
             className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-4 rounded float-right"
             to={`/editAction/${currentAction.idAction}`}
-            state={{ action }}
+            state={{ id }}
           >
             Ažuriraj
           </Link>

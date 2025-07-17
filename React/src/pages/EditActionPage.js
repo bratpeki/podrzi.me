@@ -4,13 +4,14 @@ import { AuthStateContext } from "../components/UseAuthState";
 import InfoFooter from "../components/InfoFooter";
 import NavigationBar from "../components/NavigationHeader";
 import { apiRequest } from "../utility/FetchAPI";
+import CollaboratorSearch from "../components/CollaboratorSearch";
 
 //TODO : REMOVE NOVE SLIKE, NOVA SLIKA KAO PRIMARNA
 function EditActionPage() {
   const location = useLocation();
-  const { action } = location.state || {};
+  const { id } = location.state || {};
   const [currentAction, setCurrentAction] = useState('');
-
+  const [displayNames, setDisplayNames] = useState([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [goal, setGoal] = useState("");
@@ -25,9 +26,9 @@ function EditActionPage() {
 
     //cekanje da se ucita stranica do kraja da se ne bi action bio null
     useEffect(() => {
-    if (!action) return;
+    if (!id) return;
   
-    apiRequest("actions/getaction?idAction=" + action.idAction,"GET",authState.accessToken)
+    apiRequest("actions/getaction?idAction=" + id,"GET",authState.accessToken)
       .then(res => res)
       .then(data => {
         setCurrentAction(data);
@@ -39,7 +40,7 @@ function EditActionPage() {
       .catch(err => {
         console.error("Failed to fetch action:", err);
       });
-    apiRequest("images/getactionimages?idAction=" + action.idAction,"GET",authState.accessToken)
+    apiRequest("images/getactionimages?idAction=" + id,"GET",authState.accessToken)
       .then(res => res)
       .then(data => {
         setImageFiles(data);
@@ -48,7 +49,15 @@ function EditActionPage() {
       .catch(err => {
         console.error("Failed to fetch action:", err);
       });
-    }, [action, authState.accessToken]);
+    apiRequest("users/getusers","GET",authState.accessToken)
+    .then(res => res)
+    .then(data => {
+      setDisplayNames(data);
+    })
+      .catch(err => {
+        console.error("Failed to fetch action:", err);
+      });
+    }, [id, authState.accessToken]);
     
     if (!currentAction) {
     return <div className="p-8 text-center text-gray-500">Učitavanje akcije...</div>;
@@ -259,6 +268,10 @@ const uploadImage = async (idAction, file) => {
         </section>
 
         <hr className="border-t border-gray-300" />
+
+        <section>
+          <CollaboratorSearch displayNames={displayNames} />
+        </section>
 
         {/* Section: Project category */}
         <section>
