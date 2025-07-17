@@ -8,6 +8,7 @@ import { AuthStateContext } from "../components/UseAuthState";
 import NavigationBar from "../components/NavigationHeader";
 import InfoFooter from "../components/InfoFooter";
 import { apiRequest } from "../utility/FetchAPI";
+import { Link } from "react-router-dom";
 
 function ViewDonationsPage() {
 
@@ -95,7 +96,9 @@ function ViewDonationsPage() {
 							{new Date(donation.donationTime).toLocaleString()}
 						</p>
 					</div>
-					<img src={donation.img} alt={`Image for ${donation.actionName}`} className="w-1/3 h-48 object-cover rounded-md ml-4"/> {/* Image explicitly takes 1/3 and has left margin */}
+					<Link to={`/actionView/${donation.idAction}`} state={ {donation} } className="hover:underline">
+						<img src={donation.img} alt={`Image for ${donation.actionName}`} className="w-1/3 h-48 object-cover rounded-md ml-4"/> {/* Image explicitly takes 1/3 and has left margin */}
+					</Link>
 				</div>
 			)
 		}
