@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate, Link, useParams } from "react-router-dom"; // Uklonjena useLocation
+import { useNavigate, Link, useParams } from "react-router-dom";
 import { useContext, useState, useEffect } from "react";
 import NavigationBar from "../components/NavigationHeader.js";
 import InfoFooter from "../components/InfoFooter.js";
@@ -7,7 +7,7 @@ import { AuthStateContext } from "../components/UseAuthState.js";
 import ImageGallery from "../components/ImageGallery.js";
 import { apiRequest } from "../utility/FetchAPI.js";
 import { jwtDecode } from "jwt-decode";
-import DonateFormModal from "../components/DonateFormModal.js"; // <-- Importuj novu komponentu
+import DonateFormModal from "../components/DonateFormModal.js";
 
 function ActionViewPage() {
   const navigate = useNavigate();
@@ -18,10 +18,15 @@ function ActionViewPage() {
   const [actionImages, setImages] = useState([]);
   const [isOwner, setIsOwner] = useState(false);
   const [loadingAction, setLoadingAction] = useState(true);
-  const [showDonateModal, setShowDonateModal] = useState(false); 
+  const [showDonateModal, setShowDonateModal] = useState(false);
+  // Komentari će sada biti deo currentAction, ali zadržavamo ih ovde za lakši pristup u JSX-u
+  // Možeš ih inicijalizovati sa praznim nizom ili [] direktno
+  const [comments, setComments] = useState([]);
+  const [newCommentText, setNewCommentText] = useState("");
+  const [commentError, setCommentError] = useState("");
+  const [submittingComment, setSubmittingComment] = useState(false);
 
-  // Funkcija za dohvaćanje detalja akcije i slika
-  // Izdvojena u posebnu funkciju da se može ponovo pozvati
+  // Funkcija za dohvaćanje detalja akcije (uključujući komentare i slike)
   const fetchActionData = async () => {
     if (!actionIdFromUrl || !authState.accessToken) {
       setLoadingAction(false);
@@ -37,6 +42,9 @@ function ActionViewPage() {
       );
       setCurrentAction(actionData);
 
+      // Preuzmi komentare direktno iz actionData ako postoje
+      setComments(actionData.comments || []); // Pretpostavka da backend vraća comments array
+
       if (authState.accessToken && actionData.actionOwners) {
         const decoded = jwtDecode(authState.accessToken);
         const ownerFound = actionData.actionOwners.find(
@@ -47,7 +55,6 @@ function ActionViewPage() {
         setIsOwner(false);
       }
 
-      // Dohvaćanje slika unutar iste funkcije (ili pozvati zasebno, ali ovo je efikasno)
       const imageData = await apiRequest(
         `images/getactionimages?idAction=${actionIdFromUrl}`,
         "GET",
@@ -58,25 +65,59 @@ function ActionViewPage() {
     } catch (err) {
       console.error("Failed to fetch action details or images:", err);
       setCurrentAction(null);
+      setComments([]); // Osiguraj da su komentari prazni ako akcija ne uspe
       setImages([]);
     } finally {
       setLoadingAction(false);
     }
   };
 
-  // Efekat za početno dohvaćanje podataka i ponovno dohvaćanje
-  // kad se promeni ID akcije u URL-u ili token
-  useEffect(() => {
-    fetchActionData();
-  }, [actionIdFromUrl, authState.accessToken]); // Dodaj actionIdFromUrl i authState.accessToken kao dependencies
+  // Uklonjena je funkcija fetchComments() jer se komentari dohvaćaju unutar fetchActionData()
 
-  // Callback funkcija za uspješnu donaciju
+  useEffect(() => {
+    fetchActionData(); // Sada fetchActionData dohvaća i komentare
+  }, [actionIdFromUrl, authState.accessToken]);
+
   const handleDonationSuccess = () => {
-    // Ponovo dohvati podatke o akciji kako bi se prikazali ažurirani iznosi
     fetchActionData();
   };
 
-  // Prikaz učitavanja
+  const handleCommentSubmit = async (e) => {
+    e.preventDefault();
+    setCommentError("");
+
+    if (!authState.accessToken) {
+      setCommentError("Morate biti prijavljeni da biste ostavili komentar.");
+      return;
+    }
+
+    if (!newCommentText.trim()) {
+      setCommentError("Komentar ne može biti prazan.");
+      return;
+    }
+
+    setSubmittingComment(true);
+
+    try {
+      const commentData = {
+        text: newCommentText.trim(),
+        idAction: currentAction.idAction,
+      };
+
+      await apiRequest("comments/add", "POST", authState.accessToken, commentData);
+
+      setNewCommentText("");
+      setCommentError("");
+      fetchActionData(); // Ponovo dohvati SVE podatke o akciji (uključujući ažurirane komentare)
+
+    } catch (err) {
+      console.error("Greška pri slanju komentara:", err);
+      setCommentError(err.message || "Došlo je do greške prilikom slanja komentara.");
+    } finally {
+      setSubmittingComment(false);
+    }
+  };
+
   if (loadingAction) {
     return (
       <div className="min-h-screen flex flex-col bg-gray-100">
@@ -89,7 +130,6 @@ function ActionViewPage() {
     );
   }
 
-  // Prikaz poruke ako akcija nije pronađena nakon učitavanja
   if (!currentAction) {
     return (
       <div className="min-h-screen flex flex-col bg-gray-100">
@@ -206,10 +246,9 @@ function ActionViewPage() {
               </p>
             </div>
 
-            {/* Dugme koje otvara modal */}
             <button
               className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-4 rounded w-full"
-              onClick={() => setShowDonateModal(true)} // <-- Otvori modal
+              onClick={() => setShowDonateModal(true)}
             >
               Doniraj
             </button>
@@ -217,16 +256,71 @@ function ActionViewPage() {
           </div>
         </div>
         <p className="text-lg text-gray-700 mt-6">{currentAction.desc}</p>
+
+        <div className="mt-10 p-6 bg-white rounded-lg shadow-lg">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Komentari</h2>
+
+          <div className="max-h-80 overflow-y-auto border border-gray-200 rounded-md p-4 mb-4 space-y-4">
+            {comments.length > 0 ? (
+              // mapiranje komentara
+              comments.map((comment) => (
+                <div key={comment.idComment} className="border-b pb-3 last:border-b-0">
+                  <div className="flex items-center mb-1">
+                    <img
+                      src={comment.imagePath || "https://via.placeholder.com/30"}
+                      alt={comment.displayName || "Gost"}
+                      className="w-7 h-7 rounded-full object-cover mr-2"
+                    />
+                    <p className="font-semibold text-gray-800">
+                      {comment.displayName || "Gost"}
+                    </p>
+                    <span className="text-sm text-gray-500 ml-auto">
+                      {new Date(comment.created).toLocaleString()}
+                    </span>
+                  </div>
+                  <p className="text-gray-700 ml-9">{comment.text}</p>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500 text-center">Nema komentara. Budite prvi koji će ostaviti komentar!</p>
+            )}
+          </div>
+
+          <form onSubmit={handleCommentSubmit} className="mt-4">
+            {commentError && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                <span className="block sm:inline">{commentError}</span>
+              </div>
+            )}
+            <textarea
+              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500 resize-y"
+              rows="3"
+              placeholder="Napišite svoj komentar..."
+              value={newCommentText}
+              onChange={(e) => setNewCommentText(e.target.value)}
+              disabled={submittingComment}
+            ></textarea>
+            <button
+              type="submit"
+              className="mt-3 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-4 rounded-md transition duration-200"
+              disabled={submittingComment || !authState.accessToken}
+            >
+              {submittingComment ? "Slanje..." : "Pošalji Komentar"}
+            </button>
+            {!authState.accessToken && (
+              <p className="text-sm text-red-500 mt-2">Morate biti prijavljeni da biste komentarisali.</p>
+            )}
+          </form>
+        </div>
       </main>
 
       <InfoFooter />
 
-      {/* Uslovno renderovanje DonateFormModal-a */}
-      {showDonateModal && currentAction && ( // <-- Prikazuje se modal samo ako treba, ili ako je akcija uspješno učitana
+      {showDonateModal && currentAction && (
         <DonateFormModal
-          action={currentAction} 
-          onClose={() => setShowDonateModal(false)} 
-          onDonationSuccess={handleDonationSuccess} 
+          action={currentAction}
+          onClose={() => setShowDonateModal(false)}
+          onDonationSuccess={handleDonationSuccess}
         />
       )}
     </div>
