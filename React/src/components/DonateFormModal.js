@@ -1,18 +1,14 @@
 import React, { useState, useContext, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import NavigationBar from "../components/NavigationHeader.js";
-import InfoFooter from "../components/InfoFooter.js";
-import { AuthStateContext } from "../components/UseAuthState.js";
-import { apiRequest } from "../utility/FetchAPI.js"; 
-import { jwtDecode } from "jwt-decode"; // Za ID korisnika, mada u testu ne šaljemo ID jer ga panča vadi iz tokena xD
+import { AuthStateContext } from "../components/UseAuthState.js"; // Prilagodi putanju ako je potrebno
+import { apiRequest } from "../utility/FetchAPI.js";
+import { jwtDecode } from "jwt-decode";
 
-function DonateFormPage() {
-  const location = useLocation();
-  const navigate = useNavigate();
+// Props:
+// - action: Objekat akcije (currentAction iz ActionViewPage)
+// - onClose: Funkcija za zatvaranje modala
+// - onDonationSuccess: Funkcija koja se poziva nakon uspješne donacije
+function DonateFormModal({ action, onClose, onDonationSuccess }) {
   const { authState } = useContext(AuthStateContext);
-
-  // Action getter
-  const { action } = location.state || {};
 
   const [amount, setAmount] = useState("");
   const [cardNumber, setCardNumber] = useState("");
@@ -21,100 +17,85 @@ function DonateFormPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Provjera da li je akcija dostupna
+  // Reset forme kad se pop up zatvori ili otvori
   useEffect(() => {
-    if (!action) {
-      navigate("/"); // Preusmeri na početnu ako nema akcije
-    }
-  }, [action, navigate]);
+    setAmount("");
+    setCardNumber("");
+    setExpiryDate("");
+    setCvv("");
+    setError("");
+    setLoading(false);
+  }, [action]); // Resetuj kad se akcija mijenja ili se modal 'ponovo otvori' sa istom akcijom
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // Resetuj grešku
+    setError("");
 
     if (!amount || parseFloat(amount) <= 0) {
       setError("Molimo unesite validan iznos donacije.");
       return;
     }
-    // Minimalna provjera za karticu - pošto nemamo još definisano za sad samo da ne bude prazno polje
     if (!cardNumber || !expiryDate || !cvv) {
-        setError("Molimo popunite sva polja za plaćanje.");
-        return;
+      setError("Molimo popunite sva polja za plaćanje.");
+      return;
     }
 
     setLoading(true);
 
     try {
-      // Dekodiranje tokena 
-      let userId = null; // Podrazumijevana vrijednost ako je gost u pitanju
-
+      let userId = null;
       if (authState.accessToken) {
         try {
           const decoded = jwtDecode(authState.accessToken);
-          userId = decoded.id; // Uzmi ID korisnika iz dekodiranog tokena
+          userId = decoded.id;
         } catch (decodeError) {
           console.warn("Greška pri dekodiranju tokena, nastavljam kao anonimni korisnik:", decodeError);
-          // Ako token postoji ali je nevažeći, idUser ostaje null
         }
       }
 
-      // Podaci za slanje na backend, mada userId sad i ne treba
       const donationData = {
         idAction: action.idAction,
-        idUser: userId, 
+        idUser: userId,
         amount: parseFloat(amount),
       };
 
       console.log("Slanje donacije:", donationData);
 
-      // Slanje zahtjeva na backend koristeći apiRequest
       const data = await apiRequest("donations/adddonation", "POST", authState.accessToken, donationData);
 
-      // Ako je execution stigao ovdje, to znači da je apiRequest bio uspješan
-      // i 'data' već sadrži parsirani JSON odgovor od servera.
       console.log("Donacija uspešna:", data);
-      alert("Hvala na donaciji!");
-      navigate(`/actionview/${action.idAction}`, { state: { action } }); // Vrati se na stranicu akcije
+      alert("Hvala na donaciji!"); // Možemo ovdje sweet alert koristiti za ljepšti pop up npr
+
+      onDonationSuccess(); // Callback za refresh podataka u roditeljskoj akciji
+      onClose();           
 
     } catch (err) {
       console.error("Greška kod donacije:", err);
-      // 'err' ovdje je greška koju baca apiRequest (koja već sadrži poruku)
       let errorMessage = "Došlo je do neočekivane greške. Pokušajte ponovo.";
-
       if (err.message) {
-          errorMessage = err.message;
+        errorMessage = err.message;
       }
-      // Otvoreno za implementaciju neke specifične err poruke
-
       setError(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
-  // Prikazuje "Akcija nije pronađena" ako akcija, jelte, nije pronađena
-  if (!action) {
-    return (
-      <div className="min-h-screen flex flex-col bg-gray-100">
-        <NavigationBar showSearch={false} />
-        <main className="flex-grow px-6 pt-28 pb-16 max-w-6xl mx-auto text-center text-gray-500">
-          Akcija nije pronađena.
-        </main>
-        <InfoFooter />
-      </div>
-    );
-  }
-
+  // JSX za modalnu formu
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
-      <NavigationBar showSearch={false} />
-
-      <main className="flex-grow px-6 pt-28 pb-16 max-w-2xl mx-auto w-full">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-lg w-full p-6 relative">
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-2xl font-bold"
+        >
+          &times;
+        </button>
+        <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
           Donirajte za "{action.name}"
-        </h1>
+        </h2>
 
-        <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-lg">
+        <form onSubmit={handleSubmit} className="p-2">
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
               <span className="block sm:inline">{error}</span>
@@ -139,7 +120,7 @@ function DonateFormPage() {
           </div>
 
           <div className="mb-6 border-t pt-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Podaci o kartici (TEST ZA SAD)</h2>
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">Podaci o kartici (TEST ZA SAD)</h3>
             <div className="mb-4">
               <label htmlFor="cardNumber" className="block text-gray-700 text-sm font-bold mb-2">
                 Broj kartice
@@ -148,7 +129,7 @@ function DonateFormPage() {
                 type="text"
                 id="cardNumber"
                 value={cardNumber}
-                onChange={(e) => setCardNumber(e.target.value.replace(/\D/g, ''))} // Samo brojevi
+                onChange={(e) => setCardNumber(e.target.value.replace(/\D/g, ''))}
                 className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 placeholder="**** **** **** ****"
                 maxLength="16"
@@ -179,7 +160,7 @@ function DonateFormPage() {
                   type="text"
                   id="cvv"
                   value={cvv}
-                  onChange={(e) => setCvv(e.target.value.replace(/\D/g, ''))} // Samo brojevi
+                  onChange={(e) => setCvv(e.target.value.replace(/\D/g, ''))}
                   className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   placeholder="***"
                   maxLength="4"
@@ -197,10 +178,9 @@ function DonateFormPage() {
             {loading ? "Obrada..." : "Potvrdi Donaciju"}
           </button>
         </form>
-      </main>
-
-      <InfoFooter />
+      </div>
     </div>
   );
 }
-export default DonateFormPage;
+
+export default DonateFormModal;
