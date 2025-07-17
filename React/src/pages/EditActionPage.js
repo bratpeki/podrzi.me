@@ -5,6 +5,7 @@ import InfoFooter from "../components/InfoFooter";
 import NavigationBar from "../components/NavigationHeader";
 import { apiRequest } from "../utility/FetchAPI";
 import CollaboratorSearch from "../components/CollaboratorSearch";
+import DeleteDialog from '../components/DeleteDialog';
 
 //TODO : REMOVE NOVE SLIKE, NOVA SLIKA KAO PRIMARNA
 function EditActionPage() {
@@ -22,6 +23,9 @@ function EditActionPage() {
   const [responseMessage, setResponseMessage] = useState("");
   const { authState, authDispatch } = useContext(AuthStateContext);
 
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const navigate = useNavigate();
+  
   console.log("EditActionPage", authState.accessToken);
 
     //cekanje da se ucita stranica do kraja da se ne bi action bio null
@@ -204,6 +208,23 @@ const uploadImage = async (idAction, file) => {
       setResponseMessage('Došlo je do greške pri uploadu slike.');
     }
   };
+  const handleDeleteClick = () => {
+      setShowDeleteDialog(true);
+  };
+  const handleConfirmDelete = async (password) => {
+    const formData = new FormData();
+    formData.append('idAction', currentAction.idAction);
+    formData.append('password', password);
+    const response = await apiRequest('actions/removeaction', 'POST', authState.accessToken, formData)
+    const text = await response;
+    if(text == "invalidpassworderror"){
+      setShowDeleteDialog(false);
+      return;
+    }else{
+      navigate("/")
+    }
+
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800">
@@ -211,6 +232,7 @@ const uploadImage = async (idAction, file) => {
       <NavigationBar showSearch={false} showCreate={false}/>
 
       {/* Page content */}
+                  
       <div className="max-w-5xl mx-auto py-20 px-6 space-y-16">
         {/* Section: Start with the basics */}
         <section>
@@ -461,8 +483,21 @@ const uploadImage = async (idAction, file) => {
           >
             Sačuvaj
           </button>
+        <div>
+          <button
+            onClick={handleDeleteClick}
+            className="bg-red-600 hover:bg-red-700 text-white font-semibold py-4 px-8 rounded float-left"
+          >
+            Obriši Akciju
+          </button>
+        </div>
         </section>
       </div>
+      <DeleteDialog
+        show={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        onConfirm={handleConfirmDelete}
+      />
       <InfoFooter></InfoFooter>
     </div>
   );
