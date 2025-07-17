@@ -34,7 +34,7 @@ public class ActionAPI {
     public ResponseEntity<?> getAction(@RequestParam Integer idAction) {
         Action a = actionRepository.findByidAction(idAction);
         List<Comment> lc = commentRepository.findByaction_idAction(idAction);
-        List<CommentDTO> coms = lc.stream().map(c->new CommentDTO(c.getText(), c.getAction().getIdAction(), c.getCreated(), c.getUser().getIdUser(), c.getUser().getDisplayName())).toList();
+        List<CommentDTO> coms = lc.stream().map(c->new CommentDTO(c.getText(), c.getAction().getIdAction(), c.getCreated(), c.getUser().getIdUser(), c.getUser().getDisplayName(), c.getUser().getImagePath())).toList();
         List<ActionOwnerDTO> AOs = actionOwnerRepository.findAll().stream().filter(ao->ao.getAction().getIdAction().equals(idAction)).map(ao->new ActionOwnerDTO(ao.getUser().getIdUser(), ao.getIsCollab(), ao.getUser().getDisplayName(), ao.getUser().getImagePath())).toList();
         return ResponseEntity.ok(new ActionDTO(a.getName(), a.getGoal(), a.getCollected(), a.getDesc(), a.getPrimaryImage(), a.getIdAction(), AOs, coms));
     }
