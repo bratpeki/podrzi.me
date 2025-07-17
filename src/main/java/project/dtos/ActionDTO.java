@@ -1,6 +1,7 @@
 package project.dtos;
 
 import java.util.List;
+import project.classes.Comment;
 
 public class ActionDTO {
     private Integer idAction;
@@ -10,8 +11,9 @@ public class ActionDTO {
     private String desc;
     private String primaryImage = "";
     private List<ActionOwnerDTO> actionOwners;
+    private List<CommentDTO> comments;
 
-    public ActionDTO(String name, Float goal, Float collected, String desc, String primaryimage, Integer idAction, List<ActionOwnerDTO> actionOwners) {
+    public ActionDTO(String name, Float goal, Float collected, String desc, String primaryimage, Integer idAction, List<ActionOwnerDTO> actionOwners, List<CommentDTO> comments) {
         this.idAction = idAction;
         this.name = name;
         this.goal = goal;
@@ -19,6 +21,7 @@ public class ActionDTO {
         this.desc = desc;
         this.primaryImage = primaryimage;
         this.actionOwners = actionOwners;
+        this.comments = comments;
     }
 
     public List<ActionOwnerDTO> getActionOwners() {
@@ -62,5 +65,11 @@ public class ActionDTO {
     }
     public void setPrimaryImage(String primaryImage) {
         this.primaryImage = primaryImage;
+    }
+    public List<CommentDTO> getComments() {
+        return comments;
+    }
+    public void setComments(List<CommentDTO> comments) {
+        this.comments = comments;
     }
 }
