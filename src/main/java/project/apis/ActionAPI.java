@@ -108,10 +108,17 @@ public class ActionAPI {
         User u = userRepository.findByidUser(jwt.extractId(token.get("token")));
         if (u.getPassword().equals(password)) {
             Action a = actionRepository.findByidAction(idAction);
+            ActionOwner ao = actionOwnerRepository.findByidAO_IdAction(idAction);
+            actionOwnerRepository.delete(ao);
             actionRepository.delete(a);
             return ResponseEntity.ok("success");
         }
         else
             return ResponseEntity.ok("wrongPasswordError");
+    }
+
+    @GetMapping("/searchactions")
+    private ResponseEntity<?> searchActions(@RequestParam String input) {
+        return ResponseEntity.ok(actionRepository.findTop5BynameContainingIgnoreCase(input).stream().toList());
     }
 }
