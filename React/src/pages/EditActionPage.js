@@ -4,13 +4,14 @@ import { AuthStateContext } from "../components/UseAuthState";
 import InfoFooter from "../components/InfoFooter";
 import NavigationBar from "../components/NavigationHeader";
 import { apiRequest } from "../utility/FetchAPI";
+import CollaboratorSearch from "../components/CollaboratorSearch";
 
 //TODO : REMOVE NOVE SLIKE, NOVA SLIKA KAO PRIMARNA
 function EditActionPage() {
   const location = useLocation();
-  const { action } = location.state || {};
+  const { id } = location.state || {};
   const [currentAction, setCurrentAction] = useState('');
-
+  const [displayNames, setDisplayNames] = useState([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [goal, setGoal] = useState("");
@@ -25,9 +26,9 @@ function EditActionPage() {
 
     //cekanje da se ucita stranica do kraja da se ne bi action bio null
     useEffect(() => {
-    if (!action) return;
+    if (!id) return;
   
-    apiRequest("actions/getaction?idAction=" + action.idAction,"GET",authState.accessToken)
+    apiRequest("actions/getaction?idAction=" + id,"GET",authState.accessToken)
       .then(res => res)
       .then(data => {
         setCurrentAction(data);
@@ -39,7 +40,7 @@ function EditActionPage() {
       .catch(err => {
         console.error("Failed to fetch action:", err);
       });
-    apiRequest("images/getactionimages?idAction=" + action.idAction,"GET",authState.accessToken)
+    apiRequest("images/getactionimages?idAction=" + id,"GET",authState.accessToken)
       .then(res => res)
       .then(data => {
         setImageFiles(data);
@@ -48,7 +49,15 @@ function EditActionPage() {
       .catch(err => {
         console.error("Failed to fetch action:", err);
       });
-    }, [action, authState.accessToken]);
+    apiRequest("users/getusers","GET",authState.accessToken)
+    .then(res => res)
+    .then(data => {
+      setDisplayNames(data);
+    })
+      .catch(err => {
+        console.error("Failed to fetch action:", err);
+      });
+    }, [id, authState.accessToken]);
     
     if (!currentAction) {
     return <div className="p-8 text-center text-gray-500">Učitavanje akcije...</div>;
@@ -259,6 +268,31 @@ const uploadImage = async (idAction, file) => {
         </section>
 
         <hr className="border-t border-gray-300" />
+
+        <section>
+          <div className="grid md:grid-cols-2 gap-10">
+            <div>
+              <h3 className="font-medium text-lg mb-1">Kolaboratori</h3>
+              <p className="text-sm text-gray-600 mb-4">
+                Collaborators are users who are actively involved in contributing to a specific action or campaign within the platform. They can help manage the action, provide updates, or interact with supporters. Adding collaborators allows multiple trusted users to work together on the same action, improving communication, efficiency, and transparency for those following or supporting the campaign.
+              </p>
+              <p className="text-sm text-gray-500">
+                Potential backers will also see them in category pages, search
+                results, or emails.
+              </p>
+            </div>
+
+            <div className="bg-white p-6 shadow border rounded">
+              <CollaboratorSearch displayNames={displayNames}></CollaboratorSearch>
+              <button
+              //NEKA BUDE SIMBOL SLANJA
+                className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-6 rounded float-right"
+              >
+            Pošalji Zahtjeve
+          </button>
+            </div>
+          </div>
+        </section>
 
         {/* Section: Project category */}
         <section>
