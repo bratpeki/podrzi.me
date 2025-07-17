@@ -1,5 +1,5 @@
 import React from "react";
-import { useLocation, useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useParams } from "react-router-dom"; // Uklonjena useLocation
 import { useContext, useState, useEffect } from "react";
 import NavigationBar from "../components/NavigationHeader.js";
 import InfoFooter from "../components/InfoFooter.js";
@@ -7,117 +7,142 @@ import { AuthStateContext } from "../components/UseAuthState.js";
 import ImageGallery from "../components/ImageGallery.js";
 import { apiRequest } from "../utility/FetchAPI.js";
 import { jwtDecode } from "jwt-decode";
+import DonateFormModal from "../components/DonateFormModal.js"; // <-- Importuj novu komponentu
 
 function ActionViewPage() {
-  const location = useLocation();
   const navigate = useNavigate();
-  const { id } = location.state || {};
-  const [currentAction, setCurrentAction] = useState("");
+  const { id: actionIdFromUrl } = useParams();
+  const { authState } = useContext(AuthStateContext);
+
+  const [currentAction, setCurrentAction] = useState(null);
   const [actionImages, setImages] = useState([]);
-  const { authState, authDispatch } = useContext(AuthStateContext);
-  const [IsOwner, setIsOwner] = useState(false);
-  const [Owners, setOwners] = useState([]);
+  const [isOwner, setIsOwner] = useState(false);
+  const [loadingAction, setLoadingAction] = useState(true);
+  const [showDonateModal, setShowDonateModal] = useState(false); 
 
-  //cekanje da se ucita stranica do kraja da se ne bi action bio null
-  useEffect(() => {
-    if (!id) return;
+  // Funkcija za dohvaćanje detalja akcije i slika
+  // Izdvojena u posebnu funkciju da se može ponovo pozvati
+  const fetchActionData = async () => {
+    if (!actionIdFromUrl || !authState.accessToken) {
+      setLoadingAction(false);
+      return;
+    }
 
-    apiRequest(
-      "actions/getaction?idAction=" + id,
-      "GET",
-      authState.accessToken
-    )
-      .then((res) => res)
-      .then((data) => {
-        setCurrentAction(data);
-        setOwners(data.actionOwners);
+    setLoadingAction(true);
+    try {
+      const actionData = await apiRequest(
+        `actions/getaction?idAction=${actionIdFromUrl}`,
+        "GET",
+        authState.accessToken
+      );
+      setCurrentAction(actionData);
 
+      if (authState.accessToken && actionData.actionOwners) {
         const decoded = jwtDecode(authState.accessToken);
-
-        const isOwner = !!data.actionOwners.find(
+        const ownerFound = actionData.actionOwners.find(
           (owner) => owner.idUser === decoded.id
         );
+        setIsOwner(!!ownerFound);
+      } else {
+        setIsOwner(false);
+      }
 
-        setIsOwner(isOwner);
+      // Dohvaćanje slika unutar iste funkcije (ili pozvati zasebno, ali ovo je efikasno)
+      const imageData = await apiRequest(
+        `images/getactionimages?idAction=${actionIdFromUrl}`,
+        "GET",
+        authState.accessToken
+      );
+      setImages(imageData);
 
-        console.log(
-          decoded.id,
-          data.actionOwners.map((o) => o.idUser),
-          isOwner
-        );
-      })
-      .catch((err) => {
-        console.error("Failed to fetch action:", err);
-      });
+    } catch (err) {
+      console.error("Failed to fetch action details or images:", err);
+      setCurrentAction(null);
+      setImages([]);
+    } finally {
+      setLoadingAction(false);
+    }
+  };
 
-    apiRequest(
-      "images/getactionimages?idAction=" + id,
-      "GET",
-      authState.accessToken
-    )
-      .then((res) => res)
-      .then((data) => {
-        setImages(data);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch action:", err);
-      });
+  // Efekat za početno dohvaćanje podataka i ponovno dohvaćanje
+  // kad se promeni ID akcije u URL-u ili token
+  useEffect(() => {
+    fetchActionData();
+  }, [actionIdFromUrl, authState.accessToken]); // Dodaj actionIdFromUrl i authState.accessToken kao dependencies
 
-    //setOwner(apiRequest("actions/validateuser?idAction="+action.idAction,"GET",authState.accessToken));
-  }, [id, authState.accessToken]);
-  if (!currentAction) {
+  // Callback funkcija za uspješnu donaciju
+  const handleDonationSuccess = () => {
+    // Ponovo dohvati podatke o akciji kako bi se prikazali ažurirani iznosi
+    fetchActionData();
+  };
+
+  // Prikaz učitavanja
+  if (loadingAction) {
     return (
-      <div className="p-8 text-center text-gray-500">Učitavanje akcije...</div>
+      <div className="min-h-screen flex flex-col bg-gray-100">
+        <NavigationBar showSearch={false} />
+        <main className="flex-grow px-6 pt-28 pb-16 max-w-6xl mx-auto text-center text-gray-500">
+          Učitavanje akcije...
+        </main>
+        <InfoFooter />
+      </div>
     );
   }
+
+  // Prikaz poruke ako akcija nije pronađena nakon učitavanja
+  if (!currentAction) {
+    return (
+      <div className="min-h-screen flex flex-col bg-gray-100">
+        <NavigationBar showSearch={false} />
+        <main className="flex-grow px-6 pt-28 pb-16 max-w-6xl mx-auto text-center text-gray-500">
+          Akcija nije pronađena ili je došlo do greške pri učitavanju.
+        </main>
+        <InfoFooter />
+      </div>
+    );
+  }
+
   const progress = Math.min(
     100,
     (currentAction.collected / currentAction.goal) * 100
   ).toFixed(0);
 
-  //Funkcija za prikaz
-
   const showCollaborations = () => {
+    if (!currentAction.actionOwners || currentAction.actionOwners.length === 0) {
+      return null;
+    }
     const owner = currentAction.actionOwners.filter((o) => !o.isCollab);
     const collaborators = currentAction.actionOwners.filter((o) => o.isCollab);
 
-    if (
-      !currentAction ||
-      !currentAction.actionOwners ||
-      currentAction.actionOwners.length === 0
-    ) {
-      return null;
-    }
-
     return (
       <div className="mt-10 p-4 bg-white rounded shadow">
-        <h2 className="text-x1 font-extrabold text-gray-800 mb-2">Vlasnik</h2>
+        <h2 className="text-xl font-extrabold text-gray-800 mb-2">Vlasnik</h2>
         <ul className="list-none p-0 space-y-2">
-          {owner.map((owner) => (
-            <li key={owner.idUser} className="flex items-center gap-3">
+          {owner.map((o) => (
+            <li key={o.idUser} className="flex items-center gap-3">
               <img
-                src={owner.imagePath}
-                alt={owner.displayName}
+                src={o.imagePath}
+                alt={o.displayName}
                 className="w-8 h-8 rounded-full object-cover border"
               />
-              <span>{owner.displayName}</span>
+              <span>{o.displayName}</span>
             </li>
           ))}
         </ul>
         {collaborators.length > 0 && (
           <>
-            <h2 className="text-x1 font-extrabold text-gray-800 mb-2">
+            <h2 className="text-xl font-extrabold text-gray-800 mt-4 mb-2">
               Kolaboratori
             </h2>
             <ul className="list-none p-0 space-y-2">
-              {collaborators.map((owner) => (
-                <li key={owner.idUser} className="flex items-center gap-3">
+              {collaborators.map((c) => (
+                <li key={c.idUser} className="flex items-center gap-3">
                   <img
-                    src={owner.imagePath}
-                    alt={owner.displayName}
+                    src={c.imagePath}
+                    alt={c.displayName}
                     className="w-8 h-8 rounded-full object-cover border"
                   />
-                  <span>{owner.displayName}</span>
+                  <span>{c.displayName}</span>
                 </li>
               ))}
             </ul>
@@ -132,12 +157,11 @@ function ActionViewPage() {
       <NavigationBar showSearch={false} />
 
       <main className="flex-grow px-6 pt-28 pb-16 max-w-6xl mx-auto">
-        {/* edit button */}
-        {IsOwner && (
+        {isOwner && (
           <Link
             className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-4 rounded float-right"
             to={`/editAction/${currentAction.idAction}`}
-            state={{ id }}
+            state={{ action: currentAction }}
           >
             Ažuriraj
           </Link>
@@ -146,16 +170,12 @@ function ActionViewPage() {
           {currentAction.name}
         </h1>
 
-        {/* Two-column layout */}
         <div className="flex flex-col md:flex-row gap-10">
-          {/* Left: Image */}
           <div className="md:w-3/3">
             <ImageGallery images={actionImages} />
           </div>
 
-          {/* Right: Details */}
           <div className="md:max-w-2/3 w-2/3 bg-white shadow-lg rounded-lg p-6 flex flex-col justify-between">
-            {/* Amount info */}
             <div>
               <p className="text-xl font-bold text-gray-700 mb-2">
                 {currentAction.collected.toLocaleString()}€ prikupljeno
@@ -164,7 +184,6 @@ function ActionViewPage() {
                 od ciljanih {currentAction.goal.toLocaleString()}€
               </p>
 
-              {/* Progress bar */}
               <div className="w-full bg-gray-200 rounded-full h-4 mb-2">
                 <div
                   className={`h-4 rounded-full ${
@@ -181,17 +200,16 @@ function ActionViewPage() {
                 {progress}% prikupljeno
               </p>
 
-              {/* Backers */}
               <p className="text-md font-medium text-gray-700 mb-6">
                 👥 Broj podržavalaca:{" "}
                 <span className="font-bold">{currentAction.backers || 0}</span>
               </p>
             </div>
 
-            {/* Donate button */}
+            {/* Dugme koje otvara modal */}
             <button
               className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-4 rounded w-full"
-              onClick={() => navigate(`/donate/${currentAction.idAction}`, { state: { action: currentAction } })}
+              onClick={() => setShowDonateModal(true)} // <-- Otvori modal
             >
               Doniraj
             </button>
@@ -202,6 +220,15 @@ function ActionViewPage() {
       </main>
 
       <InfoFooter />
+
+      {/* Uslovno renderovanje DonateFormModal-a */}
+      {showDonateModal && currentAction && ( // <-- Prikazuje se modal samo ako treba, ili ako je akcija uspješno učitana
+        <DonateFormModal
+          action={currentAction} 
+          onClose={() => setShowDonateModal(false)} 
+          onDonationSuccess={handleDonationSuccess} 
+        />
+      )}
     </div>
   );
 }
