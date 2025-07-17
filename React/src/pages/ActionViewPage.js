@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate, Link, useParams } from "react-router-dom";
+import { useNavigate, Link, useParams, useLocation } from "react-router-dom";
 import { useContext, useState, useEffect } from "react";
 import NavigationBar from "../components/NavigationHeader.js";
 import InfoFooter from "../components/InfoFooter.js";
@@ -10,10 +10,10 @@ import { jwtDecode } from "jwt-decode";
 import DonateFormModal from "../components/DonateFormModal.js";
 
 function ActionViewPage() {
+  const location = useLocation();
+  const { id } = location.state || {};
   const navigate = useNavigate();
-  const { id: actionIdFromUrl } = useParams();
   const { authState } = useContext(AuthStateContext);
-
   const [currentAction, setCurrentAction] = useState(null);
   const [actionImages, setImages] = useState([]);
   const [isOwner, setIsOwner] = useState(false);
@@ -28,7 +28,7 @@ function ActionViewPage() {
 
   // Funkcija za dohvaćanje detalja akcije (uključujući komentare i slike)
   const fetchActionData = async () => {
-    if (!actionIdFromUrl || !authState.accessToken) {
+    if (!id || !authState.accessToken) {
       setLoadingAction(false);
       return;
     }
@@ -36,7 +36,7 @@ function ActionViewPage() {
     setLoadingAction(true);
     try {
       const actionData = await apiRequest(
-        `actions/getaction?idAction=${actionIdFromUrl}`,
+        `actions/getaction?idAction=${id}`,
         "GET",
         authState.accessToken
       );
@@ -56,7 +56,7 @@ function ActionViewPage() {
       }
 
       const imageData = await apiRequest(
-        `images/getactionimages?idAction=${actionIdFromUrl}`,
+        `images/getactionimages?idAction=${id}`,
         "GET",
         authState.accessToken
       );
@@ -76,7 +76,7 @@ function ActionViewPage() {
 
   useEffect(() => {
     fetchActionData(); // Sada fetchActionData dohvaća i komentare
-  }, [actionIdFromUrl, authState.accessToken]);
+  }, [id, authState.accessToken]);
 
   const handleDonationSuccess = () => {
     fetchActionData();
@@ -200,8 +200,8 @@ function ActionViewPage() {
         {isOwner && (
           <Link
             className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-4 rounded float-right"
-            to={`/editAction/${currentAction.idAction}`}
-            state={{ action: currentAction }}
+            to={`/editAction/${id}`}
+            state={{ id }}
           >
             Ažuriraj
           </Link>
