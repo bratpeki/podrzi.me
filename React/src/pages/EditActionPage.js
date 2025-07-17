@@ -270,7 +270,28 @@ const uploadImage = async (idAction, file) => {
         <hr className="border-t border-gray-300" />
 
         <section>
-          <CollaboratorSearch displayNames={displayNames} />
+          <div className="grid md:grid-cols-2 gap-10">
+            <div>
+              <h3 className="font-medium text-lg mb-1">Kolaboratori</h3>
+              <p className="text-sm text-gray-600 mb-4">
+                Collaborators are users who are actively involved in contributing to a specific action or campaign within the platform. They can help manage the action, provide updates, or interact with supporters. Adding collaborators allows multiple trusted users to work together on the same action, improving communication, efficiency, and transparency for those following or supporting the campaign.
+              </p>
+              <p className="text-sm text-gray-500">
+                Potential backers will also see them in category pages, search
+                results, or emails.
+              </p>
+            </div>
+
+            <div className="bg-white p-6 shadow border rounded">
+              <CollaboratorSearch displayNames={displayNames}></CollaboratorSearch>
+              <button
+              //NEKA BUDE SIMBOL SLANJA
+                className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-6 rounded float-right"
+              >
+            Pošalji Zahtjeve
+          </button>
+            </div>
+          </div>
         </section>
 
         {/* Section: Project category */}
