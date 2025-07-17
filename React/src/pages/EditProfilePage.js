@@ -6,16 +6,20 @@ import { AuthStateContext } from '../components/UseAuthState';
 import { apiRequest } from '../utility/FetchAPI';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import DeleteDialog from '../components/DeleteDialog';
 
 function EditProfilePage(){
 
-    const { authState }=useContext(AuthStateContext);
+    const { authState,authDispatch }=useContext(AuthStateContext);
     const [profileImage, setProfileImage] = useState(null);
     const [confirmPassword, setConfirmPassword] = useState('');
     const [passwordError, setPasswordError] = useState('');
     const [showOldPassword,setShowOldPassword]= useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const notification = withReactContent(Swal); //Za notifikacije
+
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const navigate = useNavigate();
 
     const [formData,setFormData]=useState({
         "idUser":'',
@@ -27,9 +31,6 @@ function EditProfilePage(){
         "desc":'',
         "imagePath":'',
     });
-
-
-    const navigate=useNavigate();
 
     useEffect(()=>{
         const fetchProfile=async ()=>{
@@ -141,7 +142,34 @@ function EditProfilePage(){
            return false;
           }
         };
+        const handleDeleteClick = () => {
+              setShowDeleteDialog(true);
+        };
+         const logout = () => {
+          authDispatch({ type: "logout" });
+        };
 
+        const handleConfirmDelete = (password) => {
+          const formData = new FormData();
+          formData.append("password", password);
+          apiRequest('users/removeuser', 'POST', authState.accessToken, formData)
+              .then(res => {
+                if (res=="success") {
+                  logout()
+                  navigate('/home');
+                } else if (res == "wrongPasswordError"){
+                    alert('Pogrešna lozinka');
+                } else if (res == "hasActionsError"){
+                    alert('Korisnik je vlasnik akcija, Morate ih prvo obrisati!');
+                }
+              })
+              .catch(() => {
+                alert('Something went wrong.');
+              })
+              .finally(() => {
+                setShowDeleteDialog(false);
+              });
+        };
 
 return (
     <div className="min-h-screen bg-gray-100 flex flex-col justify-between">
@@ -253,17 +281,30 @@ return (
             <button
               type="submit"
                disabled={formData.password && formData.password !== confirmPassword}
-               className={`w-full py-2 rounded transition ${
+               className={`w-full py-2 rounded transition font-semibold ${
                   formData.password && formData.password !== confirmPassword
                    ? 'bg-gray-400 cursor-not-allowed'
                    : 'bg-blue-600 text-white hover:bg-blue-700'
                 }`}
             >
-              Sačuvaj promjene
+              Sačuvaj Promjene
             </button>
           </form>
+          <div className='pt-2'>
+            <button
+              onClick={handleDeleteClick}
+              className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded w-full"
+            >
+              Obriši Nalog
+            </button>
+          </div>
         </div>
       </div>
+    <DeleteDialog
+      show={showDeleteDialog}
+      onClose={() => setShowDeleteDialog(false)}
+      onConfirm={handleConfirmDelete}
+    />
     <InfoFooter />
   </div>
   );
