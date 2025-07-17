@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import project.classes.User;
 import project.dtos.UserLoginDTO;
 import project.dtos.UserProfileDTO;
+import project.repositories.ActionOwnerRepository;
 import project.repositories.UserRepository;
 import project.utilities.JWT;
 
@@ -16,10 +17,12 @@ import java.util.regex.Pattern;
 public class UserAPI {
     private final JWT jwt;
     private final UserRepository userRepository;
+    private final ActionOwnerRepository actionOwnerRepository;
 
-    public UserAPI (UserRepository userRepository, JWT jwt) {
+    public UserAPI (UserRepository userRepository, JWT jwt, ActionOwnerRepository actionOwnerRepository) {
         this.userRepository = userRepository;
         this.jwt = jwt;
+        this.actionOwnerRepository = actionOwnerRepository;
     }
 
     @GetMapping("/getusers")
@@ -104,5 +107,20 @@ public class UserAPI {
             return ResponseEntity.ok(userRepository.findByidUser(idUser).getDisplayName());
         else
             return ResponseEntity.ok("invalidUserError");
+    }
+
+    @PostMapping("/removeuser")
+    public ResponseEntity<?> removeUser(@RequestHeader Map<String, String> token, @RequestParam String password) {
+        User u = userRepository.findByidUser(jwt.extractId(token.get("token")));
+        if (u.getPassword().equals(password)) {
+            if (actionOwnerRepository.findByidAO_IdUser(u.getIdUser()) == null) {
+                userRepository.delete(u);
+                return ResponseEntity.ok("success");
+            }
+            else
+                return ResponseEntity.ok("hasActionsError");
+        }
+        else
+            return ResponseEntity.ok("wrongPasswordError");
     }
 }

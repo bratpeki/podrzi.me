@@ -29,6 +29,8 @@ public class Security {
 
             "/api/actions/getvisibleactions",
             "/api/actions/getaction",
+            "/api/actions/searchactions",
+
             "/api/images/getprimaryimage",
 
             "/api/donations/adddonation",
@@ -43,6 +45,7 @@ public class Security {
             "/api/users/showprofile",
             "/api/users/updateprofile",
             "/api/users/getusers",
+            "/api/users/removeuser",
 
             "/api/reviews/addreview",
 
@@ -53,9 +56,11 @@ public class Security {
             "/api/actions/addaction",
             "/api/actions/setprimaryimage",
             "/api/actions/updateaction",
-            "/api/actions/validateuser"
+            "/api/actions/validateuser",
+            "/api/actions/removeaction",
 
-
+            "/api/comments/add",
+            "/api/comments/remove"
     };
 
     public static String[] AdminMethods = {
@@ -73,7 +78,7 @@ public class Security {
         http.cors().and().csrf().disable().addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class).authorizeHttpRequests(auth -> auth
                         .requestMatchers(PublicMethods).permitAll()     //PUBLIC
                         .requestMatchers(AdminMethods).hasRole("ADMIN") //ADMIN
-                        .requestMatchers(UserMethods).hasRole("USER"))  //USER
+                        .requestMatchers(UserMethods).hasRole("USER"))//USER
                 .sessionManagement(ses -> ses.sessionCreationPolicy((SessionCreationPolicy.STATELESS)))
                 .exceptionHandling(ex -> ex.authenticationEntryPoint((request, response, authException) -> {
                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Nemate prava!");

@@ -2,9 +2,9 @@
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthStateContext } from "./UseAuthState";
+import NotificationDropdown from './NotificationDropdown';
 import ActionSearchBar from "./ActionSearchBar";
 import ActionSuggestion from "./ActionSuggestion";
-
 // TODO: Preimenovati
 function NavigationBar({
   showSearch = true,
@@ -57,7 +57,7 @@ function NavigationBar({
       </div>
 
       {/* Right: Nav links */}
-      <div className="space-x-6">
+      <div className="space-x-6 flex items-center relative">
         {authState.accessToken != null && showCreate && (
           <Link to="/createAction" className="hover:underline">
             Kreiraj akciju
@@ -69,9 +69,7 @@ function NavigationBar({
           </Link>
         )}
         {authState.accessToken != null && showNotification && (
-          <Link to="/notifications" className="hover:underline">
-            Notifikacije
-          </Link>
+          <NotificationDropdown />
         )}
         {authState.accessToken != null && showLogout && (
           <button className="hover:underline" onClick={logout}>

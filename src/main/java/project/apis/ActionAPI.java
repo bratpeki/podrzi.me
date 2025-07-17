@@ -2,13 +2,12 @@ package project.apis;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import project.classes.Action;
-import project.classes.ActionOwner;
-import project.classes.User;
-import project.dtos.ActionDTO;
-import project.dtos.ActionOwnerDTO;
+
+import project.classes.*;
+import project.dtos.*;
 import project.repositories.ActionOwnerRepository;
 import project.repositories.ActionRepository;
+import project.repositories.CommentRepository;
 import project.repositories.UserRepository;
 import project.utilities.JWT;
 import java.util.Map;
@@ -20,26 +19,30 @@ public class ActionAPI {
     private final ActionRepository actionRepository;
     private final UserRepository  userRepository;
     private final ActionOwnerRepository actionOwnerRepository;
+    private final CommentRepository commentRepository;
     private final JWT jwt;
 
-    public ActionAPI (ActionRepository actionRepository, ActionOwnerRepository actionOwnerRepository, JWT jwt, UserRepository userRepository) {
+    public ActionAPI (ActionRepository actionRepository, ActionOwnerRepository actionOwnerRepository, JWT jwt, UserRepository userRepository, CommentRepository commentRepository) {
         this.actionRepository = actionRepository;
         this.actionOwnerRepository = actionOwnerRepository;
         this.jwt = jwt;
         this.userRepository = userRepository;
+        this.commentRepository = commentRepository;
     }
 
     @GetMapping("/getaction")
     public ResponseEntity<?> getAction(@RequestParam Integer idAction) {
         Action a = actionRepository.findByidAction(idAction);
+        List<Comment> lc = commentRepository.findByaction_idAction(idAction);
+        List<CommentDTO> coms = lc.stream().map(c->new CommentDTO(c.getText(), c.getAction().getIdAction(), c.getCreated(), c.getUser().getIdUser(), c.getUser().getDisplayName())).toList();
         List<ActionOwnerDTO> AOs = actionOwnerRepository.findAll().stream().filter(ao->ao.getAction().getIdAction().equals(idAction)).map(ao->new ActionOwnerDTO(ao.getUser().getIdUser(), ao.getIsCollab(), ao.getUser().getDisplayName(), ao.getUser().getImagePath())).toList();
-        return ResponseEntity.ok(new ActionDTO(a.getName(), a.getGoal(), a.getCollected(), a.getDesc(), a.getPrimaryImage(), a.getIdAction(), AOs));
+        return ResponseEntity.ok(new ActionDTO(a.getName(), a.getGoal(), a.getCollected(), a.getDesc(), a.getPrimaryImage(), a.getIdAction(), AOs, coms));
     }
 
     @GetMapping("/getvisibleactions")
     public ResponseEntity<?> getVisibleActions(@RequestHeader Map<String, String> token) {
         List<Action> list = actionRepository.findAll().stream().filter(a->a.getVisible() == 1).toList();
-        return ResponseEntity.ok(list.stream().map(a->new ActionDTO(a.getName(), a.getGoal(), a.getCollected(), a.getDesc(), a.getPrimaryImage(), a.getIdAction(), null)).toList());
+        return ResponseEntity.ok(list.stream().map(a->new ActionDTO(a.getName(), a.getGoal(), a.getCollected(), a.getDesc(), a.getPrimaryImage(), a.getIdAction(), null, null)).toList());
     }
 
     @PostMapping("/addaction")
@@ -108,10 +111,17 @@ public class ActionAPI {
         User u = userRepository.findByidUser(jwt.extractId(token.get("token")));
         if (u.getPassword().equals(password)) {
             Action a = actionRepository.findByidAction(idAction);
+            ActionOwner ao = actionOwnerRepository.findByidAO_IdAction(idAction);
+            actionOwnerRepository.delete(ao);
             actionRepository.delete(a);
             return ResponseEntity.ok("success");
         }
         else
             return ResponseEntity.ok("wrongPasswordError");
+    }
+
+    @GetMapping("/searchactions")
+    private ResponseEntity<?> searchActions(@RequestParam String input) {
+        return ResponseEntity.ok(actionRepository.findTop5BynameContainingIgnoreCase(input).stream().toList());
     }
 }
