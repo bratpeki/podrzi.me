@@ -46,12 +46,13 @@ public class CommentAPI {
     }
 
     @PostMapping("/remove")
-    public ResponseEntity<?> remove(@RequestHeader Map<String, String> token, @RequestParam Integer idComment) {
+    public ResponseEntity<?> remove(@RequestHeader Map<String, String> token, @RequestBody Integer idComment) {
         User u = userRepository.findByidUser(jwt.extractId(token.get("token")));
         if (u == null)
             return ResponseEntity.ok("notLoggedIn");
         Comment c = commentRepository.findByidComment(idComment);
-
+        if (!c.getUser().getIdUser().equals(u.getIdUser()))
+            return ResponseEntity.ok("wrongUserError");
         commentRepository.delete(c);
         return ResponseEntity.ok("success");
     }

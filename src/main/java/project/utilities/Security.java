@@ -40,7 +40,7 @@ public class Security {
 
             "/uploads/**",
 
-            "/api/reports/getall"
+            //"/api/reports/getall"
     };
 
     public static String[] UserMethods = {
@@ -82,7 +82,7 @@ public class Security {
 
             "/api/notifications/sendall",
 
-            //"/api/reports/getall",
+            "/api/reports/getall",
             "/api/reports/handle",
 
             "/api/admins/addadmin",

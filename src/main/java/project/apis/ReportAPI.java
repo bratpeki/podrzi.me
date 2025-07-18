@@ -15,10 +15,10 @@ import java.util.Map;
 public class ReportAPI {
 
     private final ReportRepository reportRepository;
-    private JWT jwt;
+    private final JWT jwt;
     private final UserRepository userRepository;
 
-    public ReportAPI(UserRepository userRepository, ReportRepository reportRepository) {
+    public ReportAPI(UserRepository userRepository, ReportRepository reportRepository, JWT jwt) {
         this.userRepository = userRepository;
         this.jwt = jwt;
         this.reportRepository = reportRepository;

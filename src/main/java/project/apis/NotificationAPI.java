@@ -27,10 +27,17 @@ public class NotificationAPI {
         this.actionRepository = actionRepository;
     }
 
+    @PostMapping("/seen")
+    public ResponseEntity<?> seenNotif(@RequestHeader Map<String,String> token, @RequestBody List<Integer> idNotification) {
+        Integer idUser = jwt.extractId(token.get("token"));
+        notificationRepository.markAsSeenByUser(idNotification, idUser);
+        return ResponseEntity.ok("success");
+    }
+
     @GetMapping("/get")
     public ResponseEntity<?> getNotifications(@RequestHeader Map<String, String> token) {
         List<Notification> n = notificationRepository.findAllByUser_idUser(jwt.extractId(token.get("token")));
-        return ResponseEntity.ok(n.stream().map(a->new NotificationDTO(a.getUser().getIdUser(), a.getText(), a.getType(), a.getUser().getDisplayName(), a.getUser().getImagePath()))
+        return ResponseEntity.ok(n.stream().map(a->new NotificationDTO(a.getUser().getIdUser(), a.getText(), a.getType(), a.getUser().getDisplayName(), a.getUser().getImagePath(), a.getIdNotification()))
         );
     }
 

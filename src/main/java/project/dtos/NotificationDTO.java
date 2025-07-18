@@ -6,20 +6,28 @@ import project.classes.User;
 import java.time.LocalDateTime;
 
 public class NotificationDTO {
+    private Integer idNotification;
     private Integer idUser;
     private String text;
     private Integer type; // 0 - collab, 1 - alert (kraj akcije itd...
     private String displayName = "";
     private String imagePath = "";
 
-    public NotificationDTO(Integer idUser, String text, Integer type, String displayName, String imagePath) {
+    public NotificationDTO(Integer idUser, String text, Integer type, String displayName, String imagePath, Integer idNotification) {
         this.idUser = idUser;
         this.text = text;
         this.type = type;
         this.displayName = displayName;
         this.imagePath = imagePath;
+        this.idNotification = idNotification;
     }
 
+    public Integer getIdNotification() {
+        return idNotification;
+    }
+    public void setIdNotification(Integer idNotification) {
+        this.idNotification = idNotification;
+    }
     public String getDisplayName() {
         return displayName;
     }
