@@ -28,7 +28,7 @@ function ActionViewPage() {
 
   // Funkcija za dohvaćanje detalja akcije (uključujući komentare i slike)
   const fetchActionData = async () => {
-    if (!id || !authState.accessToken) {
+    if (!id) {
       setLoadingAction(false);
       return;
     }
@@ -76,7 +76,7 @@ function ActionViewPage() {
 
   useEffect(() => {
     fetchActionData(); // Sada fetchActionData dohvaća i komentare
-  }, [id, authState.accessToken]);
+  }, [id]);
 
   const handleDonationSuccess = () => {
     fetchActionData();
