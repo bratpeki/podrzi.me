@@ -70,6 +70,7 @@ public class Security {
 
             "/api/comments/add",
             "/api/comments/remove",
+            "/api/comments/edit",
 
             "/api/refunds/request"
 

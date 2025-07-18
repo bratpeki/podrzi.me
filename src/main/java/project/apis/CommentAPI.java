@@ -56,4 +56,16 @@ public class CommentAPI {
         commentRepository.delete(c);
         return ResponseEntity.ok("success");
     }
+
+    @PostMapping("/edit")
+    public ResponseEntity<?> edit(@RequestHeader Map<String, String> token, @RequestBody Integer idComment, @RequestBody String text) {
+        User u = userRepository.findByidUser(jwt.extractId(token.get("token")));
+        Comment c = commentRepository.findByidComment(idComment);
+        if (c.getUser().getIdUser().equals(u.getIdUser())) {
+            c.setText("(EDITOVANO "+LocalDateTime.now() +") " + text);
+            commentRepository.save(c);
+            return ResponseEntity.ok("success");
+        } else
+            return ResponseEntity.ok("invalidUserError");
+    }
 }
