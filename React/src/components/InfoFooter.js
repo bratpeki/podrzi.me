@@ -18,6 +18,9 @@ function InfoFooter() {
         <Link to="/tos" className="hover:underline">
           Uslovi korišćenja
         </Link>
+        <Link to="/review" className="hover:underline">
+          Napravi Recenziju
+        </Link>
       </div>
     </footer>
   );

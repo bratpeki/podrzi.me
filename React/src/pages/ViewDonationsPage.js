@@ -1,14 +1,14 @@
 import React, { useContext, useEffect, useState } from "react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-
+import RefundDialog from "../components/RefundDialog";
 import { useLocation } from "react-router-dom";
-
 import { AuthStateContext } from "../components/UseAuthState";
 import NavigationBar from "../components/NavigationHeader";
 import InfoFooter from "../components/InfoFooter";
 import { apiRequest } from "../utility/FetchAPI";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
 
 function ViewDonationsPage() {
   const location = useLocation();
@@ -17,8 +17,10 @@ function ViewDonationsPage() {
   const [dons, setDons] = useState([]);
   const [responseMessage, setResponseMessage] = useState("");
 
-  const { authState } = useContext(AuthStateContext);
+  const [showDialog, setShowDialog] = useState(false);
+  const [selectedDonationId, setSelectedDonationId] = useState(null);
 
+  const { authState } = useContext(AuthStateContext);
   useEffect(() => {
     const fetchDons = async () => {
       try {
@@ -76,6 +78,39 @@ function ViewDonationsPage() {
     });
 
     doc.save("izvjestaj-donacija.pdf");
+  };
+  const handleRefund = (donationId) => {
+    setSelectedDonationId(donationId);
+    setShowDialog(true);
+  };
+
+  const confirmRefund = async (reason) => {
+    setShowDialog(false);
+    if (!reason.trim()) {
+      alert("Morate unijeti razlog.");
+      return;
+    }
+
+    try {
+      const res = await apiRequest(
+        "refunds/request",
+        "POST",
+        authState.accessToken,
+        {
+          idDonation: selectedDonationId,
+          reason: reason,
+        }
+      );
+
+      if (res === "success") {
+        alert("Povrat je zatražen.");
+      } else {
+        alert("Greška: " + res);
+      }
+    } catch (err) {
+      console.error("Greška pri zahtjevu za povrat:", err);
+      alert("Došlo je do greške.");
+    }
   };
 
   return (
@@ -138,7 +173,7 @@ function ViewDonationsPage() {
             {/* Refund button directly below each card */}
             <div className="flex justify-end mb-6">
               <button
-                //onClick={() => handleRefund(donation.idDonation)}
+                onClick={() => handleRefund(donation.idDonation)}
                 className="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-2 rounded shadow"
               >
                 Zatraži povrat
@@ -147,9 +182,13 @@ function ViewDonationsPage() {
           </div>
         ))}
       </div>
-
       {/* Footer */}
       <InfoFooter />
+      <RefundDialog
+        show={showDialog}
+        onClose={() => setShowDialog(false)}
+        onConfirm={confirmRefund}
+      />
     </div>
   );
 }
