@@ -5,13 +5,13 @@ import InfoFooter from "../components/InfoFooter";
 import NavigationBar from "../components/NavigationHeader";
 import { apiRequest } from "../utility/FetchAPI";
 import CollaboratorSearch from "../components/CollaboratorSearch";
-import DeleteDialog from '../components/DeleteDialog';
+import DeleteDialog from "../components/DeleteDialog";
 
 //TODO : REMOVE NOVE SLIKE, NOVA SLIKA KAO PRIMARNA
 function EditActionPage() {
   const location = useLocation();
   const { id } = location.state || {};
-  const [currentAction, setCurrentAction] = useState('');
+  const [currentAction, setCurrentAction] = useState("");
   const [displayNames, setDisplayNames] = useState([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -25,66 +25,76 @@ function EditActionPage() {
 
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const navigate = useNavigate();
-  
+
   console.log("EditActionPage", authState.accessToken);
 
-    //cekanje da se ucita stranica do kraja da se ne bi action bio null
-    useEffect(() => {
+  //cekanje da se ucita stranica do kraja da se ne bi action bio null
+  useEffect(() => {
     if (!id) return;
-  
-    apiRequest("actions/getaction?idAction=" + id,"GET",authState.accessToken)
-      .then(res => res)
-      .then(data => {
+
+    apiRequest("actions/getaction?idAction=" + id, "GET", authState.accessToken)
+      .then((res) => res)
+      .then((data) => {
         setCurrentAction(data);
         setName(data.name);
         setDescription(data.desc);
         setGoal(data.goal);
-        setPrimaryImage(data.primaryImage)
+        setPrimaryImage(data.primaryImage);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("Failed to fetch action:", err);
       });
-    apiRequest("images/getactionimages?idAction=" + id,"GET",authState.accessToken)
-      .then(res => res)
-      .then(data => {
+    apiRequest(
+      "images/getactionimages?idAction=" + id,
+      "GET",
+      authState.accessToken
+    )
+      .then((res) => res)
+      .then((data) => {
         setImageFiles(data);
         setImagePreviews(data);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("Failed to fetch action:", err);
       });
-    apiRequest("users/getusers","GET",authState.accessToken)
-    .then(res => res)
-    .then(data => {
-      setDisplayNames(data);
-    })
-      .catch(err => {
+    apiRequest("users/getusers", "GET", authState.accessToken)
+      .then((res) => res)
+      .then((data) => {
+        setDisplayNames(data);
+      })
+      .catch((err) => {
         console.error("Failed to fetch action:", err);
       });
-    }, [id, authState.accessToken]);
-    
-    if (!currentAction) {
-    return <div className="p-8 text-center text-gray-500">Učitavanje akcije...</div>;
-    }
+  }, [id, authState.accessToken]);
 
+  if (!currentAction) {
+    return (
+      <div className="p-8 text-center text-gray-500">Učitavanje akcije...</div>
+    );
+  }
 
   const handleUpdate = async () => {
     try {
-      const response = await apiRequest("actions/updateaction","POST",authState.accessToken,{
-        "idAction":parseInt(currentAction.idAction),
-          "name": name,
-          "desc": description,
-          "goal": goal,
-          "primaryImage": primaryImage
-      })
+      const response = await apiRequest(
+        "actions/updateaction",
+        "POST",
+        authState.accessToken,
+        {
+          idAction: parseInt(currentAction.idAction),
+          name: name,
+          desc: description,
+          goal: goal,
+          primaryImage: primaryImage,
+        }
+      );
       const text = await response;
       if (text == "nameTakenError") {
         setResponseMessage("Ime akcije zauzeto");
       } else {
         setResponseMessage("Uploadujemo!");
-          for (const file of newImageFiles){
-            uploadImage(currentAction.idAction,file);
-          }
+        for (const file of newImageFiles) {
+          uploadImage(currentAction.idAction, file);
+        }
       }
     } catch (error) {
       setResponseMessage("greška!");
@@ -92,42 +102,47 @@ function EditActionPage() {
     }
   };
 
-const uploadImage = async (idAction, file) => {
-   if (imageFiles.includes(file)){
-    console.log("slika vec postoji")
-    return;
-   }
-   const formData = new FormData();
-   formData.append('idAction', idAction);
-   formData.append('file', file);
-   console.log(file)
-   console.log(primaryImage)
-   if(file == primaryImage){
-     formData.append('isPrimary', true)
-   }else{
-     formData.append('isPrimary', false)
-   }
+  const uploadImage = async (idAction, file) => {
+    if (imageFiles.includes(file)) {
+      console.log("slika vec postoji");
+      return;
+    }
+    const formData = new FormData();
+    formData.append("idAction", idAction);
+    formData.append("file", file);
+    console.log(file);
+    console.log(primaryImage);
+    if (file == primaryImage) {
+      formData.append("isPrimary", true);
+    } else {
+      formData.append("isPrimary", false);
+    }
     try {
-      const response = await apiRequest("images/uploadactionimage","POST",authState.accessToken,formData)
+      const response = await apiRequest(
+        "images/uploadactionimage",
+        "POST",
+        authState.accessToken,
+        formData
+      );
       if (response) {
-        setResponseMessage('Akcija i slika su uspešno sačuvane!');
+        setResponseMessage("Akcija i slika su uspešno sačuvane!");
       } else {
-        setResponseMessage('Akcija je sačuvana, ali upload slike nije uspeo.');
+        setResponseMessage("Akcija je sačuvana, ali upload slike nije uspeo.");
       }
     } catch (error) {
-      console.error('Upload error:', error);
-      setResponseMessage('Došlo je do greške pri uploadu slike.');
+      console.error("Upload error:", error);
+      setResponseMessage("Došlo je do greške pri uploadu slike.");
     }
   };
 
   const handleImageChange = (e) => {
-    const newFiles = Array.from(e.target.files).filter(file =>
-      ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)
+    const newFiles = Array.from(e.target.files).filter((file) =>
+      ["image/jpeg", "image/png", "image/jpg"].includes(file.type)
     );
 
-    const newPreviews = newFiles.map(file => URL.createObjectURL(file));
+    const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
 
-    setNewImageFiles(prevFiles => {
+    setNewImageFiles((prevFiles) => {
       const combined = [...prevFiles, ...newFiles];
       if (!primaryImage && newFiles.length > 0) {
         setPrimaryImage(newFiles[0]);
@@ -135,19 +150,19 @@ const uploadImage = async (idAction, file) => {
       return combined;
     });
 
-    setImagePreviews(prevPreviews => [...prevPreviews, ...newPreviews]);
+    setImagePreviews((prevPreviews) => [...prevPreviews, ...newPreviews]);
   };
 
   const handleDrop = (e) => {
     e.preventDefault();
 
-    const newFiles = Array.from(e.dataTransfer.files).filter(file =>
-      ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)
+    const newFiles = Array.from(e.dataTransfer.files).filter((file) =>
+      ["image/jpeg", "image/png", "image/jpg"].includes(file.type)
     );
 
-    const newPreviews = newFiles.map(file => URL.createObjectURL(file));
+    const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
 
-    setNewImageFiles(prevFiles => {
+    setNewImageFiles((prevFiles) => {
       const combined = [...prevFiles, ...newFiles];
       if (!primaryImage && newFiles.length > 0) {
         setPrimaryImage(newFiles[0]);
@@ -155,7 +170,7 @@ const uploadImage = async (idAction, file) => {
       return combined;
     });
 
-    setImagePreviews(prevPreviews => [...prevPreviews, ...newPreviews]);
+    setImagePreviews((prevPreviews) => [...prevPreviews, ...newPreviews]);
   };
 
   const handleDragOver = (e) => {
@@ -163,10 +178,12 @@ const uploadImage = async (idAction, file) => {
   };
 
   const removeImage = async (fileToRemove) => {
-      // Find the matching image object by comparing names
-    const matchedFile = imageFiles.find(file => {
-      return (file.name && fileToRemove.name && file.name === fileToRemove.name) ||
-            (file === fileToRemove); // fallback if direct reference works
+    // Find the matching image object by comparing names
+    const matchedFile = imageFiles.find((file) => {
+      return (
+        (file.name && fileToRemove.name && file.name === fileToRemove.name) ||
+        file === fileToRemove
+      ); // fallback if direct reference works
     });
 
     if (!matchedFile) {
@@ -176,63 +193,70 @@ const uploadImage = async (idAction, file) => {
 
     const urlToRemove = matchedFile.url || matchedFile; // fallback if it's just a string
     try {
-        const formData = new FormData();
-        formData.append('idAction', currentAction.idAction);
-        formData.append('url', urlToRemove);
-        if(fileToRemove == primaryImage){
-          formData.append('isPrimary', true)
-        }else{
-          formData.append('isPrimary', false)
-        }
-      const response = await apiRequest("images/removeactionimage","POST",authState.accessToken,formData)
+      const formData = new FormData();
+      formData.append("idAction", currentAction.idAction);
+      formData.append("url", urlToRemove);
+      if (fileToRemove == primaryImage) {
+        formData.append("isPrimary", true);
+      } else {
+        formData.append("isPrimary", false);
+      }
+      const response = await apiRequest(
+        "images/removeactionimage",
+        "POST",
+        authState.accessToken,
+        formData
+      );
       const text = await response;
-      if(text == "primaryImageError"){
+      if (text == "primaryImageError") {
         setResponseMessage("Ne možete ukloniti primarnu sliku");
-      }
-      else if (text =="InvalidUserError"){
+      } else if (text == "InvalidUserError") {
         setResponseMessage("Pogrešan korisnik");
-      }
-      else{
-      setImageFiles(prev => prev.filter(file => file !== fileToRemove));
+      } else {
+        setImageFiles((prev) => prev.filter((file) => file !== fileToRemove));
 
-      setImagePreviews(prev => {
-        const index = imageFiles.indexOf(fileToRemove);
-        if (index !== -1) URL.revokeObjectURL(prev[index]);
-        return prev.filter((_, i) => i !== index);
-      });
+        setImagePreviews((prev) => {
+          const index = imageFiles.indexOf(fileToRemove);
+          if (index !== -1) URL.revokeObjectURL(prev[index]);
+          return prev.filter((_, i) => i !== index);
+        });
 
-    setPrimaryImage(prev => (prev === fileToRemove ? null : prev));
+        setPrimaryImage((prev) => (prev === fileToRemove ? null : prev));
       }
     } catch (error) {
-      console.error('Upload error:', error);
-      setResponseMessage('Došlo je do greške pri uploadu slike.');
+      console.error("Upload error:", error);
+      setResponseMessage("Došlo je do greške pri uploadu slike.");
     }
   };
   const handleDeleteClick = () => {
-      setShowDeleteDialog(true);
+    setShowDeleteDialog(true);
   };
   const handleConfirmDelete = async (password) => {
     const formData = new FormData();
-    formData.append('idAction', currentAction.idAction);
-    formData.append('password', password);
-    const response = await apiRequest('actions/removeaction', 'POST', authState.accessToken, formData)
+    formData.append("idAction", currentAction.idAction);
+    formData.append("password", password);
+    const response = await apiRequest(
+      "actions/removeaction",
+      "POST",
+      authState.accessToken,
+      formData
+    );
     const text = await response;
-    if(text == "invalidpassworderror"){
+    if (text == "invalidpassworderror") {
       setShowDeleteDialog(false);
       return;
-    }else{
-      navigate("/")
+    } else {
+      navigate("/");
     }
-
   };
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800">
       {/* Top navigation bar */}
-      <NavigationBar showSearch={false} showCreate={false}/>
+      <NavigationBar showSearch={false} showCreate={false} />
 
       {/* Page content */}
-                  
+
       <div className="max-w-5xl mx-auto py-20 px-6 space-y-16">
         {/* Section: Start with the basics */}
         <section>
@@ -296,7 +320,13 @@ const uploadImage = async (idAction, file) => {
             <div>
               <h3 className="font-medium text-lg mb-1">Kolaboratori</h3>
               <p className="text-sm text-gray-600 mb-4">
-                Collaborators are users who are actively involved in contributing to a specific action or campaign within the platform. They can help manage the action, provide updates, or interact with supporters. Adding collaborators allows multiple trusted users to work together on the same action, improving communication, efficiency, and transparency for those following or supporting the campaign.
+                Collaborators are users who are actively involved in
+                contributing to a specific action or campaign within the
+                platform. They can help manage the action, provide updates, or
+                interact with supporters. Adding collaborators allows multiple
+                trusted users to work together on the same action, improving
+                communication, efficiency, and transparency for those following
+                or supporting the campaign.
               </p>
               <p className="text-sm text-gray-500">
                 Potential backers will also see them in category pages, search
@@ -305,13 +335,15 @@ const uploadImage = async (idAction, file) => {
             </div>
 
             <div className="bg-white p-6 shadow border rounded">
-              <CollaboratorSearch displayNames={displayNames}></CollaboratorSearch>
+              <CollaboratorSearch
+                displayNames={displayNames}
+              ></CollaboratorSearch>
               <button
-              //NEKA BUDE SIMBOL SLANJA
+                //NEKA BUDE SIMBOL SLANJA
                 className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-6 rounded float-right"
               >
-            Pošalji Zahtjeve
-          </button>
+                Pošalji Zahtjeve
+              </button>
             </div>
           </div>
         </section>
@@ -403,7 +435,10 @@ const uploadImage = async (idAction, file) => {
               onDrop={handleDrop}
               onDragOver={handleDragOver}
             >
-              <p className="mb-2">Izaberite slike ili ih prevucite u prozor.  Kliknite na sliku koju želite da bude primarna.</p>
+              <p className="mb-2">
+                Izaberite slike ili ih prevucite u prozor. Kliknite na sliku
+                koju želite da bude primarna.
+              </p>
               <input
                 type="file"
                 accept=".jpg,.jpeg,.png"
@@ -413,33 +448,37 @@ const uploadImage = async (idAction, file) => {
               />
 
               <div className="flex flex-wrap justify-center gap-4">
-            {imagePreviews.map((src, i) => {
-              const file = imageFiles[i];
-              const isPrimary = file === primaryImage;
+                {imagePreviews.map((src, i) => {
+                  const file = imageFiles[i];
+                  const isPrimary = file === primaryImage;
 
-              return (
-                <div key={i} className="relative inline-block">
-                  <img
-                    src={src}
-                    alt={`Preview ${i + 1}`}
-                    onClick={() => setPrimaryImage(file)}
-                    className={`cursor-pointer max-h-40 object-contain border rounded transition duration-150
-                      ${isPrimary ? 'ring-4 ring-blue-500 border-blue-400' : 'border-gray-300'}`}
-                  />
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeImage(file);
-                    }}
-                    className="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full px-1 hover:bg-red-700"
-                    title="Remove"
-                  >
-                    ×
-                  </button>
-                </div>
-              );
-            })}
-            </div>
+                  return (
+                    <div key={i} className="relative inline-block">
+                      <img
+                        src={src}
+                        alt={`Preview ${i + 1}`}
+                        onClick={() => setPrimaryImage(file)}
+                        className={`cursor-pointer max-h-40 object-contain border rounded transition duration-150
+                      ${
+                        isPrimary
+                          ? "ring-4 ring-blue-500 border-blue-400"
+                          : "border-gray-300"
+                      }`}
+                      />
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeImage(file);
+                        }}
+                        className="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full px-1 hover:bg-red-700"
+                        title="Remove"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
               <p className="text-xs text-gray-500 mt-2">
                 Max 5MB each. Only JPG, JPEG, PNG.
               </p>
@@ -473,24 +512,24 @@ const uploadImage = async (idAction, file) => {
         </section>
         <section className="pb-8">
           {responseMessage && (
-          <p className="text-center text-xl  text-red-600 mb-2">
-            {responseMessage}
-          </p>
-        )}
-         <button
+            <p className="text-center text-xl  text-red-600 mb-2">
+              {responseMessage}
+            </p>
+          )}
+          <button
             onClick={handleUpdate}
             className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-4 px-10 rounded float-right"
           >
             Sačuvaj
           </button>
-        <div>
-          <button
-            onClick={handleDeleteClick}
-            className="bg-red-600 hover:bg-red-700 text-white font-semibold py-4 px-8 rounded float-left"
-          >
-            Obriši Akciju
-          </button>
-        </div>
+          <div>
+            <button
+              onClick={handleDeleteClick}
+              className="bg-red-600 hover:bg-red-700 text-white font-semibold py-4 px-8 rounded float-left"
+            >
+              Obriši Akciju
+            </button>
+          </div>
         </section>
       </div>
       <DeleteDialog

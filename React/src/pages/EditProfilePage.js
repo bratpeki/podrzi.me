@@ -1,185 +1,197 @@
-import { useState, useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import NavigationBar from '../components/NavigationHeader';
-import InfoFooter from '../components/InfoFooter';
-import { AuthStateContext } from '../components/UseAuthState';
-import { apiRequest } from '../utility/FetchAPI';
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
-import DeleteDialog from '../components/DeleteDialog';
+import { useState, useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import NavigationBar from "../components/NavigationHeader";
+import InfoFooter from "../components/InfoFooter";
+import { AuthStateContext } from "../components/UseAuthState";
+import { apiRequest } from "../utility/FetchAPI";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+import DeleteDialog from "../components/DeleteDialog";
 
-function EditProfilePage(){
+function EditProfilePage() {
+  const { authState, authDispatch } = useContext(AuthStateContext);
+  const [profileImage, setProfileImage] = useState(null);
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const notification = withReactContent(Swal); //Za notifikacije
 
-    const { authState,authDispatch }=useContext(AuthStateContext);
-    const [profileImage, setProfileImage] = useState(null);
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [passwordError, setPasswordError] = useState('');
-    const [showOldPassword,setShowOldPassword]= useState(false);
-    const [showNewPassword, setShowNewPassword] = useState(false);
-    const notification = withReactContent(Swal); //Za notifikacije
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const navigate = useNavigate();
 
-    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-    const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    idUser: "",
+    username: "",
+    email: "",
+    password: "",
+    oldPassword: "",
+    displayName: "",
+    desc: "",
+    imagePath: "",
+  });
 
-    const [formData,setFormData]=useState({
-        "idUser":'',
-        "username": '',
-        "email":'',
-        "password":'',
-        "oldPassword":'',
-        "displayName":'',
-        "desc":'',
-        "imagePath":'',
-    });
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await apiRequest(
+          "users/showprofile",
+          "GET",
+          authState.accessToken
+        );
+        if (!res) throw new String("Greška pri dohvatanju profila");
 
-    useEffect(()=>{
-        const fetchProfile=async ()=>{
-            try{
-                const res = await apiRequest("users/showprofile","GET",authState.accessToken);
-                if(!res) throw new String('Greška pri dohvatanju profila');
+        const data = await res;
 
-                const data= await res;
-
-                setFormData({
-                    "idUser": data.idUser || '',
-                    "username": data.username || '',
-                    "email": data.email || '',
-                    "oldPassword": '',
-                    "password": '',
-                    "displayName" :data.displayName || '',
-                    "desc": data.desc || '',
-                    "imagePath": data.imagePath || '',
-                });
-            }catch(err){
-                console.error(err);
-            }
-        };
-
-        if(authState?.accessToken) fetchProfile();
-    },[authState]);
-
-
-    const handleChange=(e) =>{
-        setFormData((prev)=>({
-            ...prev,
-            [e.target.name]:e.target.value,
-        }));
+        setFormData({
+          idUser: data.idUser || "",
+          username: data.username || "",
+          email: data.email || "",
+          oldPassword: "",
+          password: "",
+          displayName: data.displayName || "",
+          desc: data.desc || "",
+          imagePath: data.imagePath || "",
+        });
+      } catch (err) {
+        console.error(err);
+      }
     };
 
-    const handleSubmit=async (e)=>{
-        e.preventDefault();
+    if (authState?.accessToken) fetchProfile();
+  }, [authState]);
 
-           // Prvo uploaduj sliku ako postoji
-        if (profileImage) {
-            const success = await handleImageUpload();
-          if (!success) return; // prekini ako upload nije uspio
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Prvo uploaduj sliku ako postoji
+    if (profileImage) {
+      const success = await handleImageUpload();
+      if (!success) return; // prekini ako upload nije uspio
+    }
+
+    try {
+      const res = apiRequest(
+        "users/updateprofile",
+        "POST",
+        authState.accessToken,
+        formData
+      );
+      const result = await res;
+
+      if (result === "missingOldPasswordError") {
+        throw new String("Niste unjeli staru lozinku");
+      }
+
+      if (result === "invalidOldPassword") {
+        throw new String("Stara lozinka nije tačna.");
+      }
+
+      if (!res && result === "success") {
+        throw new String("Greška prilikom ažuriranja profila");
+      } else {
+        await notification.fire({
+          title: "Uspješno!",
+          text: "Profil je ažuriran.",
+          icon: "success",
+          confirmButtonText: "OK",
+        });
+        navigate("/profilePage");
+      }
+    } catch (err) {
+      await notification.fire({
+        title: "Greška!",
+        text: err || "Nepoznata greška.",
+        icon: "error",
+        confirmButtonText: "U redu",
+      });
+    }
+  };
+
+  const handleImageUpload = async () => {
+    if (!profileImage || !formData.idUser) return;
+
+    const formDataImg = new FormData();
+    formDataImg.append("file", profileImage);
+    formDataImg.append("idUser", formData.idUser);
+    try {
+      const res = await apiRequest(
+        "images/uploaduserimage",
+        "POST",
+        authState.accessToken,
+        formDataImg
+      );
+      if (!res) {
+        throw new String("Greška pri uploadu slike.");
+      }
+
+      formData.imagePath = await res;
+
+      setFormData((prev) => ({
+        ...prev,
+        imagePath: formData.imagePath,
+      }));
+      return true;
+    } catch (err) {
+      console.error("Upload slike nije uspio:", err);
+      await notification.fire({
+        title: "Greška!",
+        text: err || "Greška pri slanju slike.",
+        icon: "error",
+        confirmButtonText: "U redu",
+      });
+      return false;
+    }
+  };
+  const handleDeleteClick = () => {
+    setShowDeleteDialog(true);
+  };
+  const logout = () => {
+    authDispatch({ type: "logout" });
+  };
+
+  const handleConfirmDelete = (password) => {
+    const formData = new FormData();
+    formData.append("password", password);
+    apiRequest("users/removeuser", "POST", authState.accessToken, formData)
+      .then((res) => {
+        if (res == "success") {
+          logout();
+          navigate("/home");
+        } else if (res == "wrongPasswordError") {
+          alert("Pogrešna lozinka");
+        } else if (res == "hasActionsError") {
+          alert("Korisnik je vlasnik akcija, Morate ih prvo obrisati!");
         }
-        
-        try{
-            const res = apiRequest("users/updateprofile","POST",authState.accessToken,formData);
-            const result = await res;
-              
-        
-            if (result === "missingOldPasswordError" ) {
-               throw new String("Niste unjeli staru lozinku");
-            }
+      })
+      .catch(() => {
+        alert("Something went wrong.");
+      })
+      .finally(() => {
+        setShowDeleteDialog(false);
+      });
+  };
 
-            if(result ==="invalidOldPassword"){
-              throw new String("Stara lozinka nije tačna.");
-            }
-
-            if (!res && result==="success") {
-             throw new String("Greška prilikom ažuriranja profila");
-            }else{
-               await notification.fire({
-                        title: 'Uspješno!',
-                        text: 'Profil je ažuriran.',
-                        icon: 'success',
-                        confirmButtonText: 'OK',
-                    });
-               navigate('/profilePage')
-            }
-
-        }catch(err){
-                await notification.fire({
-                       title: 'Greška!',
-                       text: err || 'Nepoznata greška.',
-                       icon: 'error',
-                       confirmButtonText: 'U redu',
-                    });
-        }
-    };
-
-
-    const handleImageUpload = async () => {
-         if (!profileImage || !formData.idUser) return;
-
-          const formDataImg = new FormData();
-          formDataImg.append("file", profileImage);
-          formDataImg.append("idUser",formData.idUser)
-        try {
-             const res = await apiRequest("images/uploaduserimage","POST",authState.accessToken,formDataImg);
-            if (!res) {
-              throw new String("Greška pri uploadu slike.");
-            }  
-
-          formData.imagePath = await res; 
-    
-          setFormData((prev) => ({
-              ...prev,
-              imagePath: formData.imagePath,
-            }));
-              return true;
-          } 
-           catch (err) {
-                console.error("Upload slike nije uspio:", err);
-                   await notification.fire({
-                         title: 'Greška!',
-                         text: err || 'Greška pri slanju slike.',
-                         icon: 'error',
-                        confirmButtonText: 'U redu',
-                      });
-           return false;
-          }
-        };
-        const handleDeleteClick = () => {
-              setShowDeleteDialog(true);
-        };
-         const logout = () => {
-          authDispatch({ type: "logout" });
-        };
-
-        const handleConfirmDelete = (password) => {
-          const formData = new FormData();
-          formData.append("password", password);
-          apiRequest('users/removeuser', 'POST', authState.accessToken, formData)
-              .then(res => {
-                if (res=="success") {
-                  logout()
-                  navigate('/home');
-                } else if (res == "wrongPasswordError"){
-                    alert('Pogrešna lozinka');
-                } else if (res == "hasActionsError"){
-                    alert('Korisnik je vlasnik akcija, Morate ih prvo obrisati!');
-                }
-              })
-              .catch(() => {
-                alert('Something went wrong.');
-              })
-              .finally(() => {
-                setShowDeleteDialog(false);
-              });
-        };
-
-return (
+  return (
     <div className="min-h-screen bg-gray-100 flex flex-col justify-between">
       <NavigationBar />
       <div className="flex-grow flex justify-center items-center px-4 py-12">
         <div className="bg-white p-8 rounded shadow max-w-md w-full">
-          <h1 className="text-2xl font-bold text-center mb-6 text-gray-800">Uredi profil</h1>
+          <h1 className="text-2xl font-bold text-center mb-6 text-gray-800">
+            Uredi profil
+          </h1>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm text-gray-700">Display name</label>
+              <label className="block text-sm text-gray-700">
+                Display name
+              </label>
               <input
                 type="text"
                 name="displayName"
@@ -201,46 +213,50 @@ return (
             </div>
 
             <div>
-             <label className="block text-sm text-gray-700">Profilna slika</label>
-               <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setProfileImage(e.target.files[0])}
-                  className="w-full border rounded px-3 py-2"
-                />
-                {profileImage && (
-                  <img
+              <label className="block text-sm text-gray-700">
+                Profilna slika
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setProfileImage(e.target.files[0])}
+                className="w-full border rounded px-3 py-2"
+              />
+              {profileImage && (
+                <img
                   src={URL.createObjectURL(profileImage)}
                   alt="Preview"
                   className="mt-2 max-h-40 rounded"
                 />
-               )}
+              )}
             </div>
 
-
-            <div className='relative'>
-              <label className="block text-sm text-gray-700">Stara lozinka</label>
+            <div className="relative">
+              <label className="block text-sm text-gray-700">
+                Stara lozinka
+              </label>
               <input
-                type={showOldPassword ?'text' : 'password'}
+                type={showOldPassword ? "text" : "password"}
                 name="oldPassword"
                 value={formData.oldPassword}
                 onChange={handleChange}
                 className="w-full border rounded px-3 py-2"
               />
-               <button
+              <button
                 type="button"
                 onClick={() => setShowOldPassword(!showOldPassword)}
                 className="absolute right-2 top-[30px] text-gray-500 hover:text-gray-800"
               >
-                 {showOldPassword ? '🔓' : '🔐'}
-               </button>
+                {showOldPassword ? "🔓" : "🔐"}
+              </button>
             </div>
 
-
-            <div className='relative'>
-              <label className="block text-sm text-gray-700">Nova lozinka</label>
+            <div className="relative">
+              <label className="block text-sm text-gray-700">
+                Nova lozinka
+              </label>
               <input
-                type={showNewPassword ? 'text' : "password"}
+                type={showNewPassword ? "text" : "password"}
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
@@ -251,46 +267,50 @@ return (
                 onClick={() => setShowNewPassword(!showNewPassword)}
                 className="absolute right-2 top-[30px] text-gray-500 hover:text-gray-800"
               >
-                {showNewPassword ? '🔓' : '🔐'}
-               </button>
+                {showNewPassword ? "🔓" : "🔐"}
+              </button>
             </div>
 
             <div>
-              <label className="block text-sm text-gray-700">Potvrdi novu lozinku</label>
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => {
-                            const value = e.target.value;
-                            setConfirmPassword(value);
+              <label className="block text-sm text-gray-700">
+                Potvrdi novu lozinku
+              </label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setConfirmPassword(value);
 
-                           if (value === formData.password) {
-                                    setPasswordError('');
-                                   // Ako su iste, proslijedi validnu lozinku
-                                    handleChange({ target: { name: 'password', value } });
-                            } else {
-                                     setPasswordError('Lozinke se ne poklapaju');
-                                   }
-                          }}
-                  className="w-full border rounded px-3 py-2"
+                  if (value === formData.password) {
+                    setPasswordError("");
+                    // Ako su iste, proslijedi validnu lozinku
+                    handleChange({ target: { name: "password", value } });
+                  } else {
+                    setPasswordError("Lozinke se ne poklapaju");
+                  }
+                }}
+                className="w-full border rounded px-3 py-2"
               />
-                 {passwordError && (
-                    <p className="text-red-600 text-sm mt-1">{passwordError}</p>
-                  )}
-              </div>
+              {passwordError && (
+                <p className="text-red-600 text-sm mt-1">{passwordError}</p>
+              )}
+            </div>
             <button
               type="submit"
-               disabled={formData.password && formData.password !== confirmPassword}
-               className={`w-full py-2 rounded transition font-semibold ${
-                  formData.password && formData.password !== confirmPassword
-                   ? 'bg-gray-400 cursor-not-allowed'
-                   : 'bg-blue-600 text-white hover:bg-blue-700'
-                }`}
+              disabled={
+                formData.password && formData.password !== confirmPassword
+              }
+              className={`w-full py-2 rounded transition font-semibold ${
+                formData.password && formData.password !== confirmPassword
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-blue-600 text-white hover:bg-blue-700"
+              }`}
             >
               Sačuvaj Promjene
             </button>
           </form>
-          <div className='pt-2'>
+          <div className="pt-2">
             <button
               onClick={handleDeleteClick}
               className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded w-full"
@@ -300,13 +320,13 @@ return (
           </div>
         </div>
       </div>
-    <DeleteDialog
-      show={showDeleteDialog}
-      onClose={() => setShowDeleteDialog(false)}
-      onConfirm={handleConfirmDelete}
-    />
-    <InfoFooter />
-  </div>
+      <DeleteDialog
+        show={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        onConfirm={handleConfirmDelete}
+      />
+      <InfoFooter />
+    </div>
   );
 }
 export default EditProfilePage;

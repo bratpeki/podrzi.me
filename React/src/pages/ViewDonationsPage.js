@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 
 // U ProfilePage šaljemo "state"
 // Ovde ga dobavljamo sa "location.state"
-import { useLocation } from 'react-router-dom';
+import { useLocation } from "react-router-dom";
 
 import { AuthStateContext } from "../components/UseAuthState";
 import NavigationBar from "../components/NavigationHeader";
@@ -11,7 +11,6 @@ import { apiRequest } from "../utility/FetchAPI";
 import { Link } from "react-router-dom";
 
 function ViewDonationsPage() {
-
   const location = useLocation();
   const { idUser } = location.state || {};
 
@@ -20,50 +19,52 @@ function ViewDonationsPage() {
 
   const { authState } = useContext(AuthStateContext);
 
-	useEffect( () => {
+  useEffect(() => {
+    const fetchDons = async () => {
+      try {
+        // TODO: Deprekacija, valjda mijenjamo await fetch sa apiRequest
+        const res = await apiRequest(
+          "donations/getdonationsuser?idUser=" + idUser,
+          "GET",
+          authState.accessToken
+        );
+        // const res = await fetch("http://podrzime.ddns.net:8080/api/donations/getdonationsuser?idUser=48", {
+        const responseBodyText = await res;
 
-		const fetchDons = async () => {
-		  try {
-			  // TODO: Deprekacija, valjda mijenjamo await fetch sa apiRequest
-			  const res = await apiRequest("donations/getdonationsuser?idUser=" + idUser,"GET",authState.accessToken);
-			  // const res = await fetch("http://podrzime.ddns.net:8080/api/donations/getdonationsuser?idUser=48", {
-			const responseBodyText = await res;
+        if (responseBodyText === "wrongUserError") {
+          setResponseMessage("Korisnik nije prepoznat!");
+          throw new Error("Korisnik nije prepoznat!");
+        }
 
-			if (responseBodyText === "wrongUserError") {
-				setResponseMessage("Korisnik nije prepoznat!");
-				throw new Error("Korisnik nije prepoznat!");
-			}
+        const data = responseBodyText;
+        // Za potrebe testiranja mnogo elemenata
+        // Ispašće upozorenje za mnogo identičnih key-eva, ali to nam je nebitno
+        // for ( let i = 0; i < 20; i++ ) data.push(data[0]);
 
-			const data = responseBodyText;
-			// Za potrebe testiranja mnogo elemenata
-			// Ispašće upozorenje za mnogo identičnih key-eva, ali to nam je nebitno
-			// for ( let i = 0; i < 20; i++ ) data.push(data[0]);
+        for (let i = 0; i < data.length; i++) {
+          let resImg = await apiRequest(
+            "images/getprimaryimage?idAction=" + data[i].idAction,
+            "GET",
+            authState.accessToken
+          );
+          let imgResponse = await resImg;
+          data[i].img = imgResponse;
+        }
 
-			for (let i = 0; i < data.length; i++) {
-				let resImg = await apiRequest("images/getprimaryimage?idAction=" + data[i].idAction,"GET",authState.accessToken);
-				let imgResponse = await resImg;
-				data[i].img = imgResponse;
-			}
-
-			setDons(data);
-
-
-		  } catch (err) {
-				console.error('Greška pri učitavanju donacija:', err.message);
-				setResponseMessage('Greška pri učitavanju donacija: ' + err.message);
-		  }
-
-		};
+        setDons(data);
+      } catch (err) {
+        console.error("Greška pri učitavanju donacija:", err.message);
+        setResponseMessage("Greška pri učitavanju donacija: " + err.message);
+      }
+    };
 
     if (authState?.accessToken) fetchDons();
-	}, [authState, idUser]);
+  }, [authState, idUser]);
 
   return (
-
     <div className="min-h-screen flex flex-col bg-gray-100">
-
       {/* Navigation Bar */}
-    <NavigationBar showSearch={false} />
+      <NavigationBar showSearch={false} />
 
       <header className="text-center mt-12 mb-6 pt-10">
         <h1 className="text-5xl font-bold text-gray-800">
@@ -71,47 +72,52 @@ function ViewDonationsPage() {
         </h1>
       </header>
 
-        {responseMessage && (
-          <p className="text-center text-sm text-red-600 mb-2">
-            {responseMessage}
-          </p>
-        )}
+      {responseMessage && (
+        <p className="text-center text-sm text-red-600 mb-2">
+          {responseMessage}
+        </p>
+      )}
 
-		{ /* Margina se stavlja na bottom da blok ne upada u footer */ }
-		<div className="mb-14">
-
-		{
-			dons.map(
-				donation =>
-				<div key={donation.idDonation} className="bg-white rounded-lg shadow-md p-6 mb-4 border border-gray-200 w-9/12 min-w-max mx-auto flex justify-between items-center">
-					<div className="w-2/3">
-						<h3 className="text-xl font-semibold text-gray-800 mb-2">
-							Akcija: {donation.actionName}
-						</h3>
-						<p className="text-gray-700 mb-1">
-							<span className="font-medium">Iznos donacije:</span> {donation.amount} KM
-						</p>
-						<p className="text-gray-600 text-sm">
-							<span className="font-medium">Vrijeme donacije:</span>{" "}
-							{new Date(donation.donationTime).toLocaleString()}
-						</p>
-					</div>
-					<Link to={`/actionView/${donation.idAction}`} state={ {donation} } className="hover:underline">
-						<img src={donation.img} alt={`Image for ${donation.actionName}`} className="w-1/3 h-48 object-cover rounded-md ml-4"/> {/* Image explicitly takes 1/3 and has left margin */}
-					</Link>
-				</div>
-			)
-		}
-
-		</div>
+      {/* Margina se stavlja na bottom da blok ne upada u footer */}
+      <div className="mb-14 w-1/2 mx-auto">
+        {dons.map((donation) => (
+          <Link
+            to={`/actionView/${donation.idAction}`}
+            state={{ id: donation.idAction }}
+            className="w-full"
+          >
+            <div
+              key={donation.idDonation}
+              className="bg-white rounded-lg shadow-md p-6 mb-4 border w-full border-gray-200 flex justify-between items-center"
+            >
+              <div className="w-2/3">
+                <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                  Akcija: {donation.actionName}
+                </h3>
+                <p className="text-gray-700 mb-1">
+                  <span className="font-medium">Iznos donacije:</span>{" "}
+                  {donation.amount} KM
+                </p>
+                <p className="text-gray-600 text-sm">
+                  <span className="font-medium">Vrijeme donacije:</span>{" "}
+                  {new Date(donation.donationTime).toLocaleString()}
+                </p>
+              </div>
+              <img
+                src={donation.img}
+                alt={`Image for ${donation.actionName}`}
+                className="w-full h-48 object-fill rounded-md ml-4"
+              />{" "}
+              {/* Image explicitly takes 1/3 and has left margin */}
+            </div>
+          </Link>
+        ))}
+      </div>
 
       {/* Footer */}
       <InfoFooter />
-
     </div>
-
   );
-
 }
 
 export default ViewDonationsPage;

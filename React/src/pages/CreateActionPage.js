@@ -19,19 +19,24 @@ function CreateActionPage() {
 
   const handleCreate = async () => {
     try {
-      const response = await apiRequest("actions/addaction","POST",authState.accessToken,{
-          "name": name,
-          "desc": description,
-          "goal": goal,
-      });
+      const response = await apiRequest(
+        "actions/addaction",
+        "POST",
+        authState.accessToken,
+        {
+          name: name,
+          desc: description,
+          goal: goal,
+        }
+      );
       const text = await response;
       if (text == "nameTakenError") {
         setResponseMessage("Ime akcije zauzeto");
       } else {
         setResponseMessage("Uploadujemo!");
-          for (const file of imageFiles){
-            uploadImage(parseInt(text),file);
-          }
+        for (const file of imageFiles) {
+          uploadImage(parseInt(text), file);
+        }
       }
     } catch (error) {
       setResponseMessage("greška!");
@@ -39,38 +44,43 @@ function CreateActionPage() {
     }
   };
 
-const uploadImage = async (idAction, file) => {
-   const formData = new FormData();
-   formData.append('idAction', idAction);
-   formData.append('file', file);
-   console.log(file)
-   console.log(primaryImage)
-   if(file == primaryImage){
-     formData.append('isPrimary', true)
-   }else{
-     formData.append('isPrimary', false)
-   }
+  const uploadImage = async (idAction, file) => {
+    const formData = new FormData();
+    formData.append("idAction", idAction);
+    formData.append("file", file);
+    console.log(file);
+    console.log(primaryImage);
+    if (file == primaryImage) {
+      formData.append("isPrimary", true);
+    } else {
+      formData.append("isPrimary", false);
+    }
     try {
-      const response = await apiRequest("images/uploadactionimage","POST",authState.accessToken,formData)
+      const response = await apiRequest(
+        "images/uploadactionimage",
+        "POST",
+        authState.accessToken,
+        formData
+      );
       if (response) {
-        setResponseMessage('Akcija i slika su uspešno sačuvane!');
+        setResponseMessage("Akcija i slika su uspešno sačuvane!");
       } else {
-        setResponseMessage('Akcija je sačuvana, ali upload slike nije uspeo.');
+        setResponseMessage("Akcija je sačuvana, ali upload slike nije uspeo.");
       }
     } catch (error) {
-      console.error('Upload error:', error);
-      setResponseMessage('Došlo je do greške pri uploadu slike.');
+      console.error("Upload error:", error);
+      setResponseMessage("Došlo je do greške pri uploadu slike.");
     }
   };
 
   const handleImageChange = (e) => {
-    const newFiles = Array.from(e.target.files).filter(file =>
-      ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)
+    const newFiles = Array.from(e.target.files).filter((file) =>
+      ["image/jpeg", "image/png", "image/jpg"].includes(file.type)
     );
 
-    const newPreviews = newFiles.map(file => URL.createObjectURL(file));
+    const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
 
-    setImageFiles(prevFiles => {
+    setImageFiles((prevFiles) => {
       const combined = [...prevFiles, ...newFiles];
       if (!primaryImage && newFiles.length > 0) {
         setPrimaryImage(newFiles[0]);
@@ -78,19 +88,19 @@ const uploadImage = async (idAction, file) => {
       return combined;
     });
 
-    setImagePreviews(prevPreviews => [...prevPreviews, ...newPreviews]);
+    setImagePreviews((prevPreviews) => [...prevPreviews, ...newPreviews]);
   };
 
   const handleDrop = (e) => {
     e.preventDefault();
 
-    const newFiles = Array.from(e.dataTransfer.files).filter(file =>
-      ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)
+    const newFiles = Array.from(e.dataTransfer.files).filter((file) =>
+      ["image/jpeg", "image/png", "image/jpg"].includes(file.type)
     );
 
-    const newPreviews = newFiles.map(file => URL.createObjectURL(file));
+    const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
 
-    setImageFiles(prevFiles => {
+    setImageFiles((prevFiles) => {
       const combined = [...prevFiles, ...newFiles];
       if (!primaryImage && newFiles.length > 0) {
         setPrimaryImage(newFiles[0]);
@@ -98,7 +108,7 @@ const uploadImage = async (idAction, file) => {
       return combined;
     });
 
-    setImagePreviews(prevPreviews => [...prevPreviews, ...newPreviews]);
+    setImagePreviews((prevPreviews) => [...prevPreviews, ...newPreviews]);
   };
 
   const handleDragOver = (e) => {
@@ -106,21 +116,21 @@ const uploadImage = async (idAction, file) => {
   };
 
   const removeImage = (fileToRemove) => {
-    setImageFiles(prev => prev.filter(file => file !== fileToRemove));
+    setImageFiles((prev) => prev.filter((file) => file !== fileToRemove));
 
-    setImagePreviews(prev => {
+    setImagePreviews((prev) => {
       const index = imageFiles.indexOf(fileToRemove);
       if (index !== -1) URL.revokeObjectURL(prev[index]);
       return prev.filter((_, i) => i !== index);
     });
 
-    setPrimaryImage(prev => (prev === fileToRemove ? null : prev));
+    setPrimaryImage((prev) => (prev === fileToRemove ? null : prev));
   };
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800">
       {/* Top navigation bar */}
-      <NavigationBar showSearch={false} showCreate={false}/>
+      <NavigationBar showSearch={false} showCreate={false} />
 
       {/* Page content */}
       <div className="max-w-5xl mx-auto py-20 px-6 space-y-16">
@@ -268,7 +278,10 @@ const uploadImage = async (idAction, file) => {
               onDrop={handleDrop}
               onDragOver={handleDragOver}
             >
-              <p className="mb-2">Izaberite slike ili ih prevucite u prozor.  Kliknite na sliku koju želite da bude primarna.</p>
+              <p className="mb-2">
+                Izaberite slike ili ih prevucite u prozor. Kliknite na sliku
+                koju želite da bude primarna.
+              </p>
               <input
                 type="file"
                 accept=".jpg,.jpeg,.png"
@@ -278,33 +291,37 @@ const uploadImage = async (idAction, file) => {
               />
 
               <div className="flex flex-wrap justify-center gap-4">
-            {imagePreviews.map((src, i) => {
-              const file = imageFiles[i];
-              const isPrimary = file === primaryImage;
+                {imagePreviews.map((src, i) => {
+                  const file = imageFiles[i];
+                  const isPrimary = file === primaryImage;
 
-              return (
-                <div key={i} className="relative inline-block">
-                  <img
-                    src={src}
-                    alt={`Preview ${i + 1}`}
-                    onClick={() => setPrimaryImage(file)}
-                    className={`cursor-pointer max-h-40 object-contain border rounded transition duration-150
-                      ${isPrimary ? 'ring-4 ring-blue-500 border-blue-400' : 'border-gray-300'}`}
-                  />
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeImage(file);
-                    }}
-                    className="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full px-1 hover:bg-red-700"
-                    title="Remove"
-                  >
-                    ×
-                  </button>
-                </div>
-              );
-            })}
-            </div>
+                  return (
+                    <div key={i} className="relative inline-block">
+                      <img
+                        src={src}
+                        alt={`Preview ${i + 1}`}
+                        onClick={() => setPrimaryImage(file)}
+                        className={`cursor-pointer max-h-40 object-contain border rounded transition duration-150
+                      ${
+                        isPrimary
+                          ? "ring-4 ring-blue-500 border-blue-400"
+                          : "border-gray-300"
+                      }`}
+                      />
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeImage(file);
+                        }}
+                        className="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full px-1 hover:bg-red-700"
+                        title="Remove"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
               <p className="text-xs text-gray-500 mt-2">
                 Max 5MB each. Only JPG, JPEG, PNG.
               </p>
@@ -338,11 +355,11 @@ const uploadImage = async (idAction, file) => {
         </section>
         <section className="pb-8">
           {responseMessage && (
-          <p className="text-center text-xl  text-red-600 mb-2">
-            {responseMessage}
-          </p>
-        )}
-         <button
+            <p className="text-center text-xl  text-red-600 mb-2">
+              {responseMessage}
+            </p>
+          )}
+          <button
             onClick={handleCreate}
             className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-4 px-10 rounded float-right"
           >

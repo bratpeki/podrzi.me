@@ -2,8 +2,8 @@ import { useEffect, createContext, useReducer } from "react";
 
 const initialAuthStateContext = {
   initialized: false, // Postaje true kada se može raditi sa tokenom (kad je inicijalizovan)
-  loggedIn: false,    // Ako korisnik nije gost
-  accessToken: null   // Šalje se sa svakim zahtjevom u fetch-u ("token": authState.accessToken)
+  loggedIn: false, // Ako korisnik nije gost
+  accessToken: null, // Šalje se sa svakim zahtjevom u fetch-u ("token": authState.accessToken)
 };
 
 const localStorageKey = "accessToken";
@@ -14,9 +14,7 @@ function authStateReducer(state, action) {
 
   switch (action.type) {
     case "authCheck": {
-      const localStorageAccessToken = localStorage.getItem(
-        localStorageKey
-      );
+      const localStorageAccessToken = localStorage.getItem(localStorageKey);
 
       if (!localStorageAccessToken)
         return {

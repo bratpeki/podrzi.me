@@ -28,7 +28,7 @@ function ActionViewPage() {
 
   // Funkcija za dohvaćanje detalja akcije (uključujući komentare i slike)
   const fetchActionData = async () => {
-    if (!id || !authState.accessToken) {
+    if (!id) {
       setLoadingAction(false);
       return;
     }
@@ -61,7 +61,6 @@ function ActionViewPage() {
         authState.accessToken
       );
       setImages(imageData);
-
     } catch (err) {
       console.error("Failed to fetch action details or images:", err);
       setCurrentAction(null);
@@ -76,7 +75,7 @@ function ActionViewPage() {
 
   useEffect(() => {
     fetchActionData(); // Sada fetchActionData dohvaća i komentare
-  }, [id, authState.accessToken]);
+  }, [id]);
 
   const handleDonationSuccess = () => {
     fetchActionData();
@@ -104,15 +103,21 @@ function ActionViewPage() {
         idAction: currentAction.idAction,
       };
 
-      await apiRequest("comments/add", "POST", authState.accessToken, commentData);
+      await apiRequest(
+        "comments/add",
+        "POST",
+        authState.accessToken,
+        commentData
+      );
 
       setNewCommentText("");
       setCommentError("");
       fetchActionData(); // Ponovo dohvati SVE podatke o akciji (uključujući ažurirane komentare)
-
     } catch (err) {
       console.error("Greška pri slanju komentara:", err);
-      setCommentError(err.message || "Došlo je do greške prilikom slanja komentara.");
+      setCommentError(
+        err.message || "Došlo je do greške prilikom slanja komentara."
+      );
     } finally {
       setSubmittingComment(false);
     }
@@ -148,7 +153,10 @@ function ActionViewPage() {
   ).toFixed(0);
 
   const showCollaborations = () => {
-    if (!currentAction.actionOwners || currentAction.actionOwners.length === 0) {
+    if (
+      !currentAction.actionOwners ||
+      currentAction.actionOwners.length === 0
+    ) {
       return null;
     }
     const owner = currentAction.actionOwners.filter((o) => !o.isCollab);
@@ -264,10 +272,15 @@ function ActionViewPage() {
             {comments.length > 0 ? (
               // mapiranje komentara
               comments.map((comment) => (
-                <div key={comment.idComment} className="border-b pb-3 last:border-b-0">
+                <div
+                  key={comment.idComment}
+                  className="border-b pb-3 last:border-b-0"
+                >
                   <div className="flex items-center mb-1">
                     <img
-                      src={comment.imagePath || "https://via.placeholder.com/30"}
+                      src={
+                        comment.imagePath || "https://via.placeholder.com/30"
+                      }
                       alt={comment.displayName || "Gost"}
                       className="w-7 h-7 rounded-full object-cover mr-2"
                     />
@@ -282,13 +295,18 @@ function ActionViewPage() {
                 </div>
               ))
             ) : (
-              <p className="text-gray-500 text-center">Nema komentara. Budite prvi koji će ostaviti komentar!</p>
+              <p className="text-gray-500 text-center">
+                Nema komentara. Budite prvi koji će ostaviti komentar!
+              </p>
             )}
           </div>
 
           <form onSubmit={handleCommentSubmit} className="mt-4">
             {commentError && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+              <div
+                className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+                role="alert"
+              >
                 <span className="block sm:inline">{commentError}</span>
               </div>
             )}
@@ -308,7 +326,9 @@ function ActionViewPage() {
               {submittingComment ? "Slanje..." : "Pošalji Komentar"}
             </button>
             {!authState.accessToken && (
-              <p className="text-sm text-red-500 mt-2">Morate biti prijavljeni da biste komentarisali.</p>
+              <p className="text-sm text-red-500 mt-2">
+                Morate biti prijavljeni da biste komentarisali.
+              </p>
             )}
           </form>
         </div>

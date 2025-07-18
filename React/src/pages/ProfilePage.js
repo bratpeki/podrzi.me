@@ -1,41 +1,44 @@
-import { useContext, useEffect, useState } from 'react';
-import NavigationBar from '../components/NavigationHeader';
-import InfoFooter from '../components/InfoFooter';
-import { AuthStateContext } from '../components/UseAuthState';
-import { useNavigate } from 'react-router-dom';
-import { apiRequest } from '../utility/FetchAPI';
+import { useContext, useEffect, useState } from "react";
+import NavigationBar from "../components/NavigationHeader";
+import InfoFooter from "../components/InfoFooter";
+import { AuthStateContext } from "../components/UseAuthState";
+import { useNavigate } from "react-router-dom";
+import { apiRequest } from "../utility/FetchAPI";
 
 function ProfilePage() {
   const { authState } = useContext(AuthStateContext);
   const [user, setUser] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
-  const navigate=useNavigate();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await apiRequest("users/showprofile","GET",authState.accessToken);
-        if (!res)
-          throw new Error('Neuspješan dohvatanje profila');
+        const res = await apiRequest(
+          "users/showprofile",
+          "GET",
+          authState.accessToken
+        );
+        if (!res) throw new Error("Neuspješan dohvatanje profila");
 
         const data = await res;
 
         setUser({
-          "imagePath": data.imagePath,
-          "username": data.username,
-          "displayName": data.displayName,
-          "email": data.email,
-          "desc": data.desc,
-			    "idUser": data.idUser
+          imagePath: data.imagePath,
+          username: data.username,
+          displayName: data.displayName,
+          email: data.email,
+          desc: data.desc,
+          idUser: data.idUser,
         });
       } catch (err) {
-        console.error('Greška pri učitavanju profila:', err);
+        console.error("Greška pri učitavanju profila:", err);
         setTimeout(() => setRetryCount((prev) => prev + 1), 2000);
       }
     };
 
     if (authState?.accessToken) fetchProfile();
-  }, [authState,retryCount]);
+  }, [authState, retryCount]);
 
   if (!user) {
     return (
@@ -49,14 +52,15 @@ function ProfilePage() {
     );
   }
 
-
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col justify-between">
       <NavigationBar />
 
       <div className="flex-grow flex items-center justify-center px-4 py-12">
         <div className="bg-white rounded-lg shadow-md max-w-2xl w-full p-8">
-          <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Moj profil</h1>
+          <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
+            Moj profil
+          </h1>
 
           <div className="flex flex-col items-center space-y-4">
             <img
@@ -66,36 +70,39 @@ function ProfilePage() {
             />
 
             <div className="text-center space-y-1">
-              <h2 className="text-xl font-semibold text-gray-800">{user.displayName}</h2>
+              <h2 className="text-xl font-semibold text-gray-800">
+                {user.displayName}
+              </h2>
               <p className="text-gray-500">@{user.username}</p>
               <p className="text-gray-600 text-sm">{user.email}</p>
             </div>
 
             <div className="mt-4 w-full">
-              <h3 className="text-lg font-medium text-gray-700 mb-2">Opis profila</h3>
+              <h3 className="text-lg font-medium text-gray-700 mb-2">
+                Opis profila
+              </h3>
               <p className="text-gray-700 bg-gray-100 rounded p-4">
                 {user.desc}
               </p>
             </div>
 
             <div className="mt-6 w-full flex justify-between">
-
               <button
-				  onClick={ () => navigate('/viewDonations', {state:{idUser:user.idUser}}) }
-                 className="bg-blue-600 text-white px-4 py-2 mr-4 rounded hover:bg-blue-700 transition"
-                >
-                 Pregled donacija
+                onClick={() =>
+                  navigate("/viewDonations", { state: { idUser: user.idUser } })
+                }
+                className="bg-blue-600 text-white px-4 py-2 mr-4 rounded hover:bg-blue-700 transition"
+              >
+                Pregled donacija
               </button>
 
               <button
-                 onClick={() => navigate('/EditProfilePage')}
-                 className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-                >
-                 Uredi profil
+                onClick={() => navigate("/EditProfilePage")}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+              >
+                Uredi profil
               </button>
-
             </div>
-
           </div>
         </div>
       </div>

@@ -15,19 +15,24 @@ function LoginPage() {
 
   const handleLogin = async () => {
     try {
-      const response = await apiRequest("users/userauth", "POST", authState.accessToken, {
-        "username" : username,
-        "password" : password,
-      });
+      const response = await apiRequest(
+        "users/userauth",
+        "POST",
+        authState.accessToken,
+        {
+          username: username,
+          password: password,
+        }
+      );
 
       const text = await response;
       if (text == "missingInfoError") {
         setResponseMessage("Neuspjesna prijava! Provjerite Vase podatke!");
-      }else if(text == "usernameError"){
+      } else if (text == "usernameError") {
         setResponseMessage("Korisničko ime ne postoji!");
-      }else if (text == "passwordError"){
+      } else if (text == "passwordError") {
         setResponseMessage("Lozinka je pogrešna!");
-      }else {
+      } else {
         authDispatch({
           type: "login",
           payload: {
@@ -43,9 +48,14 @@ function LoginPage() {
   };
 
   return (
-
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-start pt-10">
-      <NavigationBar showSearch = {false} showCreate={false} showProfile={false} showNotification={false} showLogout={false}/>
+      <NavigationBar
+        showSearch={false}
+        showCreate={false}
+        showProfile={false}
+        showNotification={false}
+        showLogout={false}
+      />
       <h1 className="text-4xl font-bold text-cyan-600 mb-8">PODRZI.ME</h1>
 
       <div className="w-full max-w-md bg-white p-8 shadow-md rounded border">

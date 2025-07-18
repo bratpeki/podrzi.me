@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 function CollaboratorSearch({ displayNames }) {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [selected, setSelected] = useState([]);
 
@@ -10,7 +10,7 @@ function CollaboratorSearch({ displayNames }) {
     setQuery(input);
 
     // Filter suggestions based on input
-    const matches = displayNames.filter(name =>
+    const matches = displayNames.filter((name) =>
       name.toLowerCase().startsWith(input.toLowerCase())
     );
     setSuggestions(matches);
@@ -18,14 +18,14 @@ function CollaboratorSearch({ displayNames }) {
 
   const handleSelect = (name) => {
     if (!selected.includes(name)) {
-      setSelected(prev => [...prev, name]);
+      setSelected((prev) => [...prev, name]);
     }
-    setQuery('');
+    setQuery("");
     setSuggestions([]);
   };
 
   const handleRemove = (name) => {
-    setSelected(prev => prev.filter(n => n !== name));
+    setSelected((prev) => prev.filter((n) => n !== name));
   };
 
   return (

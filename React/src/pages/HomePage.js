@@ -6,22 +6,22 @@ import ActionCard from "../components/ActionCard";
 import { apiRequest } from "../utility/FetchAPI";
 
 function HomePage() {
-
   const [actions, setActions] = useState([]);
   const { authState } = useContext(AuthStateContext);
 
   // Razlog za upotrebu efekta je da se rendering desi bez da čeka inicijalizaciju tokena
   // https://react.dev/learn/synchronizing-with-effects
-  useEffect(() => {
-    if (!authState.initialized) return;
-    apiRequest("actions/getvisibleactions","GET",authState.accessToken)
-      .then((res) => res)
-      .then((data) => {
-        setActions(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching actions:", error);
-      });
+  useEffect(
+    () => {
+      if (!authState.initialized) return;
+      apiRequest("actions/getvisibleactions", "GET", authState.accessToken)
+        .then((res) => res)
+        .then((data) => {
+          setActions(data);
+        })
+        .catch((error) => {
+          console.error("Error fetching actions:", error);
+        });
     },
     // Ako se ijedan promjeni, useEffect se ponovo poziva
     [authState.initialized]
