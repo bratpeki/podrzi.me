@@ -19,12 +19,14 @@ public class NotificationAPI {
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
     private final ActionRepository actionRepository;
+    private final ActionOwnerRepository actionOwnerRepository;
 
-    public NotificationAPI(NotificationRepository notificationRepository, JWT jwt, UserRepository userRepository, ActionRepository actionRepository) {
+    public NotificationAPI(NotificationRepository notificationRepository, JWT jwt, UserRepository userRepository, ActionRepository actionRepository, ActionOwnerRepository actionOwnerRepository) {
         this.notificationRepository = notificationRepository;
         this.jwt = jwt;
         this.userRepository = userRepository;
         this.actionRepository = actionRepository;
+        this.actionOwnerRepository = actionOwnerRepository;
     }
 
     @PostMapping("/seen")
@@ -37,7 +39,7 @@ public class NotificationAPI {
     @GetMapping("/get")
     public ResponseEntity<?> getNotifications(@RequestHeader Map<String, String> token) {
         List<Notification> n = notificationRepository.findAllByUser_idUser(jwt.extractId(token.get("token")));
-        return ResponseEntity.ok(n.stream().map(a->new NotificationDTO(a.getUser().getIdUser(), a.getText(), a.getType(), a.getUser().getDisplayName(), a.getUser().getImagePath(), a.getIdNotification()))
+        return ResponseEntity.ok(n.stream().map(a->new NotificationDTO(a.getAction().getIdAction(), a.getText(), a.getType(), a.getAction().getName(), a.getAction().getPrimaryImage(), a.getIdNotification(), a.getUser().getIdUser()))
         );
     }
 
@@ -66,4 +68,26 @@ public class NotificationAPI {
 
         return ResponseEntity.ok("success");
     }
+
+    @PostMapping("/acceptcollab")
+    public ResponseEntity<?> acceptCollab(@RequestHeader Map<String, String> token, @RequestParam Integer idAction, @RequestParam Integer idNotification) {
+        User u = userRepository.findByidUser(jwt.extractId(token.get("token")));
+        Action a = actionRepository.findByidAction(idAction);
+        Notification n = notificationRepository.findByidNotification(idNotification);
+
+        if (!(n.getAction().getIdAction().equals(idAction) && n.getUser().getIdUser().equals(u.getIdUser())))
+            return ResponseEntity.ok("invalidActionError");
+        else {
+            ActionOwner ao = new ActionOwner();
+            ao.setIsCollab(true);
+            ao.setUser(u);
+            ao.setAction(a);
+            actionOwnerRepository.save(ao);
+            notificationRepository.delete(n);
+
+            return ResponseEntity.ok("success");
+        }
+    }
+
+    //@PostMapping("/denycollab")
 }
