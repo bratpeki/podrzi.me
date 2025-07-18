@@ -11,7 +11,14 @@ public class Refund {
     @ManyToOne
     @JoinColumn(name = "idDonation")
     private Donation donation;
+    private Boolean requestedRefund;
 
+    public Boolean getRequestedRefund() {
+        return requestedRefund;
+    }
+    public void setRequestedRefund(Boolean requestedRefund) {
+        this.requestedRefund = requestedRefund;
+    }
     public Integer getIdRefund() {
         return idRefund;
     }

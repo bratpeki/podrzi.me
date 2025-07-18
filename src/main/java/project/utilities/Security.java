@@ -38,7 +38,9 @@ public class Security {
 
             "/api/admins/adminauth",
 
-            "/uploads/**"
+            "/uploads/**",
+
+            "/api/reports/getall"
     };
 
     public static String[] UserMethods = {
@@ -63,9 +65,13 @@ public class Security {
             "/api/notification/send",
 
             "/api/reports/create",
+            "/api/reports/getallunhandled",
 
             "/api/comments/add",
-            "/api/comments/remove"
+            "/api/comments/remove",
+
+            "/api/refunds/request"
+
     };
 
     public static String[] AdminMethods = {
@@ -76,12 +82,12 @@ public class Security {
 
             "/api/notifications/sendall",
 
-            "/api/reports/getall",
+            //"/api/reports/getall",
             "/api/reports/handle",
 
             "/api/admins/addadmin",
 
-            "/api/refunds/getall"
+            "/api/reports/getallunhandled"
     };
 
     @Bean

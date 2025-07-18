@@ -3,6 +3,7 @@ package project.dtos;
 import java.time.LocalDateTime;
 
 public class CommentDTO {
+    private Integer idComment;
     private String text;
     private Integer idAction;
     private LocalDateTime created;
@@ -10,15 +11,22 @@ public class CommentDTO {
     private String displayName;
     private String imagePath;
 
-    public CommentDTO(String text, Integer idAction, LocalDateTime created, Integer idUser, String displayName, String imagePath) {
+    public CommentDTO(String text, Integer idAction, LocalDateTime created, Integer idUser, String displayName, String imagePath, Integer idComment) {
         this.text = text;
         this.idAction = idAction;
         this.created = created;
         this.idUser = idUser;
         this.displayName = displayName;
         this.imagePath = imagePath;
+        this.idComment = idComment;
     }
 
+    public Integer getIdComment() {
+        return idComment;
+    }
+    public void setIdComment(Integer idComment) {
+        this.idComment = idComment;
+    }
     public String getText() {
         return text;
     }

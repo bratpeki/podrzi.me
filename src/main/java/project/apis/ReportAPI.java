@@ -24,9 +24,14 @@ public class ReportAPI {
         this.reportRepository = reportRepository;
     }
 
+    @GetMapping("/getallunhandled")
+    public ResponseEntity<?> getAllUnhandledReports() {
+        return ResponseEntity.ok(reportRepository.findAll().stream().filter(a->a.getAdmin() == null));
+    }
+
     @GetMapping("/getall")
     public ResponseEntity<?> getAllReports() {
-        return ResponseEntity.ok(reportRepository.findAll().stream().filter(a->a.getAdmin() == null));
+        return ResponseEntity.ok(reportRepository.findAll());
     }
 
     @PostMapping("/handle")
