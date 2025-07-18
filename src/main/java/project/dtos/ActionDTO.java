@@ -7,9 +7,9 @@ public class ActionDTO {
     private Integer idAction;
     private String name;
     private Float goal;
-    private Float collected = 0f;
+    private Float collected;
     private String desc;
-    private String primaryImage = "";
+    private String primaryImage;
     private List<ActionOwnerDTO> actionOwners;
     private List<CommentDTO> comments;
 

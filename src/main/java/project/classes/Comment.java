@@ -10,7 +10,7 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idComment;
     private String text;
-    private LocalDateTime created;
+    private LocalDateTime created = LocalDateTime.now();
     @ManyToOne
     @JoinColumn(name = "idUser")
     private User user;

@@ -8,7 +8,7 @@ public class Admin {
     @Column(name = "`username`", length = 40)
     private String username;
     private String password;
-    private Boolean owner;
+    private Boolean owner = false;
 
     public String getUsername() {
         return username;
