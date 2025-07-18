@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate, Link, useParams, useLocation } from "react-router-dom";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect, useRef } from "react";
 import NavigationBar from "../components/NavigationHeader.js";
 import InfoFooter from "../components/InfoFooter.js";
 import { AuthStateContext } from "../components/UseAuthState.js";
@@ -8,6 +8,7 @@ import ImageGallery from "../components/ImageGallery.js";
 import { apiRequest } from "../utility/FetchAPI.js";
 import { jwtDecode } from "jwt-decode";
 import DonateFormModal from "../components/DonateFormModal.js";
+import CommentDropdown from "../components/CommentDropdown.js";
 
 function ActionViewPage() {
   const location = useLocation();
@@ -121,6 +122,14 @@ function ActionViewPage() {
     } finally {
       setSubmittingComment(false);
     }
+  };
+
+  const handleReportUser = (userId) => {
+    alert(`Prijavljujem korisnika (ID: ${userId})`);
+  };
+
+  const handleReportComment = (commentId) => {
+    alert(`Prijavljujem komentar (ID: ${commentId})`);
   };
 
   if (loadingAction) {
@@ -270,7 +279,6 @@ function ActionViewPage() {
 
           <div className="max-h-80 overflow-y-auto border border-gray-200 rounded-md p-4 mb-4 space-y-4">
             {comments.length > 0 ? (
-              // mapiranje komentara
               comments.map((comment) => (
                 <div
                   key={comment.idComment}
@@ -287,9 +295,15 @@ function ActionViewPage() {
                     <p className="font-semibold text-gray-800">
                       {comment.displayName || "Gost"}
                     </p>
-                    <span className="text-sm text-gray-500 ml-auto">
+                    <span className="text-sm text-gray-500 ml-auto mr-4">
                       {new Date(comment.created).toLocaleString()}
                     </span>
+                    <CommentDropdown
+                      commentId={comment.idComment}
+                      userId={comment.idUser}
+                      onReportUser={handleReportUser}
+                      onReportComment={handleReportComment}
+                    />
                   </div>
                   <p className="text-gray-700 ml-9">{comment.text}</p>
                 </div>
