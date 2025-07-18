@@ -1,11 +1,14 @@
 import { useContext, useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import NavigationBar from "../components/NavigationHeader";
 import InfoFooter from "../components/InfoFooter";
 import { AuthStateContext } from "../components/UseAuthState";
 import { useNavigate } from "react-router-dom";
 import { apiRequest } from "../utility/FetchAPI";
 
-function ProfilePage() {
+function ViewProfilePage() {
+  const location = useLocation();
+  const { id } = location.state || {};
   const { authState } = useContext(AuthStateContext);
   const [user, setUser] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
@@ -15,7 +18,7 @@ function ProfilePage() {
     const fetchProfile = async () => {
       try {
         const res = await apiRequest(
-          "users/showprofile",
+          "users/showuserprofile?idUser="+id,
           "GET",
           authState.accessToken
         );
@@ -111,4 +114,4 @@ function ProfilePage() {
   );
 }
 
-export default ProfilePage;
+export default ViewProfilePage;
