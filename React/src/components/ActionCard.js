@@ -17,7 +17,7 @@ function ActionCard({ action }) {
       <img
         src={action.primaryImage}
         alt="Slika akcije"
-        className="w-full h-40 object-cover"
+        className="w-full h-40 object-scale-fit"
       />
       <div className="p-4">
         <h3 className="text-lg font-semibold text-gray-800">{action.name}</h3>
