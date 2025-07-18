@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { apiRequest } from '../utility/FetchAPI';
+import React, { useState, useEffect } from "react";
+import { apiRequest } from "../utility/FetchAPI";
 
 const ActionSearchBar = ({ onResults }) => {
-  const [input, setInput] = useState('');
-  const [debouncedInput, setDebouncedInput] = useState('');
+  const [input, setInput] = useState("");
+  const [debouncedInput, setDebouncedInput] = useState("");
 
   // Debounce logic
   useEffect(() => {
@@ -17,16 +17,19 @@ const ActionSearchBar = ({ onResults }) => {
   // API call when input stabilizes
   useEffect(() => {
     const fetchActions = async () => {
-      if (debouncedInput.trim() === '') {
-        if (typeof onResults === 'function') onResults([]);
+      if (debouncedInput.trim() === "") {
+        if (typeof onResults === "function") onResults([]);
         return;
       }
 
       try {
-        const response = await apiRequest("actions/searchactions?input=" + debouncedInput, "GET");
-        if (typeof onResults === 'function') onResults(response);
+        const response = await apiRequest(
+          "actions/searchactions?input=" + debouncedInput,
+          "GET"
+        );
+        if (typeof onResults === "function") onResults(response);
       } catch (error) {
-        console.error('Error fetching actions:', error);
+        console.error("Error fetching actions:", error);
       }
     };
 

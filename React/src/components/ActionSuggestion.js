@@ -10,7 +10,7 @@ const ActionSuggestion = ({ action }) => {
   return (
     <Link
       to={`/actionView/${action.idAction}`}
-      state={action.idAction} 
+      state={action.idAction}
       className="flex items-center border-b bg-white hover:bg-gray-100 cursor-pointer no-underline"
     >
       <img

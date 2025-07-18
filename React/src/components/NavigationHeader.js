@@ -2,7 +2,7 @@
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthStateContext } from "./UseAuthState";
-import NotificationDropdown from './NotificationDropdown';
+import NotificationDropdown from "./NotificationDropdown";
 import ActionSearchBar from "./ActionSearchBar";
 import ActionSuggestion from "./ActionSuggestion";
 // TODO: Preimenovati

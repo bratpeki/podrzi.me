@@ -49,7 +49,10 @@ function DonateFormModal({ action, onClose, onDonationSuccess }) {
           const decoded = jwtDecode(authState.accessToken);
           userId = decoded.id;
         } catch (decodeError) {
-          console.warn("Greška pri dekodiranju tokena, nastavljam kao anonimni korisnik:", decodeError);
+          console.warn(
+            "Greška pri dekodiranju tokena, nastavljam kao anonimni korisnik:",
+            decodeError
+          );
         }
       }
 
@@ -61,14 +64,18 @@ function DonateFormModal({ action, onClose, onDonationSuccess }) {
 
       console.log("Slanje donacije:", donationData);
 
-      const data = await apiRequest("donations/adddonation", "POST", authState.accessToken, donationData);
+      const data = await apiRequest(
+        "donations/adddonation",
+        "POST",
+        authState.accessToken,
+        donationData
+      );
 
       console.log("Donacija uspešna:", data);
       alert("Hvala na donaciji!"); // Možemo ovdje sweet alert koristiti za ljepšti pop up npr
 
       onDonationSuccess(); // Callback za refresh podataka u roditeljskoj akciji
-      onClose();           
-
+      onClose();
     } catch (err) {
       console.error("Greška kod donacije:", err);
       let errorMessage = "Došlo je do neočekivane greške. Pokušajte ponovo.";
@@ -97,13 +104,19 @@ function DonateFormModal({ action, onClose, onDonationSuccess }) {
 
         <form onSubmit={handleSubmit} className="p-2">
           {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <div
+              className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+              role="alert"
+            >
               <span className="block sm:inline">{error}</span>
             </div>
           )}
 
           <div className="mb-6">
-            <label htmlFor="amount" className="block text-gray-700 text-sm font-bold mb-2">
+            <label
+              htmlFor="amount"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
               Iznos donacije (€)
             </label>
             <input
@@ -120,16 +133,23 @@ function DonateFormModal({ action, onClose, onDonationSuccess }) {
           </div>
 
           <div className="mb-6 border-t pt-6">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">Podaci o kartici (TEST ZA SAD)</h3>
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">
+              Podaci o kartici (TEST ZA SAD)
+            </h3>
             <div className="mb-4">
-              <label htmlFor="cardNumber" className="block text-gray-700 text-sm font-bold mb-2">
+              <label
+                htmlFor="cardNumber"
+                className="block text-gray-700 text-sm font-bold mb-2"
+              >
                 Broj kartice
               </label>
               <input
                 type="text"
                 id="cardNumber"
                 value={cardNumber}
-                onChange={(e) => setCardNumber(e.target.value.replace(/\D/g, ''))}
+                onChange={(e) =>
+                  setCardNumber(e.target.value.replace(/\D/g, ""))
+                }
                 className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 placeholder="**** **** **** ****"
                 maxLength="16"
@@ -138,7 +158,10 @@ function DonateFormModal({ action, onClose, onDonationSuccess }) {
             </div>
             <div className="flex gap-4 mb-4">
               <div className="w-1/2">
-                <label htmlFor="expiryDate" className="block text-gray-700 text-sm font-bold mb-2">
+                <label
+                  htmlFor="expiryDate"
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                >
                   Datum isteka (MM/GG)
                 </label>
                 <input
@@ -153,14 +176,17 @@ function DonateFormModal({ action, onClose, onDonationSuccess }) {
                 />
               </div>
               <div className="w-1/2">
-                <label htmlFor="cvv" className="block text-gray-700 text-sm font-bold mb-2">
+                <label
+                  htmlFor="cvv"
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                >
                   CVV
                 </label>
                 <input
                   type="text"
                   id="cvv"
                   value={cvv}
-                  onChange={(e) => setCvv(e.target.value.replace(/\D/g, ''))}
+                  onChange={(e) => setCvv(e.target.value.replace(/\D/g, ""))}
                   className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   placeholder="***"
                   maxLength="4"
