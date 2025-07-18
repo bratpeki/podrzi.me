@@ -20,8 +20,6 @@ function ActionViewPage() {
   const [isOwner, setIsOwner] = useState(false);
   const [loadingAction, setLoadingAction] = useState(true);
   const [showDonateModal, setShowDonateModal] = useState(false);
-  // Komentari će sada biti deo currentAction, ali zadržavamo ih ovde za lakši pristup u JSX-u
-  // Možeš ih inicijalizovati sa praznim nizom ili [] direktno
   const [comments, setComments] = useState([]);
   const [newCommentText, setNewCommentText] = useState("");
   const [commentError, setCommentError] = useState("");
@@ -33,7 +31,6 @@ function ActionViewPage() {
     ? jwtDecode(authState.accessToken).id
     : null;
 
-  // Funkcija za dohvaćanje detalja akcije (uključujući komentare i slike)
   const fetchActionData = async () => {
     if (!id) {
       setLoadingAction(false);
@@ -49,8 +46,7 @@ function ActionViewPage() {
       );
       setCurrentAction(actionData);
 
-      // Preuzmi komentare direktno iz actionData ako postoje
-      setComments(actionData.comments || []); // Pretpostavka da backend vraća comments array
+      setComments(actionData.comments || []);                                  
 
       if (authState.accessToken && actionData.actionOwners) {
         const decoded = jwtDecode(authState.accessToken);
@@ -71,17 +67,15 @@ function ActionViewPage() {
     } catch (err) {
       console.error("Failed to fetch action details or images:", err);
       setCurrentAction(null);
-      setComments([]); // Osiguraj da su komentari prazni ako akcija ne uspe
-      setImages([]);
+      setComments([]); // Osiguraj da su komentari prazni ako akcija ne uspije
     } finally {
       setLoadingAction(false);
     }
   };
 
-  // Uklonjena je funkcija fetchComments() jer se komentari dohvaćaju unutar fetchActionData()
 
   useEffect(() => {
-    fetchActionData(); // Sada fetchActionData dohvaća i komentare
+    fetchActionData(); 
   }, [id]);
 
   const handleDonationSuccess = () => {
@@ -277,6 +271,7 @@ function ActionViewPage() {
             </h2>
             <ul className="list-none p-0 space-y-2">
               {collaborators.map((c) => (
+                <Link to={`/viewProfile/${c.idUser}`} state={{ id : c.idUser }}>
                 <li key={c.idUser} className="flex items-center gap-3">
                   <img
                     src={c.imagePath}
@@ -285,6 +280,7 @@ function ActionViewPage() {
                   />
                   <span>{c.displayName}</span>
                 </li>
+                </Link>
               ))}
             </ul>
           </>

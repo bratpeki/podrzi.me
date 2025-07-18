@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import NavigationBar from "../components/NavigationHeader";
 import InfoFooter from "../components/InfoFooter";
 import { AuthStateContext } from "../components/UseAuthState";
@@ -90,21 +90,15 @@ function ViewProfilePage() {
             </div>
 
             <div className="mt-6 w-full flex justify-between">
-              <button
-                onClick={() =>
-                  navigate("/viewDonations", { state: { idUser: user.idUser } })
-                }
-                className="bg-blue-600 text-white px-4 py-2 mr-4 rounded hover:bg-blue-700 transition"
-              >
-                Pregled donacija
-              </button>
-
-              <button
-                onClick={() => navigate("/EditProfile")}
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-              >
-                Uredi profil
-              </button>
+            <div className="mt-6 w-full flex justify-between">
+            <Link
+              to={`/viewActions/${user.idUser}`} // TODO: ne rutira ispravno, treba popraviti
+             state={{ idUser: user.idUser }} 
+             className="bg-blue-600 text-white px-4 py-2 mr-4 rounded hover:bg-blue-700 transition"
+            >
+              Pregled akcija
+            </Link>
+            </div>
             </div>
           </div>
         </div>
