@@ -124,12 +124,62 @@ function ActionViewPage() {
     }
   };
 
-  const handleReportUser = (userId) => {
-    alert(`Prijavljujem korisnika (ID: ${userId})`);
+  const handleReportUser = async (userId) => {
+
+	try {
+
+		var text = prompt("Unesite razlog za kreiranje prijave");
+
+		const req = apiRequest(
+			"reports/create",
+			"POST",
+			authState.accessToken,
+			{
+				reportType: 0,
+				idReported: userId,
+				text: text
+			}
+		);
+
+		const resp = await req;
+
+		if ( resp != "success" ) {
+			throw new Error("Desila se greška prilikom kreiranja prijave korisnika!");
+		}
+
+	} catch ( error ) {
+		console.error(error.message);
+	}
+
   };
 
-  const handleReportComment = (commentId) => {
-    alert(`Prijavljujem komentar (ID: ${commentId})`);
+  const handleReportComment = async (commentId) => {
+
+	try {
+
+		var text = prompt("Unesite razlog za kreiranje prijave");
+
+		const req = apiRequest(
+			"reports/create",
+			"POST",
+			authState.accessToken,
+			{
+				reportType: 2,
+				idReported: commentId,
+				text: text
+			}
+		);
+
+		const resp = await req;
+
+		if ( resp != "success" ) {
+			throw new Error("Desila se greška prilikom kreiranja prijave komentara!");
+		}
+
+	} catch ( error ) {
+		console.error(error.message);
+	}
+
   };
 
   if (loadingAction) {
