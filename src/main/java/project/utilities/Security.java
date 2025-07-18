@@ -45,6 +45,7 @@ public class Security {
 
     public static String[] UserMethods = {
             "/api/users/showprofile",
+            "/api/users/showuserprofile",
             "/api/users/updateprofile",
             "/api/users/getusers",
             "/api/users/removeuser",
