@@ -1,14 +1,14 @@
 import React, { useContext, useEffect, useState } from "react";
-
-// U ProfilePage šaljemo "state"
-// Ovde ga dobavljamo sa "location.state"
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import RefundDialog from "../components/RefundDialog";
 import { useLocation } from "react-router-dom";
-
 import { AuthStateContext } from "../components/UseAuthState";
 import NavigationBar from "../components/NavigationHeader";
 import InfoFooter from "../components/InfoFooter";
 import { apiRequest } from "../utility/FetchAPI";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
 
 function ViewDonationsPage() {
   const location = useLocation();
@@ -17,18 +17,18 @@ function ViewDonationsPage() {
   const [dons, setDons] = useState([]);
   const [responseMessage, setResponseMessage] = useState("");
 
-  const { authState } = useContext(AuthStateContext);
+  const [showDialog, setShowDialog] = useState(false);
+  const [selectedDonationId, setSelectedDonationId] = useState(null);
 
+  const { authState } = useContext(AuthStateContext);
   useEffect(() => {
     const fetchDons = async () => {
       try {
-        // TODO: Deprekacija, valjda mijenjamo await fetch sa apiRequest
         const res = await apiRequest(
           "donations/getdonationsuser?idUser=" + idUser,
           "GET",
           authState.accessToken
         );
-        // const res = await fetch("http://podrzime.ddns.net:8080/api/donations/getdonationsuser?idUser=48", {
         const responseBodyText = await res;
 
         if (responseBodyText === "wrongUserError") {
@@ -37,10 +37,6 @@ function ViewDonationsPage() {
         }
 
         const data = responseBodyText;
-        // Za potrebe testiranja mnogo elemenata
-        // Ispašće upozorenje za mnogo identičnih key-eva, ali to nam je nebitno
-        // for ( let i = 0; i < 20; i++ ) data.push(data[0]);
-
         for (let i = 0; i < data.length; i++) {
           let resImg = await apiRequest(
             "images/getprimaryimage?idAction=" + data[i].idAction,
@@ -61,6 +57,62 @@ function ViewDonationsPage() {
     if (authState?.accessToken) fetchDons();
   }, [authState, idUser]);
 
+  const generateReport = () => {
+    if (!dons.length) return;
+
+    const doc = new jsPDF({ orientation: "p", unit: "mm", format: "a4" });
+
+    doc.setFontSize(18);
+    doc.text("Pregled donacija", 14, 20);
+
+    autoTable(doc, {
+      head: [["Akcija", "Iznos", "Vrijeme"]],
+      body: dons.map((d) => [
+        d.actionName,
+        `${d.amount} KM`,
+        new Date(d.donationTime).toLocaleString("bs-BA"),
+      ]),
+      startY: 28,
+      styles: { fontSize: 10 },
+      headStyles: { fillColor: [30, 64, 175] },
+    });
+
+    doc.save("izvjestaj-donacija.pdf");
+  };
+  const handleRefund = (donationId) => {
+    setSelectedDonationId(donationId);
+    setShowDialog(true);
+  };
+
+  const confirmRefund = async (reason) => {
+    setShowDialog(false);
+    if (!reason.trim()) {
+      alert("Morate unijeti razlog.");
+      return;
+    }
+
+    try {
+      const res = await apiRequest(
+        "refunds/request",
+        "POST",
+        authState.accessToken,
+        {
+          idDonation: selectedDonationId,
+          reason: reason,
+        }
+      );
+
+      if (res === "success") {
+        alert("Povrat je zatražen.");
+      } else {
+        alert("Greška: " + res);
+      }
+    } catch (err) {
+      console.error("Greška pri zahtjevu za povrat:", err);
+      alert("Došlo je do greške.");
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
       {/* Navigation Bar */}
@@ -72,6 +124,15 @@ function ViewDonationsPage() {
         </h1>
       </header>
 
+      <div className="flex justify-center mb-6">
+        <button
+          onClick={generateReport}
+          className="bg-cyan-600 hover:bg-cyan-700 text-white font-medium py-2 px-4 rounded"
+        >
+          Generiši Izvještaj
+        </button>
+      </div>
+
       {responseMessage && (
         <p className="text-center text-sm text-red-600 mb-2">
           {responseMessage}
@@ -81,41 +142,53 @@ function ViewDonationsPage() {
       {/* Margina se stavlja na bottom da blok ne upada u footer */}
       <div className="mb-14 w-1/2 mx-auto">
         {dons.map((donation) => (
-          <Link
-            to={`/actionView/${donation.idAction}`}
-            state={{ id: donation.idAction }}
-            className="w-full"
-          >
-            <div
-              key={donation.idDonation}
-              className="bg-white rounded-lg shadow-md p-6 mb-4 border w-full border-gray-200 flex justify-between items-center"
+          <div key={donation.idDonation} className="w-full">
+            <Link
+              to={`/actionView/${donation.idAction}`}
+              state={{ id: donation.idAction }}
+              className="block"
             >
-              <div className="w-2/3">
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                  Akcija: {donation.actionName}
-                </h3>
-                <p className="text-gray-700 mb-1">
-                  <span className="font-medium">Iznos donacije:</span>{" "}
-                  {donation.amount} KM
-                </p>
-                <p className="text-gray-600 text-sm">
-                  <span className="font-medium">Vrijeme donacije:</span>{" "}
-                  {new Date(donation.donationTime).toLocaleString()}
-                </p>
+              <div className="bg-white rounded-lg shadow-md p-6 mb-2 border border-gray-200 hover:bg-gray-200 flex justify-between items-center">
+                <div className="w-2/3">
+                  <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                    Akcija: {donation.actionName}
+                  </h3>
+                  <p className="text-gray-700 mb-1">
+                    <span className="font-medium">Iznos donacije:</span>{" "}
+                    {donation.amount} KM
+                  </p>
+                  <p className="text-gray-600 text-sm">
+                    <span className="font-medium">Vrijeme donacije:</span>{" "}
+                    {new Date(donation.donationTime).toLocaleString()}
+                  </p>
+                </div>
+                <img
+                  src={donation.img}
+                  alt={`Image for ${donation.actionName}`}
+                  className="h-48 w-1/3 object-cover rounded-md ml-4"
+                />
               </div>
-              <img
-                src={donation.img}
-                alt={`Image for ${donation.actionName}`}
-                className="w-full h-48 object-fill rounded-md ml-4"
-              />{" "}
-              {/* Image explicitly takes 1/3 and has left margin */}
+            </Link>
+
+            {/* Refund button directly below each card */}
+            <div className="flex justify-end mb-6">
+              <button
+                onClick={() => handleRefund(donation.idDonation)}
+                className="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-2 rounded shadow"
+              >
+                Zatraži povrat
+              </button>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
-
       {/* Footer */}
       <InfoFooter />
+      <RefundDialog
+        show={showDialog}
+        onClose={() => setShowDialog(false)}
+        onConfirm={confirmRefund}
+      />
     </div>
   );
 }
