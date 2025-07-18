@@ -59,6 +59,11 @@ public class Security {
             "/api/actions/validateuser",
             "/api/actions/removeaction",
 
+            "/api/notifications/get",
+            "/api/notification/send",
+
+            "/api/reports/create",
+
             "/api/comments/add",
             "/api/comments/remove"
     };
@@ -69,7 +74,14 @@ public class Security {
 
             "/api/donations/getdonations",
 
-            "/api/admins/addadmin"
+            "/api/notifications/sendall",
+
+            "/api/reports/getall",
+            "/api/reports/handle",
+
+            "/api/admins/addadmin",
+
+            "/api/refunds/getall"
     };
 
     @Bean

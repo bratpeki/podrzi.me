@@ -7,14 +7,14 @@ public class Action {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idAction;
-    private Float goal = 0f;
+    private Float goal;
     @Column(columnDefinition = "FLOAT DEFAULT 0")
     private Float collected = 0f;
     private String name;
     @Column(name = "`desc`", length = 10000)
     private String desc;
     @Column(name = "visible", columnDefinition = "TINYINT")
-    private Integer visible;
+    private Integer visible = 1;
     private String primaryImage;
 
     public Integer getVisible() {

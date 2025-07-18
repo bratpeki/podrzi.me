@@ -13,7 +13,7 @@ public class User {
     private String displayName;
     @Column(name = "`desc`", length = 2000)
     private String desc;
-    private String imagePath;
+    private String imagePath = "";
 
     public String getDesc() {
         return desc;
