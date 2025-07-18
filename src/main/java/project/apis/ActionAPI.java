@@ -10,6 +10,8 @@ import project.repositories.ActionRepository;
 import project.repositories.CommentRepository;
 import project.repositories.UserRepository;
 import project.utilities.JWT;
+
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.List;
 
@@ -121,7 +123,19 @@ public class ActionAPI {
     }
 
     @GetMapping("/searchactions")
-    private ResponseEntity<?> searchActions(@RequestParam String input) {
+    public ResponseEntity<?> searchActions(@RequestParam String input) {
         return ResponseEntity.ok(actionRepository.findTop5BynameContainingIgnoreCase(input).stream().toList());
     }
+
+    @GetMapping("/getuseractions")
+    public ResponseEntity<?> getUserActions(@RequestHeader Map<String, String> token, @RequestParam Integer idUser) {
+        List<ActionOwner> aol = actionOwnerRepository.findAll().stream().filter(ao->ao.getUser().getIdUser().equals(idUser)).toList();
+        List<ActionDTO> al = new ArrayList<>();
+        for (ActionOwner a : aol)
+            al.add(new ActionDTO(a.getAction().getName(), a.getAction().getGoal(),a.getAction().getCollected(), a.getAction().getDesc(), a.getAction().getPrimaryImage(), a.getAction().getIdAction(), null, null));
+
+        return ResponseEntity.ok(al);
+    }
+
 }
+

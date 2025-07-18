@@ -61,6 +61,7 @@ public class Security {
             "/api/actions/updateaction",
             "/api/actions/validateuser",
             "/api/actions/removeaction",
+            "/api/actions/getuseractions",
 
             "/api/notifications/get",
             "/api/notification/send",
