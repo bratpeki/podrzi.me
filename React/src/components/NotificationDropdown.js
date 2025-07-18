@@ -1,62 +1,87 @@
-// src/components/NotificationDropdown.js
-import { Menu } from "@headlessui/react";
-import { BellIcon } from "@heroicons/react/24/outline";
-import { useState } from "react";
-
-const dummyNotifications = [
-  {
-    id: 1,
-    message: "Zahtjev za kolaboraciju od Marka",
-    type: "collab",
-    seen: false,
-  },
-  {
-    id: 2,
-    message: "Akcija 'Donacija' dostigla cilj!",
-    type: "goal",
-    seen: false,
-  },
-  { id: 3, message: "Podsjetnik: Rok se bliži", type: "reminder", seen: false },
-];
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import { BellIcon } from '@heroicons/react/24/outline';
+import { useContext, useEffect, useState } from 'react';
+import { apiRequest } from '../utility/FetchAPI';
+import { AuthStateContext } from '../components/UseAuthState';
 
 export default function NotificationDropdown() {
-  const [notifications, setNotifications] = useState(dummyNotifications);
-  const unseenCount = notifications.filter((n) => !n.seen).length;
+  const { authState } = useContext(AuthStateContext);
+  const [notifications, setNotifications] = useState([]);
+  const [unseenCount, setUnseenCount] = useState(0);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const res = await apiRequest("notifications/get", "GET", authState.accessToken);
+        const data = await res;
+
+        setNotifications(data);
+        setUnseenCount(data.filter(n => !n.seen).length);
+      } catch (err) {
+        console.error("Greška pri dohvatanju notifikacija:", err);
+      }
+    };
+
+    fetchNotifications();
+  }, [authState.accessToken]);
 
   const markAllAsSeen = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, seen: true })));
+    setNotifications((prev) =>
+      prev.map((n) => ({ ...n, seen: true }))
+    );
+    setUnseenCount(0);
+    // Opcionalno: napravi API poziv da backend upamti da su viđene
   };
 
   return (
-    <Menu as="div" className="relative inline-block text-left">
-      <Menu.Button
-        onClick={markAllAsSeen}
-        className="flex items-center space-x-2 text-white hover:underline"
-      >
-        <div className="relative">
-          <BellIcon className="w-6 h-6" />
-          {unseenCount > 0 && (
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
-              {dummyNotifications.length}
-            </span>
-          )}
-        </div>
-        <span>Notifikacije</span>
-      </Menu.Button>
-
-      <Menu.Items className="absolute right-0 mt-2 w-72 bg-white divide-y divide-gray-200 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50 text-black">
-        {dummyNotifications.map((notification) => (
-          <Menu.Item key={notification.id}>
-            {({ active }) => (
-              <div
-                className={`px-4 py-2 text-sm ${active ? "bg-gray-100" : ""}`}
-              >
-                {notification.message}
-              </div>
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger asChild>
+        <button
+          onClick={markAllAsSeen}
+          className="flex items-center space-x-2 text-white hover:underline relative"
+        >
+          <div className="relative">
+            <BellIcon className="w-6 h-6" />
+            {unseenCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
+                {unseenCount}
+              </span>
             )}
-          </Menu.Item>
-        ))}
-      </Menu.Items>
-    </Menu>
+          </div>
+          <span>Notifikacije</span>
+        </button>
+      </DropdownMenu.Trigger>
+
+ <DropdownMenu.Content
+  className="z-50 w-72 max-h-96 overflow-auto bg-white divide-y divide-gray-200 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none text-black"
+  align="end"
+  sideOffset={8}
+>
+  {notifications.length === 0 ? (
+    <div className="px-4 py-3 text-sm text-gray-500 text-center">
+      Nema novih notifikacija
+    </div>
+  ) : (
+    notifications.map((notification) => (
+      <DropdownMenu.Item
+        key={notification.id}
+        className="w-full text-left px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 focus:outline-none"
+      >
+        <div className="flex items-start gap-3">
+          <img
+            src={notification.imagePath}
+            alt="Profilna"
+            className="w-10 h-10 rounded-full object-cover"
+          />
+          <div className="flex flex-col">
+            <span className="font-medium">{notification.displayName}</span>
+            <span className="text-gray-700">{notification.text}</span>
+          </div>
+        </div>
+      </DropdownMenu.Item>
+    ))
+  )}
+    </DropdownMenu.Content>
+  </DropdownMenu.Root>
   );
 }

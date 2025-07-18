@@ -69,7 +69,10 @@ function NavigationBar({
           </Link>
         )}
         {authState.accessToken != null && showNotification && (
-          <NotificationDropdown />
+          <div className="space-x-6 flex items-center relative z-10">
+          {/* obavezno dodaj `relative` i po potrebi `z-10` */}
+           <NotificationDropdown />
+          </div>
         )}
         {authState.accessToken != null && showLogout && (
           <button className="hover:underline" onClick={logout}>
