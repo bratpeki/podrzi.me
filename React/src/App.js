@@ -15,6 +15,7 @@ import EditProfilePage from "./pages/EditProfilePage";
 import EditActionPage from "./pages/EditActionPage";
 import ViewDonationsPage from "./pages/ViewDonationsPage";
 import ReviewPage from './pages/ReviewPage';
+import ViewProfilePage from "./pages/ViewProfilePage";
 import { AuthStateContext, useAuth } from "./components/UseAuthState";
 import { useEffect } from "react";
 
@@ -53,9 +54,10 @@ function App() {
             <Route path="/tos" element={<ToSPage />} />
             <Route path="/profilePage" element={<ProfilePage />} />
             <Route path="/actionView/:id" element={<ActionViewPage />} />
-            <Route path="/editProfilePage/" element={<EditProfilePage />} />
+            <Route path="/editProfile/" element={<EditProfilePage />} />
             <Route path="/editAction/:id" element={<EditActionPage />} />
             <Route path="/viewDonations/" element={<ViewDonationsPage />} />
+             <Route path="/viewProfile/:id" element={<ViewProfilePage />} />
             <Route path="/review" element={<ReviewPage />} />
           </Routes>
         </Router>

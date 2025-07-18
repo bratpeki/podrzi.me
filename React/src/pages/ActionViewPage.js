@@ -26,6 +26,12 @@ function ActionViewPage() {
   const [newCommentText, setNewCommentText] = useState("");
   const [commentError, setCommentError] = useState("");
   const [submittingComment, setSubmittingComment] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [editingText, setEditingText] = useState("");
+
+  const commentAuthorId = authState.accessToken
+    ? jwtDecode(authState.accessToken).id
+    : null;
 
   // Funkcija za dohvaćanje detalja akcije (uključujući komentare i slike)
   const fetchActionData = async () => {
@@ -125,61 +131,87 @@ function ActionViewPage() {
   };
 
   const handleReportUser = async (userId) => {
+    try {
+      var text = prompt("Unesite razlog za kreiranje prijave");
 
-	try {
+      const req = apiRequest("reports/create", "POST", authState.accessToken, {
+        reportType: 0,
+        idReported: userId,
+        text: text,
+      });
 
-		var text = prompt("Unesite razlog za kreiranje prijave");
+      const resp = await req;
 
-		const req = apiRequest(
-			"reports/create",
-			"POST",
-			authState.accessToken,
-			{
-				reportType: 0,
-				idReported: userId,
-				text: text
-			}
-		);
-
-		const resp = await req;
-
-		if ( resp != "success" ) {
-			throw new Error("Desila se greška prilikom kreiranja prijave korisnika!");
-		}
-
-	} catch ( error ) {
-		console.error(error.message);
-	}
-
+      if (resp != "success") {
+        throw new Error(
+          "Desila se greška prilikom kreiranja prijave korisnika!"
+        );
+      }
+    } catch (error) {
+      console.error(error.message);
+    }
   };
 
   const handleReportComment = async (commentId) => {
+    try {
+      var text = prompt("Unesite razlog za kreiranje prijave");
 
-	try {
+      const req = apiRequest("reports/create", "POST", authState.accessToken, {
+        reportType: 2,
+        idReported: commentId,
+        text: text,
+      });
 
-		var text = prompt("Unesite razlog za kreiranje prijave");
+      const resp = await req;
 
-		const req = apiRequest(
-			"reports/create",
-			"POST",
-			authState.accessToken,
-			{
-				reportType: 2,
-				idReported: commentId,
-				text: text
-			}
-		);
+      if (resp != "success") {
+        throw new Error(
+          "Desila se greška prilikom kreiranja prijave komentara!"
+        );
+      }
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
 
-		const resp = await req;
+  const handleEditComment = (commentId, currentText) => {
+    setEditingId(commentId);
+    setEditingText(currentText);
+  };
 
-		if ( resp != "success" ) {
-			throw new Error("Desila se greška prilikom kreiranja prijave komentara!");
-		}
+  const saveEditedComment = async () => {
+    if (!editingText.trim()) return;
 
-	} catch ( error ) {
-		console.error(error.message);
-	}
+    try {
+      await apiRequest("comments/edit", "POST", authState.accessToken, {
+        idComment: editingId,
+        text: editingText,
+      });
+      setEditingId(null);
+      setEditingText("");
+      fetchActionData();
+    } catch (err) {
+      console.error("Greška pri izmeni komentara:", err);
+    }
+  };
 
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditingText("");
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    const confirmDelete = window.confirm(
+      "Da li ste sigurni da želite obrisati komentar?"
+    );
+    if (!confirmDelete) return;
+
+    try {
+      await apiRequest(`comments/remove`, "POST", authState.accessToken, commentId);
+      fetchActionData();
+    } catch (err) {
+      console.error("Greška pri brisanju komentara:", err.message);
+    }
   };
 
   if (loadingAction) {
@@ -226,6 +258,7 @@ function ActionViewPage() {
         <h2 className="text-xl font-extrabold text-gray-800 mb-2">Vlasnik</h2>
         <ul className="list-none p-0 space-y-2">
           {owner.map((o) => (
+            <Link to={`/viewProfile/${o.idUser}`} state={{ id : o.idUser }}>
             <li key={o.idUser} className="flex items-center gap-3">
               <img
                 src={o.imagePath}
@@ -234,6 +267,7 @@ function ActionViewPage() {
               />
               <span>{o.displayName}</span>
             </li>
+            </Link>
           ))}
         </ul>
         {collaborators.length > 0 && (
@@ -329,35 +363,76 @@ function ActionViewPage() {
 
           <div className="max-h-80 overflow-y-auto border border-gray-200 rounded-md p-4 mb-4 space-y-4">
             {comments.length > 0 ? (
-              comments.map((comment) => (
-                <div
-                  key={comment.idComment}
-                  className="border-b pb-3 last:border-b-0"
-                >
-                  <div className="flex items-center mb-1">
-                    <img
-                      src={
-                        comment.imagePath || "https://via.placeholder.com/30"
-                      }
-                      alt={comment.displayName || "Gost"}
-                      className="w-7 h-7 rounded-full object-cover mr-2"
-                    />
-                    <p className="font-semibold text-gray-800">
-                      {comment.displayName || "Gost"}
-                    </p>
-                    <span className="text-sm text-gray-500 ml-auto mr-4">
-                      {new Date(comment.created).toLocaleString()}
-                    </span>
-                    <CommentDropdown
-                      commentId={comment.idComment}
-                      userId={comment.idUser}
-                      onReportUser={handleReportUser}
-                      onReportComment={handleReportComment}
-                    />
+              comments.map((comment) => {
+                const isAuthor = commentAuthorId === comment.idUser;
+
+                return (
+                  <div
+                    key={comment.idComment}
+                    className="border-b pb-3 last:border-b-0"
+                  >
+                    <div className="flex items-center mb-1">
+                      <img
+                        src={
+                          comment.imagePath || "https://via.placeholder.com/30"
+                        }
+                        alt={comment.displayName || "Gost"}
+                        className="w-7 h-7 rounded-full object-cover mr-2"
+                      />
+                      <p className="font-semibold text-gray-800">
+                        {comment.displayName || "Gost"}
+                      </p>
+
+                      <span className="text-sm text-gray-500 ml-auto mr-4">
+                        {new Date(comment.created).toLocaleString()}
+                      </span>
+
+                      <CommentDropdown
+                        commentId={comment.idComment}
+                        userId={comment.idUser}
+                        onReportUser={handleReportUser}
+                        onReportComment={handleReportComment}
+                        onEditComment={() =>
+                          handleEditComment(comment.idComment, comment.text)
+                        }
+                        onDeleteComment={handleDeleteComment}
+                        /* ↓ show/hide based on author */
+                        showReportUser={!isAuthor}
+                        showReportComment={!isAuthor}
+                        showEditComment={isAuthor}
+                        showDeleteComment={isAuthor}
+                      />
+                    </div>
+
+                    {editingId === comment.idComment ? (
+                      <div className="ml-9 space-y-2">
+                        <textarea
+                          className="w-full p-2 border rounded resize-y"
+                          rows={3}
+                          value={editingText}
+                          onChange={(e) => setEditingText(e.target.value)}
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={saveEditedComment}
+                            className="bg-cyan-600 hover:bg-cyan-700 text-white text-sm px-4 py-1 rounded"
+                          >
+                            Sačuvaj
+                          </button>
+                          <button
+                            onClick={cancelEdit}
+                            className="bg-gray-300 hover:bg-gray-400 text-sm px-4 py-1 rounded"
+                          >
+                            Otkaži
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-gray-700 ml-9">{comment.text}</p>
+                    )}
                   </div>
-                  <p className="text-gray-700 ml-9">{comment.text}</p>
-                </div>
-              ))
+                );
+              })
             ) : (
               <p className="text-gray-500 text-center">
                 Nema komentara. Budite prvi koji će ostaviti komentar!
