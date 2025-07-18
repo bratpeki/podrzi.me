@@ -63,6 +63,7 @@ public class Security {
 
             "/api/notifications/get",
             "/api/notification/send",
+            "/api/notification/seen",
 
             "/api/reports/create",
             "/api/reports/getallunhandled",
