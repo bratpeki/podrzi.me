@@ -45,6 +45,7 @@ public class Security {
 
     public static String[] UserMethods = {
             "/api/users/showprofile",
+            "/api/users/showuserprofile",
             "/api/users/updateprofile",
             "/api/users/getusers",
             "/api/users/removeuser",
@@ -60,10 +61,13 @@ public class Security {
             "/api/actions/updateaction",
             "/api/actions/validateuser",
             "/api/actions/removeaction",
+            "/api/actions/getuseractions",
 
             "/api/notifications/get",
             "/api/notification/send",
             "/api/notification/seen",
+            "/api/notifications/acceptcollab",
+            "/api/notifications/denycollab",
 
             "/api/reports/create",
             "/api/reports/getallunhandled",

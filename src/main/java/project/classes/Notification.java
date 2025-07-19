@@ -17,7 +17,16 @@ public class Notification {
     @Column(columnDefinition ="TINYINT")
     private Boolean seen = false;
     private Integer type; // 0 - collab, 1 - alert (kraj akcije itd...
+    @ManyToOne
+    @JoinColumn(name ="idActionSender")
+    private Action action;
 
+    public Action getAction() {
+        return action;
+    }
+    public void setAction(Action action) {
+        this.action = action;
+    }
     public Integer getIdNotification() {
         return idNotification;
     }

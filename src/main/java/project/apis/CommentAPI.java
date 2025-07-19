@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.classes.Comment;
 import project.dtos.CommentDTO;
+import project.dtos.EditCommentDTO;
 import project.repositories.ActionRepository;
 import project.repositories.CommentRepository;
 import project.repositories.UserRepository;
@@ -58,11 +59,11 @@ public class CommentAPI {
     }
 
     @PostMapping("/edit")
-    public ResponseEntity<?> edit(@RequestHeader Map<String, String> token, @RequestBody Integer idComment, @RequestBody String text) {
+    public ResponseEntity<?> edit(@RequestHeader Map<String, String> token, @RequestBody EditCommentDTO ecdto) {
         User u = userRepository.findByidUser(jwt.extractId(token.get("token")));
-        Comment c = commentRepository.findByidComment(idComment);
+        Comment c = commentRepository.findByidComment(ecdto.getIdComment());
         if (c.getUser().getIdUser().equals(u.getIdUser())) {
-            c.setText("(EDITOVANO "+LocalDateTime.now() +") " + text);
+            c.setText("(Izmjenjeno) " + ecdto.getText());
             commentRepository.save(c);
             return ResponseEntity.ok("success");
         } else

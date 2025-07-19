@@ -6,45 +6,53 @@ import project.classes.User;
 import java.time.LocalDateTime;
 
 public class NotificationDTO {
-    private Integer idNotification;
     private Integer idUser;
+    private Integer idNotification;
+    private Integer idAction;
     private String text;
     private Integer type; // 0 - collab, 1 - alert (kraj akcije itd...
-    private String displayName = "";
-    private String imagePath = "";
+    private String name = "";
+    private String primaryImage = "";
 
-    public NotificationDTO(Integer idUser, String text, Integer type, String displayName, String imagePath, Integer idNotification) {
-        this.idUser = idUser;
+    public NotificationDTO(Integer idAction, String text, Integer type, String name, String primaryImage, Integer idNotification, Integer idUser) {
+        this.idAction = idAction;
         this.text = text;
         this.type = type;
-        this.displayName = displayName;
-        this.imagePath = imagePath;
+        this.name = name;
+        this.primaryImage = primaryImage;
         this.idNotification = idNotification;
+        this.idUser = idUser;
     }
 
+    public Integer getIdUser() {
+        return idUser;
+    }
+    public void setIdUser(Integer idUser) {
+        this.idUser = idUser;
+    }
     public Integer getIdNotification() {
         return idNotification;
     }
     public void setIdNotification(Integer idNotification) {
         this.idNotification = idNotification;
     }
-    public String getDisplayName() {
-        return displayName;
+    public String getName() {
+        return name;
     }
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
+    public void setName(String name) {
+        this.name = name;
     }
-    public String getImagePath() {
-        return imagePath;
+    public String getPrimaryImage() {
+        return primaryImage;
     }
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
+    public void setPrimaryImage(String primaryImage) {
+        this.primaryImage = primaryImage;
     }
-    public Integer getIdUser() {
-        return idUser;
+    public Integer getIdAction() {
+        return idAction;
     }
-    public void setIdUser(Integer idUser) {
-        this.idUser = idUser;
+    public void setIdAction(Integer idUser) {
+        this.idAction = idAction;
     }
     public String getText() {
         return text;

@@ -14,4 +14,8 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
     @Transactional
     @Query("UPDATE Notification n SET n.seen = true WHERE n.idNotification IN :ids AND n.user.idUser = :idUser")
     void markAsSeenByUser(@Param("ids") List<Integer> ids, @Param("idUser") Integer idUser);
+
+    List<Notification> findByaction_idAction(Integer idAction);
+
+    Notification findByidNotification (Integer idNotification);
 }

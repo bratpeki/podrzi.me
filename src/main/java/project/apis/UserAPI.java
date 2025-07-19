@@ -68,6 +68,13 @@ public class UserAPI {
         return ResponseEntity.ok(updto);
     }
 
+    @GetMapping("/showuserprofile")
+    public ResponseEntity<?> ShowProfile(@RequestHeader Map<String, String> token, @RequestParam Integer idUser) {
+        User user = userRepository.findByidUser(idUser);
+        UserProfileDTO updto = new UserProfileDTO("",  user.getEmail(), user.getDisplayName(), user.getDesc(), user.getImagePath(), user.getUsername(), "", user.getIdUser());
+        return ResponseEntity.ok(updto);
+    }
+
     @PostMapping("/updateprofile")
     public ResponseEntity<?> ShowProfile(@RequestHeader Map<String, String> token, @RequestBody UserProfileDTO updto) {
         String email = updto.getEmail();
