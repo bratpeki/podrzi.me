@@ -66,8 +66,8 @@ public class Security {
             "/api/actions/removeaction",
 
             "/api/notifications/get",
-            "/api/notification/send",
-            "/api/notification/seen",
+            "/api/notifications/send",
+            "/api/notifications/seen",
             "/api/notifications/acceptcollab",
             "/api/notifications/denycollab",
 
