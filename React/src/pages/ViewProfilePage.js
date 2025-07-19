@@ -60,10 +60,10 @@ function ViewProfilePage() {
       }
     };
 
-    if (authState?.accessToken && id) {
+    if (id) {
       fetchProfileAndActions();
     }
-  }, [authState, retryCount, id]);
+  }, [retryCount, id]);
 
   if (!user) {
     return (
