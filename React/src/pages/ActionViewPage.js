@@ -46,7 +46,7 @@ function ActionViewPage() {
       );
       setCurrentAction(actionData);
 
-      setComments(actionData.comments || []);                                  
+      setComments(actionData.comments || []);
 
       if (authState.accessToken && actionData.actionOwners) {
         const decoded = jwtDecode(authState.accessToken);
@@ -75,7 +75,7 @@ function ActionViewPage() {
 
 
   useEffect(() => {
-    fetchActionData(); 
+    fetchActionData();
   }, [id]);
 
   const handleDonationSuccess = () => {
@@ -167,6 +167,28 @@ function ActionViewPage() {
       console.error(error.message);
     }
   };
+
+  const handleReportAction = async () => {
+    try {
+      var text = prompt("Unesite razlog za kreiranje prijave");
+
+      const req = apiRequest("reports/create", "POST", authState.accessToken, {
+        reportType: 1,
+        idReported: currentAction.idAction,
+        text: text,
+      });
+
+      const resp = await req;
+
+      if (resp != "success") {
+        throw new Error(
+          "Desila se greška prilikom kreiranja prijave komentara!"
+        );
+      }
+    } catch (error) {
+      console.error(error.message);
+    }
+	};
 
   const handleEditComment = (commentId, currentText) => {
     setEditingId(commentId);
@@ -302,6 +324,14 @@ function ActionViewPage() {
           >
             Ažuriraj
           </Link>
+        )}
+        {!isOwner && (
+          <button
+            className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-4 rounded float-right"
+			onClick={handleReportAction}
+          >
+            Prijavi
+          </button>
         )}
         <h1 className="text-4xl font-bold text-gray-800 mb-8">
           {currentAction.name}
