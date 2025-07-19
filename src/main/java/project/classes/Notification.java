@@ -9,18 +9,32 @@ public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idNotification;
+
     @ManyToOne
     @JoinColumn(name = "idUserReceiver")
     private User user;
+
     private String text;
     private LocalDateTime created = LocalDateTime.now();
+
     @Column(columnDefinition ="TINYINT")
     private Boolean seen = false;
     private Integer type; // 0 - collab, 1 - alert (kraj akcije itd...
+
     @ManyToOne
     @JoinColumn(name ="idActionSender")
     private Action action;
 
+    @ManyToOne
+    @JoinColumn(name = "idUserSender")
+    private User userSender;
+
+    public User getUserSender() {
+        return userSender;
+    }
+    public void setUserSender(User userSender) {
+        this.userSender = userSender;
+    }
     public Action getAction() {
         return action;
     }

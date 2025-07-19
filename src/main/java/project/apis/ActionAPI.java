@@ -129,7 +129,7 @@ public class ActionAPI {
 
     @GetMapping("/getuseractions")
     public ResponseEntity<?> getUserActions(@RequestHeader Map<String, String> token, @RequestParam Integer idUser) {
-        List<ActionOwner> aol = actionOwnerRepository.findAll().stream().filter(ao->ao.getUser().getIdUser().equals(idUser)).toList();
+        List<ActionOwner> aol = actionOwnerRepository.findAllByuser_idUser(idUser);
         List<ActionDTO> al = new ArrayList<>();
         for (ActionOwner a : aol)
             al.add(new ActionDTO(a.getAction().getName(), a.getAction().getGoal(),a.getAction().getCollected(), a.getAction().getDesc(), a.getAction().getPrimaryImage(), a.getAction().getIdAction(), null, null));
