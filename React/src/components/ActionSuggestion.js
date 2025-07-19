@@ -6,11 +6,12 @@ const ActionSuggestion = ({ action }) => {
     (action.collected / action.goal) * 100,
     100
   ).toFixed(0);
+  const id = action.idAction;
 
   return (
     <Link
       to={`/actionView/${action.idAction}`}
-      state={action.idAction}
+      state={{id}}
       className="flex items-center border-b bg-white hover:bg-gray-100 cursor-pointer no-underline"
     >
       <img
