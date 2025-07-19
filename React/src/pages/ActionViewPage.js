@@ -73,7 +73,6 @@ function ActionViewPage() {
     }
   };
 
-
   useEffect(() => {
     fetchActionData();
   }, [id]);
@@ -188,7 +187,7 @@ function ActionViewPage() {
     } catch (error) {
       console.error(error.message);
     }
-	};
+  };
 
   const handleEditComment = (commentId, currentText) => {
     setEditingId(commentId);
@@ -223,7 +222,12 @@ function ActionViewPage() {
     if (!confirmDelete) return;
 
     try {
-      await apiRequest(`comments/remove`, "POST", authState.accessToken, commentId);
+      await apiRequest(
+        `comments/remove`,
+        "POST",
+        authState.accessToken,
+        commentId
+      );
       fetchActionData();
     } catch (err) {
       console.error("Greška pri brisanju komentara:", err.message);
@@ -274,15 +278,15 @@ function ActionViewPage() {
         <h2 className="text-xl font-extrabold text-gray-800 mb-2">Vlasnik</h2>
         <ul className="list-none p-0 space-y-2">
           {owner.map((o) => (
-            <Link to={`/viewProfile/${o.idUser}`} state={{ id : o.idUser }}>
-            <li key={o.idUser} className="flex items-center gap-3">
-              <img
-                src={o.imagePath}
-                alt={o.displayName}
-                className="w-8 h-8 rounded-full object-cover border"
-              />
-              <span>{o.displayName}</span>
-            </li>
+            <Link to={`/viewProfile/${o.idUser}`} state={{ id: o.idUser }}>
+              <li key={o.idUser} className="flex items-center gap-3">
+                <img
+                  src={o.imagePath}
+                  alt={o.displayName}
+                  className="w-8 h-8 rounded-full object-cover border"
+                />
+                <span>{o.displayName}</span>
+              </li>
             </Link>
           ))}
         </ul>
@@ -293,15 +297,15 @@ function ActionViewPage() {
             </h2>
             <ul className="list-none p-0 space-y-2">
               {collaborators.map((c) => (
-                <Link to={`/viewProfile/${c.idUser}`} state={{ id : c.idUser }}>
-                <li key={c.idUser} className="flex items-center gap-3">
-                  <img
-                    src={c.imagePath}
-                    alt={c.displayName}
-                    className="w-8 h-8 rounded-full object-cover border"
-                  />
-                  <span>{c.displayName}</span>
-                </li>
+                <Link to={`/viewProfile/${c.idUser}`} state={{ id: c.idUser }}>
+                  <li key={c.idUser} className="flex items-center gap-3">
+                    <img
+                      src={c.imagePath}
+                      alt={c.displayName}
+                      className="w-8 h-8 rounded-full object-cover border"
+                    />
+                    <span>{c.displayName}</span>
+                  </li>
                 </Link>
               ))}
             </ul>
@@ -328,7 +332,7 @@ function ActionViewPage() {
         {!isOwner && (
           <button
             className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-4 rounded float-right"
-			onClick={handleReportAction}
+            onClick={handleReportAction}
           >
             Prijavi
           </button>
@@ -398,17 +402,23 @@ function ActionViewPage() {
                     className="border-b pb-3 last:border-b-0"
                   >
                     <div className="flex items-center mb-1">
-                      <img
-                        src={
-                          comment.imagePath || "https://via.placeholder.com/30"
-                        }
-                        alt={comment.displayName || "Gost"}
-                        className="w-7 h-7 rounded-full object-cover mr-2"
-                      />
-                      <p className="font-semibold text-gray-800">
-                        {comment.displayName || "Gost"}
-                      </p>
-
+                      <Link
+                        to={`/viewProfile/${comment.idUser}`}
+                        state={{ id: comment.idUser }}
+                        className="flex items-center mb-1 hover:underline"
+                      >
+                        <img
+                          src={
+                            comment.imagePath ||
+                            "https://via.placeholder.com/30"
+                          }
+                          alt={comment.displayName || "Gost"}
+                          className="w-7 h-7 rounded-full object-cover mr-2 hover:bg-gray-200"
+                        />
+                        <p className="font-semibold text-gray-800">
+                          {comment.displayName || "Gost"}
+                        </p>
+                      </Link>
                       <span className="text-sm text-gray-500 ml-auto mr-4">
                         {new Date(comment.created).toLocaleString()}
                       </span>
