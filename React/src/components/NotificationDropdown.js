@@ -26,6 +26,28 @@ export default function NotificationDropdown() {
     fetchNotifications();
   }, [authState.accessToken]);
 
+  //Ove dvije funkcije (handleAccept/Decline Collab)sluze da ako korisnik prihvati ili odbije kolaboraciju da se ona izbrise sa notifikacija
+  const handleAcceptCollab = (notification) => {
+    setNotifications((prev) =>
+      prev.filter((n) => n.idNotification !== notification.idNotification)
+    );
+    setUnseenCount((prev) => Math.max(0, prev - 1));
+  };
+
+
+  const handleDeclineCollab = (notification) => {
+    setNotifications((prev) =>
+      prev.filter((n) => n.idNotification !== notification.idNotification)
+    );
+    setUnseenCount((prev) => Math.max(0, prev - 1));
+  };
+
+
+
+
+
+
+
 
   const markAllAsSeen = async () => {
     const unseenIds = notifications.filter(n => !n.seen).map(n => n.idNotification);
@@ -81,8 +103,8 @@ export default function NotificationDropdown() {
                   <div>
                     <CollabNotification
                       notification={notification}
-                      onAccept={(n) => console.log('Prihvatio', n)}
-                      onDecline={(n) => console.log('Odbio', n)}
+                      onAccept={handleAcceptCollab}
+                      onDecline={handleDeclineCollab}
                     />
                   </div>
                 </DropdownMenu.Item>

@@ -40,26 +40,42 @@ public class NotificationAPI {
     public ResponseEntity<?> getNotifications(@RequestHeader Map<String, String> token) {
         List<Notification> n = notificationRepository.findAllByUser_idUser(jwt.extractId(token.get("token")));
         return ResponseEntity.ok(n.stream().map(a->new NotificationDTO(a.getAction().getIdAction(), a.getText(), a.getType(), a.getAction().getName(), a.getAction().getPrimaryImage(), a.getIdNotification(), a.getUserSender().getIdUser(), a.getUserSender().getDisplayName(),a.getSeen(),null))
+       // List<Notification> n = notificationRepository.findAllByUser_idUser(jwt.extractId(token.get("token")));
+        List<Notification> n = notificationRepository.findTop10ByUserIdOrderByCreatedDesc(jwt.extractId(token.get("token")));
+        return ResponseEntity.ok(n.stream().map(a->
+                new NotificationDTO(a.getAction().getIdAction(),
+                        a.getText(),
+                        a.getType(),
+                        a.getAction().getName(),
+                        a.getAction().getPrimaryImage(),
+                        a.getIdNotification(),
+                        a.getUserSender().getIdUser(),
+                        a.getUserSender().getDisplayName(),
+                        a.getSeen(),
+                        null))
         );
     }
 
     @PostMapping("/send")
-    public ResponseEntity<?> sendNotification(@RequestHeader Map<String, String> token, @RequestBody NotificationDTO notif, @RequestParam(value="idAction", required = false) Integer idAction) {
+    public ResponseEntity<?> sendNotification(@RequestHeader Map<String, String> token, @RequestBody NotificationSendCollabDTO notif) {
         User u = userRepository.findByidUser(jwt.extractId(token.get("token")));
         Notification n = new Notification();
 
-        if (notif.getType() == 0)
-            n.setText(u.getDisplayName() + " vas je pozvao da budete kolaborator na akciji " + actionRepository.findByidAction(idAction).getName());
-        else if (notif.getType() == 0 && idAction == null)
+        if (!actionOwnerRepository.findAll().stream().filter(ao->ao.getUser().getIdUser().equals(notif.getIdUser()) && ao.getAction().getIdAction().equals(notif.getIdAction())).toList().isEmpty())
+            return ResponseEntity.ok("existsAOError");
+
+        n.setText(u.getDisplayName() + " vas je pozvao da budete kolaborator na akciji " + actionRepository.findByidAction(notif.getIdAction()).getName());
+        if (notif.getIdAction() == null)
             return ResponseEntity.ok("missingIdActionError");
-        else if (notif.getType() == 1)
-            n.setText(notif.getText());
 
         n.setCreated(LocalDateTime.now());
         n.setSeen(false);
         n.setType(notif.getType());
-        n.setUserSender(userRepository.findByidUser(notif.getIdSender()));
+        n.setUserSender(u);
+        n.setUser(userRepository.findByidUser(notif.getIdUser()));
+        n.setAction(actionRepository.findByidAction(notif.getIdAction()));
 
+        notificationRepository.save(n);
         return ResponseEntity.ok("success");
     }
 
