@@ -39,7 +39,7 @@ public class NotificationAPI {
     @GetMapping("/get")
     public ResponseEntity<?> getNotifications(@RequestHeader Map<String, String> token) {
         List<Notification> n = notificationRepository.findAllByUser_idUser(jwt.extractId(token.get("token")));
-        return ResponseEntity.ok(n.stream().map(a->new NotificationDTO(a.getAction().getIdAction(), a.getText(), a.getType(), a.getAction().getName(), a.getAction().getPrimaryImage(), a.getIdNotification(), a.getUser().getIdUser()))
+        return ResponseEntity.ok(n.stream().map(a->new NotificationDTO(a.getAction().getIdAction(), a.getText(), a.getType(), a.getAction().getName(), a.getAction().getPrimaryImage(), a.getIdNotification(), a.getUserSender().getIdUser(), a.getUserSender().getDisplayName(),a.getSeen()))
         );
     }
 
@@ -58,7 +58,7 @@ public class NotificationAPI {
         n.setCreated(LocalDateTime.now());
         n.setSeen(false);
         n.setType(notif.getType());
-        n.setUser(userRepository.findByidUser(notif.getIdUser()));
+        n.setUserSender(userRepository.findByidUser(notif.getIdSender()));
 
         return ResponseEntity.ok("success");
     }
@@ -89,5 +89,9 @@ public class NotificationAPI {
         }
     }
 
-    //@PostMapping("/denycollab")
+    @PostMapping("/denycollab")
+    public ResponseEntity<?> denyCollab(@RequestHeader Map<String, String> token, @RequestParam Integer idNotification) {
+        notificationRepository.delete(notificationRepository.findByidNotification(idNotification));
+        return ResponseEntity.ok("success");
+    }
 }

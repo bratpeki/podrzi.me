@@ -1,34 +1,45 @@
 package project.dtos;
 
-import jakarta.persistence.*;
-import project.classes.User;
-
-import java.time.LocalDateTime;
-
 public class NotificationDTO {
-    private Integer idUser;
+    private Integer idSender;
     private Integer idNotification;
     private Integer idAction;
     private String text;
     private Integer type; // 0 - collab, 1 - alert (kraj akcije itd...
     private String name = "";
     private String primaryImage = "";
+    private String displayName;
+    private Boolean seen;
 
-    public NotificationDTO(Integer idAction, String text, Integer type, String name, String primaryImage, Integer idNotification, Integer idUser) {
+    public NotificationDTO(Integer idAction, String text, Integer type, String name, String primaryImage, Integer idNotification, Integer idSender, String displayName,  Boolean seen) {
         this.idAction = idAction;
         this.text = text;
         this.type = type;
         this.name = name;
         this.primaryImage = primaryImage;
         this.idNotification = idNotification;
-        this.idUser = idUser;
+        this.idSender = idSender;
+        this.displayName = displayName;
+        this.seen = seen;
     }
 
-    public Integer getIdUser() {
-        return idUser;
+    public Boolean getSeen() {
+        return seen;
     }
-    public void setIdUser(Integer idUser) {
-        this.idUser = idUser;
+    public void setSeen(Boolean seen) {
+        this.seen = seen;
+    }
+    public String getDisplayName() {
+        return displayName;
+    }
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+    public Integer getIdSender() {
+        return idSender;
+    }
+    public void setIdSender(Integer idSender) {
+        this.idSender = idSender;
     }
     public Integer getIdNotification() {
         return idNotification;
