@@ -3,6 +3,7 @@ import { BellIcon } from '@heroicons/react/24/outline';
 import { useContext, useEffect, useState } from 'react';
 import { apiRequest } from '../utility/FetchAPI';
 import { AuthStateContext } from '../components/UseAuthState';
+import CollabNotification from './CollabNotifications';
 
 export default function NotificationDropdown() {
   const { authState } = useContext(AuthStateContext);
@@ -25,16 +26,27 @@ export default function NotificationDropdown() {
     fetchNotifications();
   }, [authState.accessToken]);
 
-  const markAllAsSeen = () => {
-    setNotifications((prev) =>
-      prev.map((n) => ({ ...n, seen: true }))
-    );
-    setUnseenCount(0);
-    // Opcionalno: napravi API poziv da backend upamti da su viđene
+
+  const markAllAsSeen = async () => {
+    const unseenIds = notifications.filter(n => !n.seen).map(n => n.idNotification);
+
+    if (unseenIds.length === 0) return;
+
+    try {
+      await apiRequest("notifications/seen", "POST", authState.accessToken, unseenIds);
+      setNotifications((prev) => prev.map((n) => ({ ...n, seen: true })));
+      setUnseenCount(0);
+    } catch (error) {
+      console.error("Greška pri slanju oznake da su notifikacije viđene:", error);
+    }
   };
 
+
+
   return (
-    <DropdownMenu.Root>
+    <DropdownMenu.Root onOpenChange={(open) => {
+      if (open) markAllAsSeen();
+    }}>
       <DropdownMenu.Trigger asChild>
         <button
           onClick={markAllAsSeen}
@@ -52,36 +64,52 @@ export default function NotificationDropdown() {
         </button>
       </DropdownMenu.Trigger>
 
- <DropdownMenu.Content
-  className="z-50 w-72 max-h-96 overflow-auto bg-white divide-y divide-gray-200 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none text-black"
-  align="end"
-  sideOffset={8}
->
-  {notifications.length === 0 ? (
-    <div className="px-4 py-3 text-sm text-gray-500 text-center">
-      Nema novih notifikacija
-    </div>
-  ) : (
-    notifications.map((notification) => (
-      <DropdownMenu.Item
-        key={notification.id}
-        className="w-full text-left px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 focus:outline-none"
+      <DropdownMenu.Content
+        className="z-50 w-72 max-h-96 overflow-auto bg-white divide-y divide-gray-200 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none text-black"
+        align="end"
+        sideOffset={8}
       >
-        <div className="flex items-start gap-3">
-          <img
-            src={notification.imagePath}
-            alt="Profilna"
-            className="w-10 h-10 rounded-full object-cover"
-          />
-          <div className="flex flex-col">
-            <span className="font-medium">{notification.displayName}</span>
-            <span className="text-gray-700">{notification.text}</span>
+        {notifications.length === 0 ? (
+          <div className="px-4 py-3 text-sm text-gray-500 text-center">
+            Nema novih notifikacija
           </div>
-        </div>
-      </DropdownMenu.Item>
-    ))
-  )}
-    </DropdownMenu.Content>
-  </DropdownMenu.Root>
+        ) : (
+          notifications.map((notification) => {
+            if (notification.type === 0) {
+              return (
+                <DropdownMenu.Item key={notification.id} asChild>
+                  <div>
+                    <CollabNotification
+                      notification={notification}
+                      onAccept={(n) => console.log('Prihvatio', n)}
+                      onDecline={(n) => console.log('Odbio', n)}
+                    />
+                  </div>
+                </DropdownMenu.Item>
+              );
+            }
+
+            return (
+              <DropdownMenu.Item
+                key={notification.id}
+                className="w-full text-left px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 focus:outline-none"
+              >
+                <div className="flex items-start gap-3">
+                  <img
+                    src={notification.primaryImage}
+                    alt="Profilna"
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                  <div className="flex flex-col">
+                    <span className="font-medium">{notification.name}</span>
+                    <span className="text-gray-700">{notification.text}</span>
+                  </div>
+                </div>
+              </DropdownMenu.Item>
+            );
+          })
+        )}
+      </DropdownMenu.Content>
+    </DropdownMenu.Root>
   );
 }
