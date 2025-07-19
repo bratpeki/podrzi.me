@@ -38,7 +38,6 @@ public class NotificationAPI {
 
     @GetMapping("/get")
     public ResponseEntity<?> getNotifications(@RequestHeader Map<String, String> token) {
-       // List<Notification> n = notificationRepository.findAllByUser_idUser(jwt.extractId(token.get("token")));
         List<Notification> n = notificationRepository.findTop10ByUserIdOrderByCreatedDesc(jwt.extractId(token.get("token")));
         return ResponseEntity.ok(n.stream().map(a->
                 new NotificationDTO(a.getAction().getIdAction(),
