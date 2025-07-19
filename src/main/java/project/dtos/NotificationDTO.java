@@ -4,6 +4,7 @@ public class NotificationDTO {
     private Integer idSender;
     private Integer idNotification;
     private Integer idAction;
+    private Integer idUser;
     private String text;
     private Integer type; // 0 - collab, 1 - alert (kraj akcije itd...
     private String name = "";
@@ -11,7 +12,7 @@ public class NotificationDTO {
     private String displayName;
     private Boolean seen;
 
-    public NotificationDTO(Integer idAction, String text, Integer type, String name, String primaryImage, Integer idNotification, Integer idSender, String displayName,  Boolean seen) {
+    public NotificationDTO(Integer idAction, String text, Integer type, String name, String primaryImage, Integer idNotification, Integer idSender, String displayName,  Boolean seen, Integer idUser) {
         this.idAction = idAction;
         this.text = text;
         this.type = type;
@@ -21,8 +22,15 @@ public class NotificationDTO {
         this.idSender = idSender;
         this.displayName = displayName;
         this.seen = seen;
+        this.idUser = idUser;
     }
 
+    public Integer getIdUser() {
+        return idUser;
+    }
+    public void setIdUser(Integer idUser) {
+        this.idUser = idUser;
+    }
     public Boolean getSeen() {
         return seen;
     }

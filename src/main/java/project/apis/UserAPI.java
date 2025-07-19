@@ -10,7 +10,9 @@ import project.repositories.UserRepository;
 import project.utilities.JWT;
 
 import java.util.Map;
+import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
@@ -26,8 +28,14 @@ public class UserAPI {
     }
 
     @GetMapping("/getusers")
-    public ResponseEntity<?> GetUsers() {
-        return ResponseEntity.ok(userRepository.findAll().stream().map(u->u.getDisplayName()).toList());
+    public ResponseEntity<?> getUsers() {
+        Map<Integer, String> map = userRepository.findAllidUsersAnddisplayNamesExcluding(58).stream()
+                .collect(Collectors.toMap(
+                        row -> (Integer) row[0],
+                        row -> (String) row[1]
+                ));
+
+        return ResponseEntity.ok(map);
     }
 
     @PostMapping("/userauth")

@@ -3,6 +3,7 @@ package project.repositories;
 import jakarta.transaction.*;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
+import project.classes.Action;
 import project.classes.Notification;
 
 import java.util.List;
@@ -18,4 +19,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
     List<Notification> findByaction_idAction(Integer idAction);
 
     Notification findByidNotification (Integer idNotification);
+
+    @Query("SELECT n FROM Notification n WHERE n.user.idUser = :idUser ORDER BY n.created DESC")
+    List<Notification> findTop10ByUserIdOrderByCreatedDesc(@Param("idUser") Integer idUser);
 }
