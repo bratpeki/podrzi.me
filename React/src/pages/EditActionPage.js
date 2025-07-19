@@ -6,13 +6,17 @@ import NavigationBar from "../components/NavigationHeader";
 import { apiRequest } from "../utility/FetchAPI";
 import CollaboratorSearch from "../components/CollaboratorSearch";
 import DeleteDialog from "../components/DeleteDialog";
+import { jwtDecode } from "jwt-decode";
 
 //TODO : REMOVE NOVE SLIKE, NOVA SLIKA KAO PRIMARNA
 function EditActionPage() {
   const location = useLocation();
   const { id } = location.state || {};
   const [currentAction, setCurrentAction] = useState("");
-  const [displayNames, setDisplayNames] = useState([]);
+  const [users, setUsers] = useState({}); // ← keep raw object here
+  const userIds = React.useMemo(() => Object.keys(users), [users]);
+  const displayNames = React.useMemo(() => Object.values(users), [users]);
+  const [collabUsers, setCollabUsers] = useState([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [goal, setGoal] = useState("");
@@ -25,6 +29,9 @@ function EditActionPage() {
 
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const navigate = useNavigate();
+  const ownerId = authState.accessToken
+    ? jwtDecode(authState.accessToken).id
+    : null;
 
   console.log("EditActionPage", authState.accessToken);
 
@@ -60,7 +67,7 @@ function EditActionPage() {
     apiRequest("users/getusers", "GET", authState.accessToken)
       .then((res) => res)
       .then((data) => {
-        setDisplayNames(data);
+        setUsers(data);
       })
       .catch((err) => {
         console.error("Failed to fetch action:", err);
@@ -99,6 +106,29 @@ function EditActionPage() {
     } catch (error) {
       setResponseMessage("greška!");
       console.error(error);
+    }
+  };
+
+  const handleSendCollabRequests = async () => {
+    try {
+      const promises = collabUsers.map((receiverId) =>
+        apiRequest(
+          "notifications/send",
+          "POST",
+          authState.accessToken,
+          {
+            idAction: id,
+            idSender: ownerId,
+            type: 0,
+            idUser: receiverId,
+          }
+        )
+      );
+      await Promise.all(promises); // wait for them all to finish
+      setResponseMessage("Pozivi poslani!");
+    } catch (error) {
+      console.error(error);
+      setResponseMessage("Greška pri slanju poziva!");
     }
   };
 
@@ -337,10 +367,13 @@ function EditActionPage() {
             <div className="bg-white p-6 shadow border rounded">
               <CollaboratorSearch
                 displayNames={displayNames}
-              ></CollaboratorSearch>
+                userIds={userIds}
+                onChange={(ids) => setCollabUsers(ids)} // Will now be array of user IDs
+              />
               <button
                 //NEKA BUDE SIMBOL SLANJA
                 className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-6 rounded float-right"
+                onClick={handleSendCollabRequests}
               >
                 Pošalji Zahtjeve
               </button>
