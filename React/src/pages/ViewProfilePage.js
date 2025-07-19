@@ -14,9 +14,41 @@ function ViewProfilePage() {
   const { id } = location.state || {};
   const { authState } = useContext(AuthStateContext);
   const [user, setUser] = useState(null);
-  const [actions, setActions] = useState([]); 
+  const [actions, setActions] = useState([]);
   const [retryCount, setRetryCount] = useState(0);
   const navigate = useNavigate();
+
+  const handleReportUser = async () => {
+
+    try {
+      var text = prompt("Unesite razlog za kreiranje prijave");
+
+      if (!text) return; // TODO: Eksperimentalno
+
+      const req = apiRequest("reports/create", "POST", authState.accessToken, {
+        reportType: 0,
+        idReported: user.idUser,
+        text: text,
+      });
+
+      const resp = await req;
+
+      if (resp != "success") {
+        throw new Error(
+          "Desila se greška prilikom kreiranja prijave korisnika!"
+        );
+      }
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
+  // Define the function that the button will call
+  const handleButtonClick = () => {
+    console.log("Button in ViewProfilePage clicked!");
+    // You can add your desired logic here, e.g., navigate to an edit page
+    alert("Button in ViewProfilePage clicked!");
+  };
 
   useEffect(() => {
     const fetchProfileAndActions = async () => {
@@ -82,7 +114,15 @@ function ViewProfilePage() {
       <NavigationBar />
 
       <div className="flex-grow flex items-center justify-center px-4 py-12">
-        <div className="bg-white rounded-lg shadow-md max-w-5xl w-full p-8"> 
+        <div className="relative bg-white rounded-lg shadow-md max-w-5xl w-full p-8 mt-10 mb-2">
+
+          <button
+            onClick={handleReportUser}
+            className="absolute top-4 right-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300 ease-in-out z-10"
+          >
+            Prijavi korisnika
+          </button>
+
           <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
             Profil korisnika
           </h1>
@@ -115,10 +155,10 @@ function ViewProfilePage() {
                 Akcije korisnika
               </h3>
               {actions.length > 0 ? (
-                
+
                 <div className="h-96 overflow-y-auto pr-2 custom-scrollbar">
 
-                    <div className="flex flex-wrap justify-center gap-6"> 
+                    <div className="flex flex-wrap justify-center gap-6">
                         {actions.map((actionItem) => (
                             <ActionCard key={actionItem.idAction} action={actionItem} />
                         ))}
