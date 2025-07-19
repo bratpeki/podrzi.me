@@ -46,7 +46,7 @@ function ActionViewPage() {
       );
       setCurrentAction(actionData);
 
-      setComments(actionData.comments || []);                                  
+      setComments(actionData.comments || []);
 
       if (authState.accessToken && actionData.actionOwners) {
         const decoded = jwtDecode(authState.accessToken);
@@ -73,9 +73,8 @@ function ActionViewPage() {
     }
   };
 
-
   useEffect(() => {
-    fetchActionData(); 
+    fetchActionData();
   }, [id]);
 
   const handleDonationSuccess = () => {
@@ -168,6 +167,28 @@ function ActionViewPage() {
     }
   };
 
+  const handleReportAction = async () => {
+    try {
+      var text = prompt("Unesite razlog za kreiranje prijave");
+
+      const req = apiRequest("reports/create", "POST", authState.accessToken, {
+        reportType: 1,
+        idReported: currentAction.idAction,
+        text: text,
+      });
+
+      const resp = await req;
+
+      if (resp != "success") {
+        throw new Error(
+          "Desila se greška prilikom kreiranja prijave komentara!"
+        );
+      }
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
   const handleEditComment = (commentId, currentText) => {
     setEditingId(commentId);
     setEditingText(currentText);
@@ -201,7 +222,12 @@ function ActionViewPage() {
     if (!confirmDelete) return;
 
     try {
-      await apiRequest(`comments/remove`, "POST", authState.accessToken, commentId);
+      await apiRequest(
+        `comments/remove`,
+        "POST",
+        authState.accessToken,
+        commentId
+      );
       fetchActionData();
     } catch (err) {
       console.error("Greška pri brisanju komentara:", err.message);
@@ -252,15 +278,15 @@ function ActionViewPage() {
         <h2 className="text-xl font-extrabold text-gray-800 mb-2">Vlasnik</h2>
         <ul className="list-none p-0 space-y-2">
           {owner.map((o) => (
-            <Link to={`/viewProfile/${o.idUser}`} state={{ id : o.idUser }}>
-            <li key={o.idUser} className="flex items-center gap-3">
-              <img
-                src={o.imagePath}
-                alt={o.displayName}
-                className="w-8 h-8 rounded-full object-cover border"
-              />
-              <span>{o.displayName}</span>
-            </li>
+            <Link to={`/viewProfile/${o.idUser}`} state={{ id: o.idUser }}>
+              <li key={o.idUser} className="flex items-center gap-3">
+                <img
+                  src={o.imagePath}
+                  alt={o.displayName}
+                  className="w-8 h-8 rounded-full object-cover border"
+                />
+                <span>{o.displayName}</span>
+              </li>
             </Link>
           ))}
         </ul>
@@ -271,15 +297,15 @@ function ActionViewPage() {
             </h2>
             <ul className="list-none p-0 space-y-2">
               {collaborators.map((c) => (
-                <Link to={`/viewProfile/${c.idUser}`} state={{ id : c.idUser }}>
-                <li key={c.idUser} className="flex items-center gap-3">
-                  <img
-                    src={c.imagePath}
-                    alt={c.displayName}
-                    className="w-8 h-8 rounded-full object-cover border"
-                  />
-                  <span>{c.displayName}</span>
-                </li>
+                <Link to={`/viewProfile/${c.idUser}`} state={{ id: c.idUser }}>
+                  <li key={c.idUser} className="flex items-center gap-3">
+                    <img
+                      src={c.imagePath}
+                      alt={c.displayName}
+                      className="w-8 h-8 rounded-full object-cover border"
+                    />
+                    <span>{c.displayName}</span>
+                  </li>
                 </Link>
               ))}
             </ul>
@@ -302,6 +328,14 @@ function ActionViewPage() {
           >
             Ažuriraj
           </Link>
+        )}
+        {!isOwner && (
+          <button
+            className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-4 rounded float-right"
+            onClick={handleReportAction}
+          >
+            Prijavi
+          </button>
         )}
         <h1 className="text-4xl font-bold text-gray-800 mb-8">
           {currentAction.name}
@@ -368,17 +402,23 @@ function ActionViewPage() {
                     className="border-b pb-3 last:border-b-0"
                   >
                     <div className="flex items-center mb-1">
-                      <img
-                        src={
-                          comment.imagePath || "https://via.placeholder.com/30"
-                        }
-                        alt={comment.displayName || "Gost"}
-                        className="w-7 h-7 rounded-full object-cover mr-2"
-                      />
-                      <p className="font-semibold text-gray-800">
-                        {comment.displayName || "Gost"}
-                      </p>
-
+                      <Link
+                        to={`/viewProfile/${comment.idUser}`}
+                        state={{ id: comment.idUser }}
+                        className="flex items-center mb-1 hover:underline"
+                      >
+                        <img
+                          src={
+                            comment.imagePath ||
+                            "https://via.placeholder.com/30"
+                          }
+                          alt={comment.displayName || "Gost"}
+                          className="w-7 h-7 rounded-full object-cover mr-2 hover:bg-gray-200"
+                        />
+                        <p className="font-semibold text-gray-800">
+                          {comment.displayName || "Gost"}
+                        </p>
+                      </Link>
                       <span className="text-sm text-gray-500 ml-auto mr-4">
                         {new Date(comment.created).toLocaleString()}
                       </span>
