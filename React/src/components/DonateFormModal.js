@@ -128,7 +128,7 @@ function DonateFormModal({ action, onClose, onDonationSuccess }) {
               htmlFor="amount"
               className="block text-gray-700 text-sm font-bold mb-2"
             >
-              Iznos donacije (€)
+              Iznos donacije (KM)
             </label>
             <input
               type="number"

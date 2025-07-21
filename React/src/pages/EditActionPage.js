@@ -290,53 +290,51 @@ function EditActionPage() {
       <div className="max-w-5xl mx-auto py-20 px-6 space-y-16">
         {/* Section: Start with the basics */}
         <section>
-          <h2 className="text-2xl font-semibold mb-1">Start with the basics</h2>
+          <h2 className="text-2xl font-semibold mb-1">Počni od osnova</h2>
           <p className="text-sm text-gray-600 mb-6">
-            Make it easy for people to learn about your project.
+             Učini da ljudi lako razumiju tvoj projekat.
           </p>
 
           <div className="grid md:grid-cols-2 gap-10">
             <div>
-              <h3 className="font-medium text-lg mb-1">Project title</h3>
+              <h3 className="font-medium text-lg mb-1">Naziv projekta</h3>
               <p className="text-sm text-gray-600 mb-4">
-                Write a clear, brief title and subtitle to help people quickly
-                understand your project. Both will appear on your project and
-                pre-launch pages.
+               Napiši jasan i kratak naslov i podnaslov kako bi ljudi lako razumjeli tvoj projekat. 
+               Oba naslova će biti prikazani na stranici projekta i na stranici prije pokretanja.
               </p>
               <p className="text-sm text-gray-500">
-                Potential backers will also see them in category pages, search
-                results, or emails.
+               Potencijalni podržavaoci će ih takođe vidjeti na stranicama kategorija,
+               u rezultatima pretrage ili u e-mailovima.
               </p>
             </div>
 
             <div className="bg-white p-6 shadow border rounded">
-              <label className="block text-sm font-medium mb-1">Title</label>
+              <label className="block text-sm font-medium mb-1">Naslov</label>
               <input
                 type="text"
                 className="w-full border border-gray-300 rounded p-2 mb-4"
                 maxLength={60}
-                placeholder="e.g. Radiotopia: A Storytelling Revolution"
+                placeholder="npr. EkoMisija: Inovacije za zelenu planetu"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
               />
 
-              <label className="block text-sm font-medium mb-1">Subtitle</label>
+              <label className="block text-sm font-medium mb-1">Podnaslov</label>
               <input
                 className="w-full border border-gray-300 rounded p-2"
                 maxLength={135}
                 rows={3}
-                placeholder="e.g. We are a collective of amazing storytelling radio shows..."
+                placeholder="npr. Mi smo kolektiv posvećen očuvanju planete..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 required
               ></input>
 
               <p className="mt-2 text-sm">
-                Give backers the best first impression of your project with
-                great titles.{" "}
+                 Ostavite najbolji prvi utisak na podržavaoce uz odlične naslove.{" "}
                 <a href="#" className="underline">
-                  Learn more...
+                  Saznaj više...
                 </a>
               </p>
             </div>
@@ -350,17 +348,14 @@ function EditActionPage() {
             <div>
               <h3 className="font-medium text-lg mb-1">Kolaboratori</h3>
               <p className="text-sm text-gray-600 mb-4">
-                Collaborators are users who are actively involved in
-                contributing to a specific action or campaign within the
-                platform. They can help manage the action, provide updates, or
-                interact with supporters. Adding collaborators allows multiple
-                trusted users to work together on the same action, improving
-                communication, efficiency, and transparency for those following
-                or supporting the campaign.
+                  Kolaboratori su korisnici koji su aktivno uključeni u doprinošenje određenoj akciji ili kampanji na platformi. 
+                  Oni mogu pomagati u upravljanju akcijom, objavljivanju ažuriranja ili interakciji s podržavaocima. 
+                  Dodavanjem kolaboratora omogućava se da više pouzdanih korisnika zajedno radi na istoj akciji, 
+                  čime se poboljšavaju komunikacija, efikasnost i transparentnost za one koji prate ili podržavaju kampanju.   
               </p>
               <p className="text-sm text-gray-500">
-                Potential backers will also see them in category pages, search
-                results, or emails.
+                  Potencijalni podržavaoci će ih takođe vidjeti na stranicama kategorija, 
+                  u rezultatima pretrage ili putem e-mailova.
               </p>
             </div>
 
@@ -385,36 +380,36 @@ function EditActionPage() {
         <section>
           <div className="grid md:grid-cols-2 gap-10">
             <div>
-              <h3 className="font-medium text-lg mb-1">Project category</h3>
+              <h3 className="font-medium text-lg mb-1">Kategorija projekta</h3>
               <p className="text-sm text-gray-600 mb-2">
-                Choose a primary category and subcategory to help backers find
-                your project.
+                Izaberi glavnu kategoriju i potkategoriju kako bi podržavaoci
+                lakše pronašli tvoj projekat.
               </p>
               <p className="text-sm text-gray-500">
-                You can change these anytime before and during your campaign.
+                Ove opcije možeš mijenjati u bilo kojem trenutku prije i tokom kampanje.
               </p>
             </div>
 
             <div className="bg-white p-6 shadow border rounded grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Primary category
+                  Glavna kategorija
                 </label>
                 <select className="w-full border border-gray-300 rounded p-2">
-                  <option>Art</option>
-                  <option>Technology</option>
-                  <option>Games</option>
+                  <option>Umjetnost</option>
+                  <option>Tehnologija</option>
+                  <option>Igrice</option>
                 </select>
               </div>
 
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Primary subcategory
+                  Glavna podkategorija
                 </label>
                 <select className="w-full border border-gray-300 rounded p-2">
-                  <option>Ceramics</option>
-                  <option>Apps</option>
-                  <option>Board Games</option>
+                  <option>Keramika</option>
+                  <option>Aplikacije</option>
+                  <option>Društvene igre</option>
                 </select>
               </div>
 
@@ -429,18 +424,17 @@ function EditActionPage() {
         <section>
           <div className="grid md:grid-cols-2 gap-10">
             <div>
-              <h3 className="font-medium text-lg mb-1">Project location</h3>
+              <h3 className="font-medium text-lg mb-1">Lokacija projekta</h3>
               <p className="text-sm text-gray-600">
-                Enter the location that best describes where your project is
-                based.
+                  Unesi lokaciju koja najbolje opisuje gdje se vaš projekat nalazi.
               </p>
             </div>
 
             <div className="bg-white p-6 shadow border rounded">
-              <label className="block text-sm font-medium mb-1">Location</label>
+              <label className="block text-sm font-medium mb-1">Lokacija</label>
               <input
                 type="text"
-                placeholder="Start typing your location..."
+                placeholder="Unesite vašu lokaciju projekta..."
                 className="w-full border border-gray-300 rounded p-2"
               />
             </div>
@@ -452,14 +446,13 @@ function EditActionPage() {
         <section>
           <div className="grid md:grid-cols-2 gap-10 mb-10">
             <div>
-              <h3 className="font-medium text-lg mb-1">Project images</h3>
+              <h3 className="font-medium text-lg mb-1">Slike projekta</h3>
               <p className="text-sm text-gray-600">
-                Add images that clearly represent your project. Choose ones that
-                look good at different sizes.
+                  Dodaj slike koje vizuelno oslikavaju tvoj projekat i koje zadržavaju kvalitet u svim dimenzijama.
               </p>
               <p className="text-sm text-gray-500 mt-2">
-                Your images should be at least 1024×576 pixels. Max file size:
-                5MB each. Accepted: JPG, PNG, JPEG
+                    Slike treba da budu najmanje 1024×576 piksela.
+                    Maksimalna veličina fajla: 5MB po slici. Dozvoljeni formati: JPG, PNG, JPEG.
               </p>
             </div>
 
@@ -513,7 +506,7 @@ function EditActionPage() {
                 })}
               </div>
               <p className="text-xs text-gray-500 mt-2">
-                Max 5MB each. Only JPG, JPEG, PNG.
+                Maksimalna velicna slike  5MB svaka. Format: JPG, JPEG, PNG.
               </p>
             </div>
           </div>
@@ -522,15 +515,15 @@ function EditActionPage() {
         <section>
           <div className="grid md:grid-cols-2 gap-10">
             <div>
-              <h3 className="font-medium text-lg mb-1">Funding Goal</h3>
+              <h3 className="font-medium text-lg mb-1">Ciljani iznos</h3>
               <p className="text-sm text-gray-600">
-                Enter the amount of money that is required to fund this project
+                Unesi iznos novca koji je potreban za finansiranje ovog projekta.
               </p>
             </div>
 
             <div className="bg-white p-6 shadow border rounded">
               <label className="block text-sm font-medium mb-1">
-                Funding Goal
+                Ciljani iznos
               </label>
               <input
                 type="text"

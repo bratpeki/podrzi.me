@@ -322,10 +322,10 @@ function ActionViewPage() {
           <div className="md:max-w-2/3 w-2/3 bg-white shadow-lg rounded-lg p-6 flex flex-col justify-between">
             <div>
               <p className="text-xl font-bold text-gray-700 mb-2">
-                {currentAction.collected.toLocaleString()}€ prikupljeno
+                {currentAction.collected.toLocaleString()}KM prikupljeno
               </p>
               <p className="text-sm text-gray-600 mb-4">
-                od ciljanih {currentAction.goal.toLocaleString()}€
+                od ciljanih {currentAction.goal.toLocaleString()}KM
               </p>
 
               <div className="w-full bg-gray-200 rounded-full h-4 mb-2">
