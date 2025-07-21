@@ -46,7 +46,7 @@ function DonateFormModal({ action, onClose, onDonationSuccess }) {
     setLoading(true);
 
     try {
-      let userId = null;
+      let userId = 58;
       if (authState.accessToken) {
         try {
           const decoded = jwtDecode(authState.accessToken);
