@@ -10,6 +10,8 @@ import { jwtDecode } from "jwt-decode";
 import DonateFormModal from "../components/DonateFormModal.js";
 import CommentDropdown from "../components/CommentDropdown.js";
 import ReportDialog from "../components/ReportDialog.js";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 function ActionViewPage() {
   const location = useLocation();
@@ -27,6 +29,7 @@ function ActionViewPage() {
   const [submittingComment, setSubmittingComment] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [editingText, setEditingText] = useState("");
+  const sweetAlert = withReactContent(Swal);
 
   const [reportContext, setReportContext] = useState(null);
 
@@ -156,7 +159,12 @@ function ActionViewPage() {
         throw new Error("Desila se greška prilikom kreiranja prijave.");
       }
     } catch (error) {
-      console.error(error.message);
+        await sweetAlert.fire({
+          title: "Greška!",
+          text: error.message,
+          icon: "error",
+          confirmButtonText: "U redu",
+        });
     } finally {
       setReportContext(null);
     }
