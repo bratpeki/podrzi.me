@@ -1,101 +1,82 @@
 import { useContext, useEffect, useState } from "react";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import NavigationBar from "../components/NavigationHeader";
 import InfoFooter from "../components/InfoFooter";
 import { AuthStateContext } from "../components/UseAuthState";
-import { useNavigate } from "react-router-dom";
 import { apiRequest } from "../utility/FetchAPI";
 import ActionCard from "../components/ActionCard";
+import { jwtDecode } from "jwt-decode";
 
-// Koristili smo ActionCard.js za prikaz akcija korisnika
-
-function ViewProfilePage() {
+function UnifiedProfilePage() {
   const location = useLocation();
-  const { id } = location.state || {};
+  const navigate = useNavigate();
   const { authState } = useContext(AuthStateContext);
   const [user, setUser] = useState(null);
   const [actions, setActions] = useState([]);
   const [retryCount, setRetryCount] = useState(0);
-  const navigate = useNavigate();
+
+  const tokenId = authState?.accessToken ? jwtDecode(authState.accessToken).id : null;
+  const viewedId = location.state?.id || tokenId;
+  const isOwnProfile = tokenId === viewedId;
+
+  const fetchUserProfile = async () => {
+    try {
+      const endpoint = isOwnProfile
+        ? "users/showprofile"
+        : `users/showuserprofile?idUser=${viewedId}`;
+
+      const res = await apiRequest(endpoint, "GET", authState.accessToken);
+
+      if (!res) throw new Error("Neuspješno dohvaćanje profila");
+
+      setUser({
+        imagePath: res.imagePath,
+        username: res.username,
+        displayName: res.displayName,
+        email: res.email,
+        desc: res.desc,
+        idUser: res.idUser,
+      });
+
+      const actionsRes = await apiRequest(
+        `actions/getuseractions?idUser=${viewedId}`,
+        "GET",
+        authState.accessToken
+      );
+
+      if (actionsRes) {
+        setActions(Array.isArray(actionsRes) ? actionsRes : [actionsRes]);
+      } else {
+        setActions([]);
+      }
+    } catch (err) {
+      console.error("Greška pri učitavanju profila ili akcija:", err);
+      setTimeout(() => setRetryCount((prev) => prev + 1), 2000);
+    }
+  };
 
   const handleReportUser = async () => {
-
     try {
-      var text = prompt("Unesite razlog za kreiranje prijave");
+      const text = prompt("Unesite razlog za kreiranje prijave");
+      if (!text) return;
 
-      if (!text) return; // TODO: Eksperimentalno
-
-      const req = apiRequest("reports/create", "POST", authState.accessToken, {
+      const resp = await apiRequest("reports/create", "POST", authState.accessToken, {
         reportType: 0,
         idReported: user.idUser,
         text: text,
       });
 
-      const resp = await req;
-
-      if (resp != "success") {
-        throw new Error(
-          "Desila se greška prilikom kreiranja prijave korisnika!"
-        );
+      if (resp !== "success") {
+        throw new Error("Desila se greška prilikom kreiranja prijave korisnika!");
       }
     } catch (error) {
       console.error(error.message);
     }
   };
 
-  // Define the function that the button will call
-  const handleButtonClick = () => {
-    console.log("Button in ViewProfilePage clicked!");
-    // You can add your desired logic here, e.g., navigate to an edit page
-    alert("Button in ViewProfilePage clicked!");
-  };
-
   useEffect(() => {
-    const fetchProfileAndActions = async () => {
-      try {
-        const userRes = await apiRequest(
-          "users/showuserprofile?idUser=" + id,
-          "GET",
-          authState.accessToken
-        );
-        if (!userRes) throw new Error("Neuspješno dohvaćanje profila");
-        setUser({
-          imagePath: userRes.imagePath,
-          username: userRes.username,
-          displayName: userRes.displayName,
-          email: userRes.email,
-          desc: userRes.desc,
-          idUser: userRes.idUser,
-        });
-
-        const actionsRes = await apiRequest(
-          `actions/getuseractions?idUser=${id}`,
-          "GET",
-          authState.accessToken
-        );
-
-        if (actionsRes) {
-            if (Array.isArray(actionsRes)) {
-                setActions(actionsRes);
-            } else if (typeof actionsRes === 'object' && actionsRes !== null) {
-                setActions([actionsRes]);
-            } else {
-                setActions([]);
-            }
-        } else {
-            setActions([]);
-        }
-
-      } catch (err) {
-        console.error("Greška pri učitavanju profila ili akcija:", err);
-        setTimeout(() => setRetryCount((prev) => prev + 1), 2000);
-      }
-    };
-
-    if (id) {
-      fetchProfileAndActions();
-    }
-  }, [retryCount, id]);
+    if (viewedId && authState?.accessToken) fetchUserProfile();
+  }, [retryCount, viewedId, authState]);
 
   if (!user) {
     return (
@@ -116,15 +97,17 @@ function ViewProfilePage() {
       <div className="flex-grow flex items-center justify-center px-4 py-12">
         <div className="relative bg-white rounded-lg shadow-md max-w-5xl w-full p-8 mt-10 mb-2">
 
-          <button
-            onClick={handleReportUser}
-            className="absolute top-4 right-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300 ease-in-out z-10"
-          >
-            Prijavi korisnika
-          </button>
+          {!isOwnProfile && (
+            <button
+              onClick={handleReportUser}
+              className="absolute top-4 right-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300 ease-in-out z-10"
+            >
+              Prijavi korisnika
+            </button>
+          )}
 
           <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
-            Profil korisnika
+            {isOwnProfile ? "Moj profil" : "Profil korisnika"}
           </h1>
 
           <div className="flex flex-col items-center space-y-4">
@@ -139,30 +122,41 @@ function ViewProfilePage() {
                 {user.displayName}
               </h2>
               <p className="text-gray-500">@{user.username}</p>
+              {isOwnProfile && <p className="text-gray-600 text-sm">{user.email}</p>}
             </div>
 
             <div className="mt-4 w-full">
-              <h3 className="text-lg font-medium text-gray-700 mb-2">
-                Opis profila
-              </h3>
-              <p className="text-gray-700 bg-gray-100 rounded p-4">
-                {user.desc}
-              </p>
+              <h3 className="text-lg font-medium text-gray-700 mb-2">Opis profila</h3>
+              <p className="text-gray-700 bg-gray-100 rounded p-4">{user.desc}</p>
             </div>
 
+            {isOwnProfile && (
+              <div className="mt-6 w-full flex justify-between">
+                <button
+                  onClick={() => navigate("/viewDonations", { state: { idUser: user.idUser } })}
+                  className="bg-blue-600 text-white px-4 py-2 mr-4 rounded hover:bg-blue-700 transition"
+                >
+                  Pregled donacija
+                </button>
+
+                <button
+                  onClick={() => navigate("/EditProfile")}
+                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                >
+                  Uredi profil
+                </button>
+              </div>
+            )}
+
             <div className="mt-6 w-full">
-              <h3 className="text-lg font-medium text-gray-700 mb-4">
-                Akcije korisnika
-              </h3>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">Akcije korisnika</h3>
               {actions.length > 0 ? (
-
                 <div className="h-96 overflow-y-auto pr-2 custom-scrollbar">
-
-                    <div className="flex flex-wrap justify-center gap-6">
-                        {actions.map((actionItem) => (
-                            <ActionCard key={actionItem.idAction} action={actionItem} />
-                        ))}
-                    </div>
+                  <div className="flex flex-wrap justify-center gap-6">
+                    {actions.map((actionItem) => (
+                      <ActionCard key={actionItem.idAction} action={actionItem} />
+                    ))}
+                  </div>
                 </div>
               ) : (
                 <p className="text-gray-600">Ovaj korisnik još nema kreiranih akcija.</p>
@@ -176,4 +170,4 @@ function ViewProfilePage() {
   );
 }
 
-export default ViewProfilePage;
+export default UnifiedProfilePage;

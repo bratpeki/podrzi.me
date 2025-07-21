@@ -5,6 +5,8 @@ import { AuthStateContext } from "./UseAuthState";
 import NotificationDropdown from "./NotificationDropdown";
 import ActionSearchBar from "./ActionSearchBar";
 import ActionSuggestion from "./ActionSuggestion";
+import { jwtDecode } from "jwt-decode";
+
 // TODO: Preimenovati
 function NavigationBar({
   showSearch = true,
@@ -16,6 +18,9 @@ function NavigationBar({
   const { authState, authDispatch } = useContext(AuthStateContext);
   const navigate = useNavigate();
   const [matchingActions, setMatchingActions] = useState([]);
+  const userId = authState?.accessToken
+    ? jwtDecode(authState.accessToken).id
+    : null;
 
   const handleSearchResults = (results) => {
     setMatchingActions(results);
@@ -64,14 +69,14 @@ function NavigationBar({
           </Link>
         )}
         {authState.accessToken != null && showProfile && (
-          <Link to="/profilePage" className="hover:underline">
+          <Link to={`/viewProfile/${userId}`} state={{ id: userId }} className="hover:underline">
             Profil
           </Link>
         )}
         {authState.accessToken != null && showNotification && (
           <div className="space-x-6 flex items-center relative z-10">
-          {/* obavezno dodaj `relative` i po potrebi `z-10` */}
-           <NotificationDropdown />
+            {/* obavezno dodaj `relative` i po potrebi `z-10` */}
+            <NotificationDropdown />
           </div>
         )}
         {authState.accessToken != null && showLogout && (

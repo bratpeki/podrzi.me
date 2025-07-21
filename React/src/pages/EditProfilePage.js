@@ -103,7 +103,9 @@ function EditProfilePage() {
           icon: "success",
           confirmButtonText: "OK",
         });
-        navigate("/profilePage");
+        navigate(`/viewProfile/${formData.idUser}`, {
+          state: { id: formData.idUser },
+        });
       }
     } catch (err) {
       await notification.fire({

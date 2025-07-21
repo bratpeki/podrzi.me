@@ -9,7 +9,6 @@ import CreateActionPage from "./pages/CreateActionPage";
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
 import ToSPage from "./pages/ToSPage";
-import ProfilePage from "./pages/ProfilePage";
 import ActionViewPage from "./pages/ActionViewPage";
 import EditProfilePage from "./pages/EditProfilePage";
 import EditActionPage from "./pages/EditActionPage";
@@ -52,7 +51,6 @@ function App() {
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/tos" element={<ToSPage />} />
-            <Route path="/profilePage" element={<ProfilePage />} />
             <Route path="/actionView/:id" element={<ActionViewPage />} />
             <Route path="/editProfile/" element={<EditProfilePage />} />
             <Route path="/editAction/:id" element={<EditActionPage />} />
