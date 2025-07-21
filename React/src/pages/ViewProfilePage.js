@@ -6,6 +6,7 @@ import { AuthStateContext } from "../components/UseAuthState";
 import { apiRequest } from "../utility/FetchAPI";
 import ActionCard from "../components/ActionCard";
 import { jwtDecode } from "jwt-decode";
+import ReportDialog from "../components/ReportDialog";
 
 function UnifiedProfilePage() {
   const location = useLocation();
@@ -14,8 +15,11 @@ function UnifiedProfilePage() {
   const [user, setUser] = useState(null);
   const [actions, setActions] = useState([]);
   const [retryCount, setRetryCount] = useState(0);
+  const [reportContext, setReportContext] = useState(null);
 
-  const tokenId = authState?.accessToken ? jwtDecode(authState.accessToken).id : null;
+  const tokenId = authState?.accessToken
+    ? jwtDecode(authState.accessToken).id
+    : null;
   const viewedId = location.state?.id || tokenId;
   const isOwnProfile = tokenId === viewedId;
 
@@ -54,23 +58,32 @@ function UnifiedProfilePage() {
       setTimeout(() => setRetryCount((prev) => prev + 1), 2000);
     }
   };
+  const handleReportUser = (userId) => {
+    setReportContext({ type: 0, id: userId }); // type 0 = user
+  };
 
-  const handleReportUser = async () => {
+  const confirmReport = async (reason) => {
+    if (!reportContext) return;
+
     try {
-      const text = prompt("Unesite razlog za kreiranje prijave");
-      if (!text) return;
+      const res = await apiRequest(
+        "reports/create",
+        "POST",
+        authState.accessToken,
+        {
+          reportType: reportContext.type,
+          idReported: reportContext.id,
+          text: reason,
+        }
+      );
 
-      const resp = await apiRequest("reports/create", "POST", authState.accessToken, {
-        reportType: 0,
-        idReported: user.idUser,
-        text: text,
-      });
-
-      if (resp !== "success") {
-        throw new Error("Desila se greška prilikom kreiranja prijave korisnika!");
+      if (res !== "success") {
+        throw new Error("Desila se greška prilikom kreiranja prijave.");
       }
     } catch (error) {
       console.error(error.message);
+    } finally {
+      setReportContext(null);
     }
   };
 
@@ -96,10 +109,9 @@ function UnifiedProfilePage() {
 
       <div className="flex-grow flex items-center justify-center px-4 py-12">
         <div className="relative bg-white rounded-lg shadow-md max-w-5xl w-full p-8 mt-10 mb-2">
-
           {!isOwnProfile && (
             <button
-              onClick={handleReportUser}
+              onClick={() => handleReportUser(user.idUser)}
               className="absolute top-4 right-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300 ease-in-out z-10"
             >
               Prijavi korisnika
@@ -122,18 +134,28 @@ function UnifiedProfilePage() {
                 {user.displayName}
               </h2>
               <p className="text-gray-500">@{user.username}</p>
-              {isOwnProfile && <p className="text-gray-600 text-sm">{user.email}</p>}
+              {isOwnProfile && (
+                <p className="text-gray-600 text-sm">{user.email}</p>
+              )}
             </div>
 
             <div className="mt-4 w-full">
-              <h3 className="text-lg font-medium text-gray-700 mb-2">Opis profila</h3>
-              <p className="text-gray-700 bg-gray-100 rounded p-4">{user.desc}</p>
+              <h3 className="text-lg font-medium text-gray-700 mb-2">
+                Opis profila
+              </h3>
+              <p className="text-gray-700 bg-gray-100 rounded p-4">
+                {user.desc}
+              </p>
             </div>
 
             {isOwnProfile && (
               <div className="mt-6 w-full flex justify-between">
                 <button
-                  onClick={() => navigate("/viewDonations", { state: { idUser: user.idUser } })}
+                  onClick={() =>
+                    navigate("/viewDonations", {
+                      state: { idUser: user.idUser },
+                    })
+                  }
                   className="bg-blue-600 text-white px-4 py-2 mr-4 rounded hover:bg-blue-700 transition"
                 >
                   Pregled donacija
@@ -149,23 +171,35 @@ function UnifiedProfilePage() {
             )}
 
             <div className="mt-6 w-full">
-              <h3 className="text-lg font-medium text-gray-700 mb-4">Akcije korisnika</h3>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">
+                Akcije korisnika
+              </h3>
               {actions.length > 0 ? (
                 <div className="h-96 overflow-y-auto pr-2 custom-scrollbar">
                   <div className="flex flex-wrap justify-center gap-6">
                     {actions.map((actionItem) => (
-                      <ActionCard key={actionItem.idAction} action={actionItem} />
+                      <ActionCard
+                        key={actionItem.idAction}
+                        action={actionItem}
+                      />
                     ))}
                   </div>
                 </div>
               ) : (
-                <p className="text-gray-600">Ovaj korisnik još nema kreiranih akcija.</p>
+                <p className="text-gray-600">
+                  Ovaj korisnik još nema kreiranih akcija.
+                </p>
               )}
             </div>
           </div>
         </div>
       </div>
       <InfoFooter />
+      <ReportDialog
+        show={reportContext !== null}
+        onClose={() => setReportContext(null)}
+        onConfirm={confirmReport}
+      />
     </div>
   );
 }
