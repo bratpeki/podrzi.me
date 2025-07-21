@@ -1,4 +1,3 @@
-import logo from "./logo.svg";
 import "./App.css";
 import { useNavigate } from 'react-router-dom';
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";

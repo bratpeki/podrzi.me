@@ -9,6 +9,7 @@ import { apiRequest } from "../utility/FetchAPI.js";
 import { jwtDecode } from "jwt-decode";
 import DonateFormModal from "../components/DonateFormModal.js";
 import CommentDropdown from "../components/CommentDropdown.js";
+import ReportDialog from "../components/ReportDialog.js";
 
 function ActionViewPage() {
   const location = useLocation();
@@ -26,6 +27,8 @@ function ActionViewPage() {
   const [submittingComment, setSubmittingComment] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [editingText, setEditingText] = useState("");
+
+  const [reportContext, setReportContext] = useState(null);
 
   const commentAuthorId = authState.accessToken
     ? jwtDecode(authState.accessToken).id
@@ -122,70 +125,40 @@ function ActionViewPage() {
       setSubmittingComment(false);
     }
   };
-
-  const handleReportUser = async (userId) => {
-    try {
-      var text = prompt("Unesite razlog za kreiranje prijave");
-
-      const req = apiRequest("reports/create", "POST", authState.accessToken, {
-        reportType: 0,
-        idReported: userId,
-        text: text,
-      });
-
-      const resp = await req;
-
-      if (resp != "success") {
-        throw new Error(
-          "Desila se greška prilikom kreiranja prijave korisnika!"
-        );
-      }
-    } catch (error) {
-      console.error(error.message);
-    }
+  const handleReportUser = (userId) => {
+    setReportContext({ type: 0, id: userId }); // type 0 = user
   };
 
-  const handleReportComment = async (commentId) => {
-    try {
-      var text = prompt("Unesite razlog za kreiranje prijave");
-
-      const req = apiRequest("reports/create", "POST", authState.accessToken, {
-        reportType: 2,
-        idReported: commentId,
-        text: text,
-      });
-
-      const resp = await req;
-
-      if (resp != "success") {
-        throw new Error(
-          "Desila se greška prilikom kreiranja prijave komentara!"
-        );
-      }
-    } catch (error) {
-      console.error(error.message);
-    }
+  const handleReportComment = (commentId) => {
+    setReportContext({ type: 2, id: commentId }); // type 2 = comment
   };
 
-  const handleReportAction = async () => {
+  const handleReportAction = () => {
+    setReportContext({ type: 1, id: currentAction.idAction }); // type 1 = action
+  };
+
+  const confirmReport = async (reason) => {
+    if (!reportContext) return;
+
     try {
-      var text = prompt("Unesite razlog za kreiranje prijave");
+      const res = await apiRequest(
+        "reports/create",
+        "POST",
+        authState.accessToken,
+        {
+          reportType: reportContext.type,
+          idReported: reportContext.id,
+          text: reason,
+        }
+      );
 
-      const req = apiRequest("reports/create", "POST", authState.accessToken, {
-        reportType: 1,
-        idReported: currentAction.idAction,
-        text: text,
-      });
-
-      const resp = await req;
-
-      if (resp != "success") {
-        throw new Error(
-          "Desila se greška prilikom kreiranja prijave komentara!"
-        );
+      if (res !== "success") {
+        throw new Error("Desila se greška prilikom kreiranja prijave.");
       }
     } catch (error) {
       console.error(error.message);
+    } finally {
+      setReportContext(null);
     }
   };
 
@@ -510,6 +483,12 @@ function ActionViewPage() {
       </main>
 
       <InfoFooter />
+      
+      <ReportDialog
+        show={reportContext !== null}
+        onClose={() => setReportContext(null)}
+        onConfirm={confirmReport}
+      />
 
       {showDonateModal && currentAction && (
         <DonateFormModal
