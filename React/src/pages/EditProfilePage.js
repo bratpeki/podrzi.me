@@ -15,7 +15,7 @@ function EditProfilePage() {
   const [passwordError, setPasswordError] = useState("");
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
-  const notification = withReactContent(Swal); //Za notifikacije
+  const sweetAlert = withReactContent(Swal); //Za notifikacije
 
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const navigate = useNavigate();
@@ -97,7 +97,7 @@ function EditProfilePage() {
       if (!res && result === "success") {
         throw new String("Greška prilikom ažuriranja profila");
       } else {
-        await notification.fire({
+        await sweetAlert.fire({
           title: "Uspješno!",
           text: "Profil je ažuriran.",
           icon: "success",
@@ -108,7 +108,7 @@ function EditProfilePage() {
         });
       }
     } catch (err) {
-      await notification.fire({
+      await sweetAlert.fire({
         title: "Greška!",
         text: err || "Nepoznata greška.",
         icon: "error",
@@ -143,7 +143,7 @@ function EditProfilePage() {
       return true;
     } catch (err) {
       console.error("Upload slike nije uspio:", err);
-      await notification.fire({
+      await sweetAlert.fire({
         title: "Greška!",
         text: err || "Greška pri slanju slike.",
         icon: "error",

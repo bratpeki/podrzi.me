@@ -2,6 +2,8 @@ import React, { useState, useContext, useEffect } from "react";
 import { AuthStateContext } from "../components/UseAuthState.js"; // Prilagodi putanju ako je potrebno
 import { apiRequest } from "../utility/FetchAPI.js";
 import { jwtDecode } from "jwt-decode";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 // Props:
 // - action: Objekat akcije (currentAction iz ActionViewPage)
@@ -16,6 +18,7 @@ function DonateFormModal({ action, onClose, onDonationSuccess }) {
   const [cvv, setCvv] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const sweetAlert= withReactContent(Swal);
 
   // Reset forme kad se pop up zatvori ili otvori
   useEffect(() => {
@@ -72,7 +75,15 @@ function DonateFormModal({ action, onClose, onDonationSuccess }) {
       );
 
       console.log("Donacija uspešna:", data);
-      alert("Hvala na donaciji!"); // Možemo ovdje sweet alert koristiti za ljepšti pop up npr
+
+     await sweetAlert.fire({
+          title: "Uspješno!",
+          text: "Hvala na donaciji!",
+          icon: "success",
+          confirmButtonText: "U redu",
+        });
+
+    //  alert("Hvala na donaciji!"); // Možemo ovdje sweet alert koristiti za ljepšti pop up npr
 
       onDonationSuccess(); // Callback za refresh podataka u roditeljskoj akciji
       onClose();

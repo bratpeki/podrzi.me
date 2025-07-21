@@ -8,7 +8,7 @@ import withReactContent from "sweetalert2-react-content";
 
 function ContactPage() {
   const { authState, authDispatch } = useContext(AuthStateContext);
-  const notification = withReactContent(Swal);
+  const sweetAlert = withReactContent(Swal);
   const [formData, setFormData] = useState({
     ime: "",
     email: "",
@@ -39,7 +39,7 @@ function ContactPage() {
         payload
       );
       if (response) {
-        await notification.fire({
+        await sweetAlert.fire({
           title: "Uspješno!",
           text: "Hvala što ste nas kontaktirali!",
           icon: "success",
@@ -48,7 +48,7 @@ function ContactPage() {
         setFormData({ ime: "", email: "", poruka: "" });
       } else {
         // const errorText = await response; Za debugovanje
-        await notification.fire({
+        await sweetAlert.fire({
           title: "Greška!",
           text: "Greška prilikom slanja poruke.",
           icon: "error",
@@ -57,7 +57,7 @@ function ContactPage() {
       }
     } catch (error) {
       //console.error('Greška pri konekciji sa serverom:', error);
-      await notification.fire({
+      await sweetAlert.fire({
         title: "Greška!",
         text: error || "Došlo je do greške pri slanju.", //Error poslije izbacit (ostaviti za debug)
         icon: "error",

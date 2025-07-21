@@ -39,7 +39,7 @@ const StarRating = ({ totalStars = 5, onRatingChange }) => {
 
 function ReviewPage() {
   const { authState, authDispatch } = useContext(AuthStateContext);
-  const notification = withReactContent(Swal);
+  const sweetAlert = withReactContent(Swal);
 
   const [formData, setFormData] = useState({
     stars: 0,
@@ -69,7 +69,7 @@ function ReviewPage() {
         payload
       );
       if (response == "success") {
-        await notification.fire({
+        await sweetAlert.fire({
           title: "Uspješno!",
           text: "Hvala vam na recenziji!",
           icon: "success",
@@ -77,14 +77,14 @@ function ReviewPage() {
         });
         setFormData({ text: "", stars: 0 });
       } else if (response == "reviewExistsError") {
-        await notification.fire({
+        await sweetAlert.fire({
           title: "Greška!",
           text: "Vec ste poslali recenziju!",
           icon: "error",
           confirmButtonText: "U redu",
         });
       } else {
-        await notification.fire({
+        await sweetAlert.fire({
           title: "Greška!",
           text: "Greška prilikom slanja recenzije!",
           icon: "error",
@@ -92,7 +92,7 @@ function ReviewPage() {
         });
       }
     } catch (error) {
-      await notification.fire({
+      await sweetAlert.fire({
         title: "Greška!",
         text: error || "Došlo je do greške pri slanju.", //Error poslije izbacit (ostaviti za debug)
         icon: "error",

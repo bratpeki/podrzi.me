@@ -9,6 +9,7 @@ import InfoFooter from "../components/InfoFooter";
 import { apiRequest } from "../utility/FetchAPI";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 function ViewDonationsPage() {
   const location = useLocation();
@@ -21,6 +22,8 @@ function ViewDonationsPage() {
   const [selectedDonationId, setSelectedDonationId] = useState(null);
 
   const { authState } = useContext(AuthStateContext);
+  const sweetAlert= withReactContent(Swal);
+
   useEffect(() => {
     const fetchDons = async () => {
       try {
@@ -87,7 +90,12 @@ function ViewDonationsPage() {
   const confirmRefund = async (reason) => {
     setShowDialog(false);
     if (!reason.trim()) {
-      alert("Morate unijeti razlog.");
+       await sweetAlert.fire({
+          title: "Neuspješno!",
+          text: "Morate unijeti razlog.",
+          icon: "error",
+          confirmButtonText: "U redu",
+        });
       return;
     }
 
@@ -103,13 +111,28 @@ function ViewDonationsPage() {
       );
 
       if (res === "success") {
-        alert("Povrat je zatražen.");
+       await sweetAlert.fire({
+          title: "Uspješno!",
+          text: "Povrat je zatražen.",
+          icon: "success",
+          confirmButtonText: "U redu",
+        });
       } else {
-        alert("Greška: " + res);
+        await sweetAlert.fire({
+          title: "Greška!",
+          text: res,
+          icon: "error",
+          confirmButtonText: "U redu",
+        });
       }
     } catch (err) {
       console.error("Greška pri zahtjevu za povrat:", err);
-      alert("Došlo je do greške.");
+        await sweetAlert.fire({
+          title: "Neuspejšno!",
+          text: "Došlo je do greške.",
+          icon: "error",
+          confirmButtonText: "U redu",
+        }); 
     }
   };
 
