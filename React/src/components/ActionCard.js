@@ -23,7 +23,7 @@ function ActionCard({ action }) {
         <h3 className="text-lg font-semibold text-gray-800">{action.name}</h3>
         <p className="text-gray-600 text-sm">{action.desc}</p>
         <p className="text-sm text-gray-600 mt-1">
-          Cilj: {action.goal.toLocaleString()}€
+          Cilj: {action.goal.toLocaleString()}KM
         </p>
 
         <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">

@@ -7,6 +7,8 @@ import { apiRequest } from "../utility/FetchAPI";
 import ActionCard from "../components/ActionCard";
 import { jwtDecode } from "jwt-decode";
 import ReportDialog from "../components/ReportDialog";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 function UnifiedProfilePage() {
   const location = useLocation();
@@ -16,6 +18,7 @@ function UnifiedProfilePage() {
   const [actions, setActions] = useState([]);
   const [retryCount, setRetryCount] = useState(0);
   const [reportContext, setReportContext] = useState(null);
+  const sweetAlert = withReactContent(Swal);
 
   const tokenId = authState?.accessToken
     ? jwtDecode(authState.accessToken).id
@@ -81,7 +84,12 @@ function UnifiedProfilePage() {
         throw new Error("Desila se greška prilikom kreiranja prijave.");
       }
     } catch (error) {
-      console.error(error.message);
+        await sweetAlert.fire({
+          title: "Greška!",
+          text: error.message,
+          icon: "error",
+          confirmButtonText: "U redu",
+        });
     } finally {
       setReportContext(null);
     }
