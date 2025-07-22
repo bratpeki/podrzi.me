@@ -163,12 +163,12 @@ function ActionViewPage() {
         throw new Error("Desila se greška prilikom kreiranja prijave.");
       }
     } catch (error) {
-        await sweetAlert.fire({
-          title: "Greška!",
-          text: error.message,
-          icon: "error",
-          confirmButtonText: "U redu",
-        });
+      await sweetAlert.fire({
+        title: "Greška!",
+        text: error.message,
+        icon: "error",
+        confirmButtonText: "U redu",
+      });
     } finally {
       setReportContext(null);
     }
@@ -381,8 +381,126 @@ function ActionViewPage() {
           </div>
         </div>
 
-        {/* DESCRIPTION AND COMMENTS OMITTED FOR SPACE */}
-        {/* Copy your comments section and modal logic here if needed */}
+        <p className="text-lg text-gray-700 mt-6">{currentAction.desc}</p>
+
+        <div className="mt-10 p-6 bg-white rounded-lg shadow-lg">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Komentari</h2>
+
+          <div className="max-h-80 overflow-y-auto border border-gray-200 rounded-md p-4 mb-4 space-y-4">
+            {comments.length > 0 ? (
+              comments.map((comment) => {
+                const isAuthor = commentAuthorId === comment.idUser;
+
+                return (
+                  <div
+                    key={comment.idComment}
+                    className="border-b pb-3 last:border-b-0"
+                  >
+                    <div className="flex items-center mb-1">
+                      <Link
+                        to={`/viewProfile/${comment.idUser}`}
+                        state={{ id: comment.idUser }}
+                        className="flex items-center mb-1 hover:underline"
+                      >
+                        <img
+                          src={
+                            comment.imagePath ||
+                            "https://via.placeholder.com/30"
+                          }
+                          alt={comment.displayName || "Gost"}
+                          className="w-7 h-7 rounded-full object-cover mr-2 hover:bg-gray-200"
+                        />
+                        <p className="font-semibold text-gray-800">
+                          {comment.displayName || "Gost"}
+                        </p>
+                      </Link>
+                      <span className="text-sm text-gray-500 ml-auto mr-4">
+                        {new Date(comment.created).toLocaleString()}
+                      </span>
+
+                      <CommentDropdown
+                        commentId={comment.idComment}
+                        userId={comment.idUser}
+                        onReportUser={handleReportUser}
+                        onReportComment={handleReportComment}
+                        onEditComment={() =>
+                          handleEditComment(comment.idComment, comment.text)
+                        }
+                        onDeleteComment={handleDeleteComment}
+                        showReportUser={!isAuthor}
+                        showReportComment={!isAuthor}
+                        showEditComment={isAuthor}
+                        showDeleteComment={isAuthor}
+                      />
+                    </div>
+
+                    {editingId === comment.idComment ? (
+                      <div className="ml-9 space-y-2">
+                        <textarea
+                          className="w-full p-2 border rounded resize-y"
+                          rows={3}
+                          value={editingText}
+                          onChange={(e) => setEditingText(e.target.value)}
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={saveEditedComment}
+                            className="bg-cyan-600 hover:bg-cyan-700 text-white text-sm px-4 py-1 rounded"
+                          >
+                            Sačuvaj
+                          </button>
+                          <button
+                            onClick={cancelEdit}
+                            className="bg-gray-300 hover:bg-gray-400 text-sm px-4 py-1 rounded"
+                          >
+                            Otkaži
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-gray-700 ml-9">{comment.text}</p>
+                    )}
+                  </div>
+                );
+              })
+            ) : (
+              <p className="text-gray-500 text-center">
+                Nema komentara. Budite prvi koji će ostaviti komentar!
+              </p>
+            )}
+          </div>
+
+          <form onSubmit={handleCommentSubmit} className="mt-4">
+            {commentError && (
+              <div
+                className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+                role="alert"
+              >
+                <span className="block sm:inline">{commentError}</span>
+              </div>
+            )}
+            <textarea
+              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500 resize-y"
+              rows="3"
+              placeholder="Napišite svoj komentar..."
+              value={newCommentText}
+              onChange={(e) => setNewCommentText(e.target.value)}
+              disabled={submittingComment}
+            ></textarea>
+            <button
+              type="submit"
+              className="mt-3 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-4 rounded-md transition duration-200"
+              disabled={submittingComment || !authState.accessToken}
+            >
+              {submittingComment ? "Slanje..." : "Pošalji Komentar"}
+            </button>
+            {!authState.accessToken && (
+              <p className="text-sm text-red-500 mt-2">
+                Morate biti prijavljeni da biste komentarisali.
+              </p>
+            )}
+          </form>
+        </div>
       </main>
 
       <InfoFooter />
