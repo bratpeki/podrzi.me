@@ -7,7 +7,7 @@ function TermsOfServicePage() {
     <div className="min-h-screen bg-gray-100 flex flex-col justify-between">
       <NavigationBar showSearch={false} />
       <div className="flex-grow flex flex-col items-center px-4 pt-12 pb-24">
-        <div className="bg-white shadow-md rounded-lg max-w-3xl w-full p-8">
+        <div className="bg-white shadow-md rounded-lg max-w-3xl w-full p-8 mt-12">
           <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
             Uslovi korišćenja
           </h1>
