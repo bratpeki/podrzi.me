@@ -23,15 +23,15 @@ function ImageGallery({ images }) {
   return (
     <div className="w-full max-w-5xl">
       {/* Main image */}
-      <div className="aspect-video bg-gray-100 mb-4 rounded overflow-hidden w-full">
+      <div className="mb-4 w-full h-64 bg-gray-100 rounded overflow-hidden relative">
         <img
           src={selectedImage}
           alt="Selected"
-          className="w-full h-full object-contain"
+          className="w-full h-full object-cover absolute top-0 left-0"
         />
       </div>
 
-      {/* Thumbnail list with arrows */}
+      {/* Thumbnails with arrows */}
       <div className="relative flex items-center">
         <button
           onClick={scrollLeft}
@@ -50,12 +50,9 @@ function ImageGallery({ images }) {
               src={img}
               alt={`Thumbnail ${i + 1}`}
               onClick={() => setSelectedImage(img)}
-              className={`h-24 w-40 object-cover rounded border-2 cursor-pointer transition
-                ${
-                  selectedImage === img
-                    ? "border-blue-500"
-                    : "border-transparent"
-                }`}
+              className={`h-24 w-40 object-cover rounded border-2 cursor-pointer transition ${
+                selectedImage === img ? "border-blue-500" : "border-transparent"
+              }`}
             />
           ))}
         </div>
