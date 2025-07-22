@@ -33,11 +33,8 @@ function ActionViewPage() {
   const [submittingComment, setSubmittingComment] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [editingText, setEditingText] = useState("");
-<<<<<<< HEAD
-=======
   const sweetAlert = withReactContent(Swal);
 
->>>>>>> 4a1ece42ff126476008d31655684681051c1d1cd
   const [reportContext, setReportContext] = useState(null);
 
   const commentAuthorId = authState.accessToken
