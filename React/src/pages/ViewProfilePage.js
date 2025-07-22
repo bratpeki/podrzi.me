@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import NavigationBar from "../components/NavigationHeader";
 import InfoFooter from "../components/InfoFooter";
 import { AuthStateContext } from "../components/UseAuthState";
@@ -10,7 +10,7 @@ import ReportDialog from "../components/ReportDialog";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
-function UnifiedProfilePage() {
+function ViewProfilePage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { authState } = useContext(AuthStateContext);
@@ -19,11 +19,12 @@ function UnifiedProfilePage() {
   const [retryCount, setRetryCount] = useState(0);
   const [reportContext, setReportContext] = useState(null);
   const sweetAlert = withReactContent(Swal);
+  const { id: urlId } = useParams(); // <-- get from URL
 
   const tokenId = authState?.accessToken
     ? jwtDecode(authState.accessToken).id
     : null;
-  const viewedId = location.state?.id || tokenId;
+  const viewedId = location.state?.id || urlId || tokenId;
   const isOwnProfile = tokenId === viewedId;
 
   const fetchUserProfile = async () => {
@@ -84,12 +85,12 @@ function UnifiedProfilePage() {
         throw new Error("Desila se greška prilikom kreiranja prijave.");
       }
     } catch (error) {
-        await sweetAlert.fire({
-          title: "Greška!",
-          text: error.message,
-          icon: "error",
-          confirmButtonText: "U redu",
-        });
+      await sweetAlert.fire({
+        title: "Greška!",
+        text: error.message,
+        icon: "error",
+        confirmButtonText: "U redu",
+      });
     } finally {
       setReportContext(null);
     }
@@ -212,4 +213,4 @@ function UnifiedProfilePage() {
   );
 }
 
-export default UnifiedProfilePage;
+export default ViewProfilePage;
