@@ -4,10 +4,10 @@ import InfoFooter from "../components/InfoFooter";
 
 function AboutPage() {
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col justify-between">
+    <div className="min-h-screen bg-gray-100 flex flex-col justify-between gradient-style">
       <NavigationBar showSearch={false} />
-      <div className="flex-grow flex justify-center items-center px-4 pt-12 pb-24">
-        <div className="bg-white rounded-lg shadow-md max-w-3xl w-full p-8">
+      <div className="flex-grow flex justify-center items-center px-4 pt-12 pb-24 ">
+        <div className="bg-white rounded-lg shadow-md max-w-3xl w-full p-8 " >
           <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
             O nama
           </h1>

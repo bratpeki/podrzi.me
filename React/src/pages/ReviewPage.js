@@ -102,7 +102,7 @@ function ReviewPage() {
   };
 
   return (
-    <div className=" bg-gray-100 flex flex-col min-h-screen justify-between">
+    <div className=" bg-gray-100 flex flex-col min-h-screen justify-between gradient-style">
       <NavigationBar showSearch={false} />
       <div className="flex-grow flex justify-center items-center px-4 pt-12 pb-24">
         <div className="bg-white rounded-lg shadow-md max-w-3xl w-full p-8">

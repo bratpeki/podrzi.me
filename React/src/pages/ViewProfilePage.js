@@ -113,7 +113,7 @@ function ViewProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col justify-between">
+    <div className="min-h-screen bg-gray-100 flex flex-col justify-between gradient-style">
       <NavigationBar />
 
       <div className="flex-grow flex items-center justify-center px-4 py-12">

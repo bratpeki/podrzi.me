@@ -6,6 +6,7 @@ import NotificationDropdown from "./NotificationDropdown";
 import ActionSearchBar from "./ActionSearchBar";
 import ActionSuggestion from "./ActionSuggestion";
 import { jwtDecode } from "jwt-decode";
+import myImage from "../Images/logo.png";
 
 // TODO: Preimenovati
 function NavigationBar({
@@ -32,7 +33,7 @@ function NavigationBar({
   };
 
   return (
-    <nav className="bg-cyan-800 fixed top-0 w-full p-4 flex items-center justify-between text-white shadow-md z-50 h-20">
+    <nav className="bg-cyan-500 fixed top-0 w-full p-4 flex items-center justify-between text-white shadow-md z-50 h-20">
       {/* Left: Search bar or placeholder */}
 
       <div className="w-1/6 h-full">
@@ -54,22 +55,30 @@ function NavigationBar({
         </div>
       </div>
 
-      {/* Center: Title */}
-      <div className="absolute left-1/2 transform -translate-x-1/2">
-        <Link to="/home" className="text-5xl font-bold p-4 text-white">
-          PODRŽI.ME
-        </Link>
+      {/* Center: Logo + Title */}
+      <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center">
+          <Link to="/home" className="flex items-center gap-3 text-white no-underline text-6xl font-extrabold drop-shadow-md">
+            <img
+              src={myImage}
+              alt="Logo"
+              className="h-14 w-auto object-contain p-2"
+            />
+            PODRŽI.ME
+          </Link>
       </div>
-
       {/* Right: Nav links */}
-      <div className="space-x-6 flex items-center relative">
+      <div className="space-x-6 flex items-center relative font-bold drop-shadow-md">
         {authState.accessToken != null && showCreate && (
           <Link to="/createAction" className="hover:underline">
             Kreiraj akciju
           </Link>
         )}
         {authState.accessToken != null && showProfile && (
-          <Link to={`/viewProfile/${userId}`} state={{ id: userId }} className="hover:underline">
+          <Link
+            to={`/viewProfile/${userId}`}
+            state={{ id: userId }}
+            className="hover:underline"
+          >
             Profil
           </Link>
         )}

@@ -182,7 +182,7 @@ function EditProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col justify-between">
+    <div className="min-h-screen flex flex-col justify-between gradient-style pt-14">
       <NavigationBar />
       <div className="flex-grow flex justify-center items-center px-4 py-12">
         <div className="bg-white p-8 rounded shadow max-w-md w-full">

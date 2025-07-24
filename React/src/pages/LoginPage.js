@@ -48,7 +48,7 @@ function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-start pt-10">
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-start pt-10 gradient-style">
       <NavigationBar
         showSearch={false}
         showCreate={false}

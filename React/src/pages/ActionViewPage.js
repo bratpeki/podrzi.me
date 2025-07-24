@@ -260,7 +260,7 @@ function ActionViewPage() {
     const collaborators = currentAction.actionOwners.filter((o) => o.isCollab);
 
     return (
-      <div className="mt-10 p-4 bg-white rounded shadow">
+      <div className="mt-10 p-4 bg-white rounded shadow ">
         <h2 className="text-xl font-extrabold text-gray-800 mb-2">Vlasnik</h2>
         <ul className="list-none p-0 space-y-2">
           {owner.map((o) => (
@@ -310,7 +310,7 @@ function ActionViewPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
+    <div className="min-h-screen flex flex-col bg-gray-100 gradient-style">
       <NavigationBar showSearch={false} />
 
       <main className="flex-grow px-6 pt-28 pb-16 max-w-6xl mx-auto">

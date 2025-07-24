@@ -4,10 +4,10 @@ import { Link } from "react-router-dom";
 
 function InfoFooter() {
   return (
-    <footer className="bg-cyan-800 text-white py-3 fixed bottom-0 w-full z-50 shadow-inner">
+    <footer className="bg-cyan-500 text-white py-3 bottom-0 w-full z-50 shadow-inner font-bold drop-shadow-md">
       <div className="container mx-auto px-4 flex justify-center space-x-6 text-sm">
         <Link to="/vodic" className="hover:underline">
-          Vodič
+          Vodič 
         </Link>
         <Link to="/about" className="hover:underline">
           O nama

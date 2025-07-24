@@ -67,7 +67,7 @@ function ContactPage() {
   };
 
   return (
-    <div className="bg-gray-100 flex flex-col min-h-screen justify-between">
+    <div className="bg-gray-100 flex flex-col min-h-screen justify-between gradient-style">
       <NavigationBar showSearch={false} />
       <div className="flex-grow flex items-center justify-center px-4 py-20">
         <div className="bg-white rounded-lg shadow-md max-w-2xl w-full p-8">

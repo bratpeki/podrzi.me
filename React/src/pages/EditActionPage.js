@@ -281,7 +281,7 @@ function EditActionPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-800">
+    <div className="min-h-screen  text-gray-800 gradient-style">
       {/* Top navigation bar */}
       <NavigationBar showSearch={false} showCreate={false} />
 
@@ -289,8 +289,8 @@ function EditActionPage() {
 
       <div className="max-w-5xl mx-auto py-20 px-6 space-y-16">
         {/* Section: Start with the basics */}
-        <section>
-          <h2 className="text-2xl font-semibold mb-1">Počni od osnova</h2>
+        <section className="pt-4">
+          <h2 className="text-4xl font-semibold mb-1">Počni od osnova</h2>
           <p className="text-sm text-gray-600 mb-6">
              Učini da ljudi lako razumiju tvoj projekat.
           </p>
