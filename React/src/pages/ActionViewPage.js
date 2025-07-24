@@ -381,7 +381,11 @@ function ActionViewPage() {
           </div>
         </div>
 
-        <p className="text-lg text-gray-700 mt-6">{currentAction.desc}</p>
+        <div className="mt-10 p-6 bg-white rounded-lg shadow-lg">
+          <p className="text-lg text-gray-700 whitespace-pre-line">
+            {currentAction.desc}
+          </p>
+        </div>
 
         <div className="mt-10 p-6 bg-white rounded-lg shadow-lg">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Komentari</h2>

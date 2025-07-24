@@ -1,5 +1,5 @@
 // src/components/NavigationBar.js
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthStateContext } from "./UseAuthState";
 import NotificationDropdown from "./NotificationDropdown";
@@ -7,18 +7,16 @@ import ActionSearchBar from "./ActionSearchBar";
 import ActionSuggestion from "./ActionSuggestion";
 import { jwtDecode } from "jwt-decode";
 import myImage from "../Images/logo.png";
+import { apiRequest } from "../utility/FetchAPI.js";
 
-// TODO: Preimenovati
-function NavigationBar({
-  showSearch = true,
-  showCreate = true,
-  showProfile = true,
-  showNotification = true,
-  showLogout = true,
-}) {
+function NavigationBar({ showSearch = true, showNotification = true }) {
   const { authState, authDispatch } = useContext(AuthStateContext);
   const navigate = useNavigate();
   const [matchingActions, setMatchingActions] = useState([]);
+  const [userData, setUserData] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef();
+
   const userId = authState?.accessToken
     ? jwtDecode(authState.accessToken).id
     : null;
@@ -32,10 +30,39 @@ function NavigationBar({
     navigate("/login");
   };
 
+  const toggleDropdown = () => {
+    setDropdownOpen(!dropdownOpen);
+  };
+
+  const closeDropdown = (e) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+      setDropdownOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    if (authState.accessToken) {
+      (async () => {
+        const res = await apiRequest(
+          "users/showprofile",
+          "GET",
+          authState.accessToken
+        );
+        setUserData(res);
+      })();
+    }
+  }, [authState.accessToken]);
+
+  useEffect(() => {
+    document.addEventListener("mousedown", closeDropdown);
+    return () => {
+      document.removeEventListener("mousedown", closeDropdown);
+    };
+  }, []);
+
   return (
     <nav className="bg-cyan-500 fixed top-0 w-full p-4 flex items-center justify-between text-white shadow-md z-50 h-20">
-      {/* Left: Search bar or placeholder */}
-
+      {/* Left: Search bar and suggestions */}
       <div className="w-1/6 h-full">
         {showSearch && (
           <ActionSearchBar
@@ -44,57 +71,81 @@ function NavigationBar({
           />
         )}
 
-        <div className="mt-4 space-y-3">
-          {matchingActions.map((action) => (
-            <ActionSuggestion
-              key={action.id}
-              action={action}
-              className=" overflow-y-auto"
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* Center: Logo + Title */}
-      <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center">
-          <Link to="/home" className="flex items-center gap-3 text-white no-underline text-6xl font-extrabold drop-shadow-md">
-            <img
-              src={myImage}
-              alt="Logo"
-              className="h-14 w-auto object-contain p-2"
-            />
-            PODRŽI.ME
-          </Link>
-      </div>
-      {/* Right: Nav links */}
-      <div className="space-x-6 flex items-center relative font-bold drop-shadow-md">
-        {authState.accessToken != null && showCreate && (
-          <Link to="/createAction" className="hover:underline">
-            Kreiraj akciju
-          </Link>
-        )}
-        {authState.accessToken != null && showProfile && (
-          <Link
-            to={`/viewProfile/${userId}`}
-            state={{ id: userId }}
-            className="hover:underline"
-          >
-            Profil
-          </Link>
-        )}
-        {authState.accessToken != null && showNotification && (
-          <div className="space-x-6 flex items-center relative z-10">
-            {/* obavezno dodaj `relative` i po potrebi `z-10` */}
-            <NotificationDropdown />
+        {matchingActions.length > 0 && (
+          <div className="mt-1 bg-white rounded-lg shadow p-3">
+            <div className="space-y-3">
+              {matchingActions.map((action) => (
+                <ActionSuggestion
+                  key={action.id}
+                  action={action}
+                  className="overflow-y-auto"
+                />
+              ))}
+            </div>
           </div>
         )}
-        {authState.accessToken != null && showLogout && (
-          <button className="hover:underline" onClick={logout}>
-            Odjavi se
-          </button>
+      </div>
+      {/* Center: Logo */}
+      <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center">
+        <Link
+          to="/home"
+          className="flex items-center gap-3 text-white no-underline text-6xl font-extrabold drop-shadow-md"
+        >
+          <img
+            src={myImage}
+            alt="Logo"
+            className="h-14 w-auto object-contain p-2"
+          />
+          PODRŽI.ME
+        </Link>
+      </div>
+
+      {/* Right: Profile picture + dropdown */}
+      <div className="space-x-6 flex items-center relative font-bold drop-shadow-md z-20">
+        {authState.accessToken && showNotification && <NotificationDropdown />}
+
+        {authState.accessToken && userData && (
+          <div className="relative" ref={dropdownRef}>
+            <img
+              src={userData.imagePath || "/default-profile.png"} // Fallback image
+              alt="Profile"
+              className="h-16 w-16 rounded-full cursor-pointer object-cover border-2 border-white hover:border-gray-500"
+              onClick={toggleDropdown}
+            />
+            {dropdownOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded-md shadow-lg py-2 z-30">
+                <Link
+                  to={`/viewProfile/${userId}`}
+                  state={{ id: userId }}
+                  className="block px-4 py-2 hover:bg-gray-100"
+                  onClick={() => setDropdownOpen(false)}
+                >
+                  Profil
+                </Link>
+                <Link
+                  to="/createAction"
+                  className="block px-4 py-2 hover:bg-gray-100"
+                  onClick={() => setDropdownOpen(false)}
+                >
+                  Kreiraj akciju
+                </Link>
+                <button
+                  onClick={logout}
+                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                >
+                  Odjavi se
+                </button>
+              </div>
+            )}
+          </div>
         )}
-        {authState.accessToken == null && showLogout && (
-          <button className="hover:underline" onClick={logout}>
+
+        {/* Show login button if not logged in */}
+        {!authState.accessToken && (
+          <button
+            className="hover:underline"
+            onClick={() => navigate("/login")}
+          >
             Prijavi se
           </button>
         )}
