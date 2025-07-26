@@ -86,7 +86,7 @@ function RegisterPage() {
           </Link>
         </div>
 
-        <h2 className="text-2xl font-semibold mb-6">
+        <h2 className="text-4xl font-extrabold mb-6 text-style">
           <center>Registracija</center>
         </h2>
 
@@ -137,7 +137,7 @@ function RegisterPage() {
 
         <button
           onClick={handleRegister}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+          className="w-full  py-2 button-style"
         >
           Napravi nalog
         </button>

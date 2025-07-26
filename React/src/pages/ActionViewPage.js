@@ -261,7 +261,7 @@ function ActionViewPage() {
 
     return (
       <div className="mt-10 p-4 bg-white rounded shadow ">
-        <h2 className="text-xl font-extrabold text-gray-800 mb-2">Vlasnik</h2>
+        <h2 className="text-xl font-extrabold text-style mb-2">Vlasnik</h2>
         <ul className="list-none p-0 space-y-2">
           {owner.map((o) => (
             <Link
@@ -269,7 +269,7 @@ function ActionViewPage() {
               state={{ id: o.idUser }}
               key={o.idUser}
             >
-              <li className="flex items-center gap-3">
+              <li className="flex items-center gap-3 hover:underline drop-shadow-md">
                 <img
                   src={o.imagePath}
                   alt={o.displayName}
@@ -282,17 +282,17 @@ function ActionViewPage() {
         </ul>
         {collaborators.length > 0 && (
           <>
-            <h2 className="text-xl font-extrabold text-gray-800 mt-4 mb-2">
+            <h2 className="text-xl font-extrabold text-gray-800 mt-4 mb-2 drop-shadow-md">
               Kolaboratori
             </h2>
-            <ul className="list-none p-0 space-y-2">
+            <ul className="list-none p-0 space-y-2 ">
               {collaborators.map((c) => (
                 <Link
                   to={`/viewProfile/${c.idUser}`}
                   state={{ id: c.idUser }}
                   key={c.idUser}
                 >
-                  <li className="flex items-center gap-3">
+                  <li className="flex items-center gap-3 hover:underline drop-shadow-md">
                     <img
                       src={c.imagePath}
                       alt={c.displayName}
@@ -313,27 +313,26 @@ function ActionViewPage() {
     <div className="min-h-screen flex flex-col bg-gray-100 gradient-style">
       <NavigationBar showSearch={false} />
 
-      <main className="flex-grow px-6 pt-28 pb-16 max-w-6xl mx-auto">
-        {isOwner && (
-          <Link
-            className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-4 rounded float-right"
-            to={`/editAction/${id}`}
-            state={{ id }}
-          >
-            Ažuriraj
-          </Link>
-        )}
-        {!isOwner && (
-          <button
-            className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-4 rounded float-right"
-            onClick={handleReportAction}
-          >
-            Prijavi
-          </button>
-        )}
-        <h1 className="text-4xl font-bold text-gray-800 mb-8">
+      <main className="flex-grow px-6 pt-28 pb-16 max-w-6xl mx-auto bg-white rounded shadow">
+        <h1 className="text-4xl font-extrabold text-style text-center">
           {currentAction.name}
         </h1>
+
+        <h1 className="text-2xl font-bold text-style mb-4 text-center">
+          subtitle
+        </h1>
+
+        {isOwner && (
+          <div className="flex justify-end mb-4">
+            <Link
+              className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-4 rounded"
+              to={`/editAction/${id}`}
+              state={{ id }}
+            >
+              Ažuriraj
+            </Link>
+          </div>
+        )}
 
         <div className="flex flex-col md:flex-row gap-10">
           <div className="md:w-3/3">
@@ -342,7 +341,7 @@ function ActionViewPage() {
 
           <div className="md:max-w-2/3 w-2/3 bg-white shadow-lg rounded-lg p-6 flex flex-col justify-between">
             <div>
-              <p className="text-xl font-bold text-gray-700 mb-2">
+              <p className="text-3xl font-extrabold text-style mb-2">
                 {currentAction.collected.toLocaleString()}KM prikupljeno
               </p>
               <p className="text-sm text-gray-600 mb-4">
@@ -372,7 +371,7 @@ function ActionViewPage() {
             </div>
 
             <button
-              className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-4 rounded w-full"
+              className="button-style w-full"
               onClick={() => setShowDonateModal(true)}
             >
               Doniraj
@@ -381,14 +380,14 @@ function ActionViewPage() {
           </div>
         </div>
 
-        <div className="mt-10 p-6 bg-white rounded-lg shadow-lg">
+        <div className="mt-10 p-4 bg-white rounded-lg shadow-lg">
           <p className="text-lg text-gray-700 whitespace-pre-line">
             {currentAction.desc}
           </p>
         </div>
 
         <div className="mt-10 p-6 bg-white rounded-lg shadow-lg">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Komentari</h2>
+          <h2 className="text-2xl font-bold text-style mb-4">Komentari</h2>
 
           <div className="max-h-80 overflow-y-auto border border-gray-200 rounded-md p-4 mb-4 space-y-4">
             {comments.length > 0 ? (
@@ -449,7 +448,7 @@ function ActionViewPage() {
                         <div className="flex gap-2">
                           <button
                             onClick={saveEditedComment}
-                            className="bg-cyan-600 hover:bg-cyan-700 text-white text-sm px-4 py-1 rounded"
+                            className="button-style text-sm px-4 py-1 rounded"
                           >
                             Sačuvaj
                           </button>
@@ -493,7 +492,7 @@ function ActionViewPage() {
             ></textarea>
             <button
               type="submit"
-              className="mt-3 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-4 rounded-md transition duration-200"
+              className="mt-3 font-semibold button-style"
               disabled={submittingComment || !authState.accessToken}
             >
               {submittingComment ? "Slanje..." : "Pošalji Komentar"}
@@ -505,6 +504,16 @@ function ActionViewPage() {
             )}
           </form>
         </div>
+        {!isOwner && (
+          <div className="flex justify-end pt-4">
+            <button
+              className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded transition"
+              onClick={handleReportAction}
+            >
+              Prijavi Akciju
+            </button>
+          </div>
+        )}
       </main>
 
       <InfoFooter />

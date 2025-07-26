@@ -357,7 +357,7 @@ function CreateActionPage() {
           )}
           <button
             onClick={handleCreate}
-            className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-4 px-10 rounded float-right"
+            className=" font-semibold py-4 px-10  float-right button-style"
           >
             Sačuvaj
           </button>

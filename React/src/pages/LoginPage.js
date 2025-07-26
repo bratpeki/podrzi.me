@@ -87,7 +87,7 @@ function LoginPage() {
 
         <button
           onClick={handleLogin}
-          className="w-full bg-cyan-600 text-white py-2 rounded hover:bg-cyan-700 mb-4"
+          className="w-full button-style"
         >
           Prijavi se
         </button>

@@ -8,11 +8,14 @@ import { apiRequest } from "../utility/FetchAPI";
 function HomePage() {
   const [actions, setActions] = useState([]);
   const { authState } = useContext(AuthStateContext);
+  const [retryCount, setRetryCount] = useState(0);
+  const [user,setUser] = useState(0);
 
   // Razlog za upotrebu efekta je da se rendering desi bez da čeka inicijalizaciju tokena
   // https://react.dev/learn/synchronizing-with-effects
   useEffect(
     () => {
+      
       if (!authState.initialized) return;
       apiRequest("actions/getvisibleactions", "GET", authState.accessToken)
         .then((res) => res)
@@ -24,16 +27,16 @@ function HomePage() {
         });
     },
     // Ako se ijedan promjeni, useEffect se ponovo poziva
-    [authState.initialized]
+    [authState.initialized, retryCount, authState]
   );
 
- return (
+  return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-cyan-50 to-cyan-100">
       <NavigationBar showSearch={true} />
 
       <header className="text-center mt-16 mb-8 pt-10">
         <h1 className="text-4xl font-extrabold text-cyan-900 drop-shadow-md">
-           Pregled aktivnih akcija
+          Aktivne Akcije
         </h1>
         <p className="text-gray-600 text-lg mt-2">
           Podržite akcije koje vas inspirišu

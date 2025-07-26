@@ -367,7 +367,7 @@ function EditActionPage() {
               />
               <button
                 //NEKA BUDE SIMBOL SLANJA
-                className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-6 rounded float-right"
+                className=" font-semibold py-2 px-6  float-right button-style"
                 onClick={handleSendCollabRequests}
               >
                 Pošalji Zahtjeve
@@ -544,7 +544,7 @@ function EditActionPage() {
           )}
           <button
             onClick={handleUpdate}
-            className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-4 px-10 rounded float-right"
+            className="button-style font-semibold py-4 px-10  float-right"
           >
             Sačuvaj
           </button>

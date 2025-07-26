@@ -306,7 +306,7 @@ function EditProfilePage() {
               className={`w-full py-2 rounded transition font-semibold ${
                 formData.password && formData.password !== confirmPassword
                   ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-600 text-white hover:bg-blue-700"
+                  : "bg-cyan-600 text-white hover:bg-cyan-700"
               }`}
             >
               Sačuvaj Promjene

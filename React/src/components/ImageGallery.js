@@ -1,68 +1,83 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 function ImageGallery({ images }) {
-  const [selectedImage, setSelectedImage] = useState(null);
-  const scrollRef = useRef(null);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [fade, setFade] = useState(false);
 
   useEffect(() => {
     if (images && images.length > 0) {
-      setSelectedImage(images[0]); // Show first image on load
+      setSelectedIndex(0);
     }
   }, [images]);
 
-  const scrollLeft = () => {
-    scrollRef.current?.scrollBy({ left: -200, behavior: "smooth" });
+  const handleImageChange = (index) => {
+    if (index !== selectedIndex) {
+      setFade(true);
+      setTimeout(() => {
+        setSelectedIndex(index);
+        setFade(false);
+      }, 200);
+    }
   };
 
-  const scrollRight = () => {
-    scrollRef.current?.scrollBy({ left: 200, behavior: "smooth" });
+  const goPrevious = () => {
+    if (images.length > 0) {
+      const newIndex = (selectedIndex - 1 + images.length) % images.length;
+      handleImageChange(newIndex);
+    }
+  };
+
+  const goNext = () => {
+    if (images.length > 0) {
+      const newIndex = (selectedIndex + 1) % images.length;
+      handleImageChange(newIndex);
+    }
   };
 
   if (!images || images.length === 0) return null;
 
   return (
-    <div className="w-full max-w-5xl">
-      {/* Main image */}
-      <div className="mb-4 w-full h-64 bg-gray-100 rounded overflow-hidden relative">
+    <div className="w-full max-w-5xl mx-auto">
+      {/* Main Image Display */}
+      <div className="relative w-full max-w-3xl h-[400px] aspect-[3/2] mb-4 overflow-hidden rounded-lg bg-cyan-50 shadow">
         <img
-          src={selectedImage}
+          src={images[selectedIndex]}
           alt="Selected"
-          className="w-full h-full object-cover absolute top-0 left-0"
+          className={`w-full h-full object-contain transition-opacity duration-300 ${
+            fade ? "opacity-0" : "opacity-100"
+          }`}
         />
-      </div>
 
-      {/* Thumbnails with arrows */}
-      <div className="relative flex items-center">
+        {/* Left/Right Arrows */}
         <button
-          onClick={scrollLeft}
-          className="absolute left-0 z-10 h-full px-2 bg-black/30 hover:bg-black/50 text-white"
+          onClick={goPrevious}
+          className="absolute top-1/2 left-0 -translate-y-1/2 px-3 py-2 bg-black/30 hover:bg-black/60 text-white text-lg z-10"
         >
           ◀
         </button>
-
-        <div
-          ref={scrollRef}
-          className="flex overflow-x-auto space-x-2 px-8 scrollbar-hide"
-        >
-          {images.map((img, i) => (
-            <img
-              key={i}
-              src={img}
-              alt={`Thumbnail ${i + 1}`}
-              onClick={() => setSelectedImage(img)}
-              className={`h-24 w-40 object-cover rounded border-2 cursor-pointer transition ${
-                selectedImage === img ? "border-blue-500" : "border-transparent"
-              }`}
-            />
-          ))}
-        </div>
-
         <button
-          onClick={scrollRight}
-          className="absolute right-0 z-10 h-full px-2 bg-black/30 hover:bg-black/50 text-white"
+          onClick={goNext}
+          className="absolute top-1/2 right-0 -translate-y-1/2 px-3 py-2 bg-black/30 hover:bg-black/60 text-white text-lg z-10"
         >
           ▶
         </button>
+      </div>
+
+      {/* Thumbnails */}
+      <div className="flex justify-center gap-3 overflow-x-auto scrollbar-hide px-2">
+        {images.map((img, i) => (
+          <img
+            key={i}
+            src={img}
+            alt={`Thumbnail ${i + 1}`}
+            onClick={() => handleImageChange(i)}
+            className={`h-24 w-32 object-cover rounded border-2 cursor-pointer transition-all ${
+              selectedIndex === i
+                ? "border-blue-500 scale-105"
+                : "border-transparent opacity-80 hover:opacity-100"
+            }`}
+          />
+        ))}
       </div>
     </div>
   );

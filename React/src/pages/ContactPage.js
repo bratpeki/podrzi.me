@@ -132,7 +132,7 @@ function ContactPage() {
 
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition"
+              className="w-full button-style font-semibold "
             >
               Pošalji poruku
             </button>

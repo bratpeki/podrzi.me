@@ -6,7 +6,8 @@ import NotificationDropdown from "./NotificationDropdown";
 import ActionSearchBar from "./ActionSearchBar";
 import ActionSuggestion from "./ActionSuggestion";
 import { jwtDecode } from "jwt-decode";
-import myImage from "../Images/logo.png";
+import logo from "../Images/logo.png";
+import defaultUser from "../Images/defaultUser.png";
 import { apiRequest } from "../utility/FetchAPI.js";
 
 function NavigationBar({ showSearch = true, showNotification = true }) {
@@ -63,7 +64,7 @@ function NavigationBar({ showSearch = true, showNotification = true }) {
   return (
     <nav className="bg-cyan-500 fixed top-0 w-full p-4 flex items-center justify-between text-white shadow-md z-50 h-20">
       {/* Left: Search bar and suggestions */}
-      <div className="w-1/6 h-full">
+      <div className="w-1/4 h-full">
         {showSearch && (
           <ActionSearchBar
             onResults={setMatchingActions}
@@ -92,7 +93,7 @@ function NavigationBar({ showSearch = true, showNotification = true }) {
           className="flex items-center gap-3 text-white no-underline text-6xl font-extrabold drop-shadow-md"
         >
           <img
-            src={myImage}
+            src={logo}
             alt="Logo"
             className="h-14 w-auto object-contain p-2"
           />
@@ -107,31 +108,31 @@ function NavigationBar({ showSearch = true, showNotification = true }) {
         {authState.accessToken && userData && (
           <div className="relative" ref={dropdownRef}>
             <img
-              src={userData.imagePath || "/default-profile.png"} // Fallback image
+              src={userData.imagePath || defaultUser}
               alt="Profile"
-              className="h-16 w-16 rounded-full cursor-pointer object-cover border-2 border-white hover:border-gray-500"
+              className="h-16 w-16 rounded-full cursor-pointer object-fit border-2 border-gray-500 hover:border-white"
               onClick={toggleDropdown}
             />
             {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded-md shadow-lg py-2 z-30">
+              <div className="absolute right-0 mt-2 w-48 bg-cyan-500 text-white rounded-md shadow-lg py-2 z-30">
                 <Link
                   to={`/viewProfile/${userId}`}
                   state={{ id: userId }}
-                  className="block px-4 py-2 hover:bg-gray-100"
+                  className="block px-4 py-2 hover:bg-cyan-700"
                   onClick={() => setDropdownOpen(false)}
                 >
                   Profil
                 </Link>
                 <Link
                   to="/createAction"
-                  className="block px-4 py-2 hover:bg-gray-100"
+                  className="block px-4 py-2 hover:bg-cyan-700"
                   onClick={() => setDropdownOpen(false)}
                 >
                   Kreiraj akciju
                 </Link>
                 <button
                   onClick={logout}
-                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                  className="block w-full text-left px-4 py-2 hover:bg-cyan-700"
                 >
                   Odjavi se
                 </button>

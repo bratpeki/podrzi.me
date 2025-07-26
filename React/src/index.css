@@ -24,6 +24,14 @@ code {
   @apply bg-gradient-to-b from-cyan-50 to-cyan-100
 }
 
+.text-style{
+  @apply text-cyan-900 drop-shadow-md
+}
+
+.button-style{
+  @apply bg-cyan-600 hover:bg-cyan-700 text-white font-semibold rounded transition px-4 py-2 shadow-md
+}
+
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }

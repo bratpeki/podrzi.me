@@ -121,7 +121,7 @@ function ViewProfilePage() {
           {!isOwnProfile && (
             <button
               onClick={() => handleReportUser(user.idUser)}
-              className="absolute top-4 right-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300 ease-in-out z-10"
+              className="absolute top-4 right-4  py-2 px-4 button-style shadow-lg"
             >
               Prijavi korisnika
             </button>
@@ -165,14 +165,14 @@ function ViewProfilePage() {
                       state: { idUser: user.idUser },
                     })
                   }
-                  className="bg-blue-600 text-white px-4 py-2 mr-4 rounded hover:bg-blue-700 transition"
+                  className="button-style"
                 >
                   Pregled donacija
                 </button>
 
                 <button
                   onClick={() => navigate("/EditProfile")}
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                  className="button-style"
                 >
                   Uredi profil
                 </button>
