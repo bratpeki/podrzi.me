@@ -20,13 +20,15 @@ public class NotificationAPI {
     private final UserRepository userRepository;
     private final ActionRepository actionRepository;
     private final ActionOwnerRepository actionOwnerRepository;
+    private final DonationRepository donationRepository;
 
-    public NotificationAPI(NotificationRepository notificationRepository, JWT jwt, UserRepository userRepository, ActionRepository actionRepository, ActionOwnerRepository actionOwnerRepository) {
+    public NotificationAPI(NotificationRepository notificationRepository, JWT jwt, UserRepository userRepository, ActionRepository actionRepository, ActionOwnerRepository actionOwnerRepository, DonationRepository donationRepository) {
         this.notificationRepository = notificationRepository;
         this.jwt = jwt;
         this.userRepository = userRepository;
         this.actionRepository = actionRepository;
         this.actionOwnerRepository = actionOwnerRepository;
+        this.donationRepository = donationRepository;
     }
 
     @PostMapping("/seen")
@@ -53,8 +55,8 @@ public class NotificationAPI {
         );
     }
 
-    @PostMapping("/send")
-    public ResponseEntity<?> sendNotification(@RequestHeader Map<String, String> token, @RequestBody NotificationSendCollabDTO notif) {
+    @PostMapping("/sendcollab")
+    public ResponseEntity<?> sendCollabNotification(@RequestHeader Map<String, String> token, @RequestBody NotificationSendCollabDTO notif) {
         User u = userRepository.findByidUser(jwt.extractId(token.get("token")));
         Notification n = new Notification();
 
@@ -67,12 +69,33 @@ public class NotificationAPI {
 
         n.setCreated(LocalDateTime.now());
         n.setSeen(false);
-        n.setType(notif.getType());
+        n.setType(0);
         n.setUserSender(u);
         n.setUser(userRepository.findByidUser(notif.getIdUser()));
         n.setAction(actionRepository.findByidAction(notif.getIdAction()));
 
         notificationRepository.save(n);
+        return ResponseEntity.ok("success");
+    }
+
+    @PostMapping("/send")
+    public ResponseEntity<?> sendNotification(@RequestHeader Map<String, String> token, @RequestBody NotificationSendDTO notif) {
+        User u = userRepository.findByidUser(jwt.extractId(token.get("token")));
+        List<Integer> ids = donationRepository.findDistinctUserIdsByActionId(notif.getIdAction());
+
+        for (Integer i : ids) {
+            Notification no = new Notification();
+
+            no.setAction(actionRepository.findByidAction(notif.getIdAction()));
+            no.setText(notif.getText());
+            no.setCreated(LocalDateTime.now());
+            no.setSeen(false);
+            no.setType(1);
+            no.setUserSender(u);
+            no.setUser(userRepository.findByidUser(i));
+            notificationRepository.save(no);
+        }
+
         return ResponseEntity.ok("success");
     }
 

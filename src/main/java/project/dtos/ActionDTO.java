@@ -1,7 +1,9 @@
 package project.dtos;
 
+import project.classes.Action;
+
+import java.time.LocalDateTime;
 import java.util.List;
-import project.classes.Comment;
 
 public class ActionDTO {
     private Integer idAction;
@@ -12,8 +14,14 @@ public class ActionDTO {
     private String primaryImage;
     private List<ActionOwnerDTO> actionOwners;
     private List<CommentDTO> comments;
+    private LocalDateTime endTime;
+    private List<String> tags;
+    private Action.ACategory category;
+    private String subtitle;
+    private String location;
 
-    public ActionDTO(String name, Float goal, Float collected, String desc, String primaryimage, Integer idAction, List<ActionOwnerDTO> actionOwners, List<CommentDTO> comments) {
+    public ActionDTO(String name, Float goal, Float collected, String desc, String primaryimage, Integer idAction, List<ActionOwnerDTO> actionOwners,
+                     List<CommentDTO> comments, LocalDateTime endtime, List<String> tags, Action.ACategory category, String subtitle, String location) {
         this.idAction = idAction;
         this.name = name;
         this.goal = goal;
@@ -22,8 +30,19 @@ public class ActionDTO {
         this.primaryImage = primaryimage;
         this.actionOwners = actionOwners;
         this.comments = comments;
+        this.endTime = endtime;
+        this.tags = tags;
+        this.category = category;
+        this.subtitle = subtitle;
+        this.location = location;
     }
 
+    public String getLocation() {
+        return location;
+    }
+    public void setLocation(String location) {
+        this.location = location;
+    }
     public List<ActionOwnerDTO> getActionOwners() {
         return actionOwners;
     }
@@ -71,5 +90,29 @@ public class ActionDTO {
     }
     public void setComments(List<CommentDTO> comments) {
         this.comments = comments;
+    }
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+    public List<String> getTags() {
+        return tags;
+    }
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+    }
+    public Action.ACategory getCategory() {
+        return category;
+    }
+    public void setCategory(Action.ACategory category) {
+        this.category = category;
+    }
+    public String getSubtitle() {
+        return subtitle;
+    }
+    public void setSubtitle(String subtitle) {
+        this.subtitle = subtitle;
     }
 }

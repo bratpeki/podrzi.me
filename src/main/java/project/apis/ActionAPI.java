@@ -38,13 +38,13 @@ public class ActionAPI {
         List<Comment> lc = commentRepository.findByaction_idAction(idAction);
         List<CommentDTO> coms = lc.stream().map(c->new CommentDTO(c.getText(), c.getAction().getIdAction(), c.getCreated(), c.getUser().getIdUser(), c.getUser().getDisplayName(), c.getUser().getImagePath(), c.getIdComment())).toList();
         List<ActionOwnerDTO> AOs = actionOwnerRepository.findAll().stream().filter(ao->ao.getAction().getIdAction().equals(idAction)).map(ao->new ActionOwnerDTO(ao.getUser().getIdUser(), ao.getIsCollab(), ao.getUser().getDisplayName(), ao.getUser().getImagePath())).toList();
-        return ResponseEntity.ok(new ActionDTO(a.getName(), a.getGoal(), a.getCollected(), a.getDesc(), a.getPrimaryImage(), a.getIdAction(), AOs, coms));
+        return ResponseEntity.ok(new ActionDTO(a.getName(), a.getGoal(), a.getCollected(), a.getDesc(), a.getPrimaryImage(), a.getIdAction(), AOs, coms, a.getEndTime(), a.getTags(), a.getCategory(), a.getSubtitle(), a.getLocation()));
     }
 
     @GetMapping("/getvisibleactions")
     public ResponseEntity<?> getVisibleActions(@RequestHeader Map<String, String> token) {
         List<Action> list = actionRepository.findAll().stream().filter(a->a.getVisible() == 1).toList();
-        return ResponseEntity.ok(list.stream().map(a->new ActionDTO(a.getName(), a.getGoal(), a.getCollected(), a.getDesc(), a.getPrimaryImage(), a.getIdAction(), null, null)).toList());
+        return ResponseEntity.ok(list.stream().map(a->new ActionDTO(a.getName(), a.getGoal(), a.getCollected(), a.getDesc(), a.getPrimaryImage(), a.getIdAction(), null, null, null, a.getTags(), a.getCategory(), a.getSubtitle(), a.getLocation())).toList());
     }
 
     @PostMapping("/addaction")
@@ -89,11 +89,29 @@ public class ActionAPI {
         if (!adto.getName().equals(a.getName()))
             a.setName(adto.getName());
 
+        if (!adto.getLocation().equals(a.getLocation()))
+            a.setLocation(adto.getLocation());
+
+        if (!adto.getCategory().equals(a.getCategory()))
+            a.setCategory(adto.getCategory());
+
+        if (!adto.getTags().equals(a.getTags()))
+            a.setTags(adto.getTags());
+
+        if (!adto.getSubtitle().equals(a.getSubtitle()))
+            a.setSubtitle(adto.getSubtitle());
+
+        if (!adto.getTags().equals(a.getTags()))
+            a.setTags(adto.getTags());
+
         if (!adto.getDesc().equals(a.getDesc()))
             a.setDesc(adto.getDesc());
 
         if (!adto.getGoal().equals(a.getGoal()))
             a.setGoal(adto.getGoal());
+
+        if (!adto.getEndTime().equals(a.getEndTime()))
+            a.setEndTime(adto.getEndTime());
 
         if (adto.getPrimaryImage() != null)
             if (!(adto.getPrimaryImage().equals(a.getPrimaryImage()) || adto.getPrimaryImage().isBlank()))
@@ -132,7 +150,7 @@ public class ActionAPI {
         List<ActionOwner> aol = actionOwnerRepository.findAllByuser_idUser(idUser);
         List<ActionDTO> al = new ArrayList<>();
         for (ActionOwner a : aol)
-            al.add(new ActionDTO(a.getAction().getName(), a.getAction().getGoal(),a.getAction().getCollected(), a.getAction().getDesc(), a.getAction().getPrimaryImage(), a.getAction().getIdAction(), null, null));
+            al.add(new ActionDTO(a.getAction().getName(), a.getAction().getGoal(),a.getAction().getCollected(), a.getAction().getDesc(), a.getAction().getPrimaryImage(), a.getAction().getIdAction(), null, null, null, null, null, a.getAction().getSubtitle(), a.getAction().getLocation()));
 
         return ResponseEntity.ok(al);
     }

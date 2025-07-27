@@ -23,6 +23,7 @@ public class Security {
             "/api/users/userauth",
             "/api/users/getnamebyid",
             "/api/users/showuserprofile",
+            "/api/users/forgotpassword",
 
             "/api/messages/send",
 
@@ -41,7 +42,9 @@ public class Security {
 
             "/api/admins/adminauth",
 
-            "/uploads/**",
+            "/uploads/**"
+
+
 
             //"/api/reports/getall"
     };
@@ -67,6 +70,7 @@ public class Security {
 
             "/api/notifications/get",
             "/api/notifications/send",
+            "/api/notifications/sendcollab",
             "/api/notifications/seen",
             "/api/notifications/acceptcollab",
             "/api/notifications/denycollab",
@@ -105,7 +109,7 @@ public class Security {
                         .requestMatchers(PublicMethods).permitAll()     //PUBLIC
                         .requestMatchers(AdminMethods).hasRole("ADMIN") //ADMIN
                         .requestMatchers(UserMethods).hasRole("USER"))//USER
-                .sessionManagement(ses -> ses.sessionCreationPolicy((SessionCreationPolicy.STATELESS)))
+                .sessionManagement(ses -> ses.sessionCreationPolicy((SessionCreationPolicy.IF_REQUIRED)))
                 .exceptionHandling(ex -> ex.authenticationEntryPoint((request, response, authException) -> {
                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Nemate prava!");
                 }));

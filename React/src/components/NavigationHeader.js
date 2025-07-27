@@ -97,7 +97,7 @@ function NavigationBar({ showSearch = true, showNotification = true }) {
             alt="Logo"
             className="h-14 w-auto object-contain p-2"
           />
-          PODRŽI.ME
+           <span className="hidden sm:inline text-3xl md:text-6xl">PODRŽI.ME</span>
         </Link>
       </div>
 
