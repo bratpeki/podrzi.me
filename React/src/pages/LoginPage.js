@@ -80,9 +80,9 @@ function LoginPage() {
         />
 
         <div className="text-right text-sm mb-4">
-          <a href="#" className="link-style">
-            Zaboravili ste lozinku?
-          </a>
+        <Link to="/forgotPassword" className="link-style">
+          Zaboravili ste lozinku?
+        </Link>
         </div>
 
         <button
