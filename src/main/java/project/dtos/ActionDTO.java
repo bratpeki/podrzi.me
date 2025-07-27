@@ -1,5 +1,7 @@
 package project.dtos;
 
+import project.classes.Action;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,11 +16,12 @@ public class ActionDTO {
     private List<CommentDTO> comments;
     private LocalDateTime endTime;
     private List<String> tags;
-    private Integer category;
+    private Action.ACategory category;
     private String subtitle;
+    private String location;
 
     public ActionDTO(String name, Float goal, Float collected, String desc, String primaryimage, Integer idAction, List<ActionOwnerDTO> actionOwners,
-                     List<CommentDTO> comments, LocalDateTime endtime, List<String> tags, Integer category, String subtitle) {
+                     List<CommentDTO> comments, LocalDateTime endtime, List<String> tags, Action.ACategory category, String subtitle, String location) {
         this.idAction = idAction;
         this.name = name;
         this.goal = goal;
@@ -31,8 +34,15 @@ public class ActionDTO {
         this.tags = tags;
         this.category = category;
         this.subtitle = subtitle;
+        this.location = location;
     }
 
+    public String getLocation() {
+        return location;
+    }
+    public void setLocation(String location) {
+        this.location = location;
+    }
     public List<ActionOwnerDTO> getActionOwners() {
         return actionOwners;
     }
@@ -93,10 +103,10 @@ public class ActionDTO {
     public void setTags(List<String> tags) {
         this.tags = tags;
     }
-    public Integer getCategory() {
+    public Action.ACategory getCategory() {
         return category;
     }
-    public void setCategory(Integer category) {
+    public void setCategory(Action.ACategory category) {
         this.category = category;
     }
     public String getSubtitle() {

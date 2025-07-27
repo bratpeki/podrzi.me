@@ -7,6 +7,20 @@ import java.util.List;
 
 @Entity
 public class Action {
+    public enum ACategory {
+        Humanitarno,
+        Tehnologija,
+        Igrica,
+        Umjetnost,
+        Startup,
+        Knjiga,
+        Film,
+        Video,
+        Muzika,
+        Hrana,
+        Moda
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idAction;
@@ -21,8 +35,9 @@ public class Action {
     private String primaryImage;
     private LocalDateTime endTime;
     private List<String> tags;
-    private Integer category;
+    private ACategory category;
     private String subtitle;
+    private String location;
 
     public Integer getVisible() {
         return visible;
@@ -78,10 +93,10 @@ public class Action {
     public void setTags(List<String> tags) {
         this.tags = tags;
     }
-    public Integer getCategory() {
+    public ACategory getCategory() {
         return category;
     }
-    public void setCategory(Integer category) {
+    public void setCategory(ACategory category) {
         this.category = category;
     }
     public String getSubtitle() {
@@ -89,5 +104,11 @@ public class Action {
     }
     public void setSubtitle(String subtitle) {
         this.subtitle = subtitle;
+    }
+    public String getLocation() {
+        return location;
+    }
+    public void setLocation(String location) {
+        this.location = location;
     }
 }

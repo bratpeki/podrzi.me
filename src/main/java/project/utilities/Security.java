@@ -70,6 +70,7 @@ public class Security {
 
             "/api/notifications/get",
             "/api/notifications/send",
+            "/api/notifications/sendcollab",
             "/api/notifications/seen",
             "/api/notifications/acceptcollab",
             "/api/notifications/denycollab",
