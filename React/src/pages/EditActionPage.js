@@ -113,7 +113,7 @@ function EditActionPage() {
     try {
       const promises = collabUsers.map((receiverId) =>
         apiRequest(
-          "notifications/sendCollab",
+          "notifications/sendcollab",
           "POST",
           authState.accessToken,
           {
