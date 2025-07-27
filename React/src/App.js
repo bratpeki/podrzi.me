@@ -14,6 +14,7 @@ import EditActionPage from "./pages/EditActionPage";
 import ViewDonationsPage from "./pages/ViewDonationsPage";
 import ReviewPage from './pages/ReviewPage';
 import ViewProfilePage from "./pages/ViewProfilePage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import { AuthStateContext, useAuth } from "./components/UseAuthState";
 import { useEffect } from "react";
 
@@ -54,6 +55,7 @@ function App() {
             <Route path="/editProfile/" element={<EditProfilePage />} />
             <Route path="/editAction/:id" element={<EditActionPage />} />
             <Route path="/viewDonations/" element={<ViewDonationsPage />} />
+            <Route path="/forgotPassword/" element={<ForgotPasswordPage />} />
              <Route path="/viewProfile/:id" element={<ViewProfilePage />} />
             <Route path="/review" element={<ReviewPage />} />
           </Routes>

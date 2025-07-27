@@ -33,9 +33,11 @@ function ActionViewPage() {
   const [submittingComment, setSubmittingComment] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [editingText, setEditingText] = useState("");
+  const [notifText, setNotifText] = useState("");
   const sweetAlert = withReactContent(Swal);
 
   const [reportContext, setReportContext] = useState(null);
+  const [showCreateNotifModal, setShowCreateNotifModal] = useState(false);
 
   const commentAuthorId = authState.accessToken
     ? jwtDecode(authState.accessToken).id
@@ -85,6 +87,77 @@ function ActionViewPage() {
   useEffect(() => {
     fetchActionData();
   }, [id]);
+
+  const handleCreateNotification = async () => {
+    if (!notifText.trim()) {
+      await sweetAlert.fire({
+        title: "Greška!",
+        text: "Tekst notifikacije ne može biti prazan.",
+        icon: "error",
+        confirmButtonText: "U redu",
+      });
+      return;
+    }
+
+    try {
+      const res = await apiRequest(
+        "notifications/create",
+        "POST",
+        authState.accessToken,
+        {
+          idAction: currentAction.idAction,
+          text: notifText,
+        }
+      );
+
+      if (res === "success") {
+        await sweetAlert.fire({
+          title: "Uspješno!",
+          text: "Notifikacija je poslana.",
+          icon: "success",
+          confirmButtonText: "OK",
+        });
+        setShowCreateNotifModal(false);
+        setNotifText("");
+      } else {
+        throw new Error("Neuspješno slanje notifikacije.");
+      }
+    } catch (err) {
+      console.error("Greška pri slanju notifikacije:", err);
+      await sweetAlert.fire({
+        title: "Greška!",
+        text: err.message || "Došlo je do greške.",
+        icon: "error",
+        confirmButtonText: "U redu",
+      });
+    }
+  };
+
+
+  useEffect(() => {
+    if (showCreateNotifModal) {
+      sweetAlert
+        .fire({
+          title: "Nova notifikacija",
+          input: "textarea",
+          inputPlaceholder: "Unesite tekst notifikacije...",
+          showCancelButton: true,
+          confirmButtonText: "Pošalji",
+          cancelButtonText: "Otkaži",
+          preConfirm: (text) => {
+            setNotifText(text);
+            return text;
+          },
+        })
+        .then((result) => {
+          if (result.isConfirmed) {
+            handleCreateNotification();
+          } else {
+            setShowCreateNotifModal(false);
+          }
+        });
+    }
+  }, [showCreateNotifModal]);
 
   const handleDonationSuccess = () => {
     fetchActionData();
@@ -259,6 +332,8 @@ function ActionViewPage() {
     const owner = currentAction.actionOwners.filter((o) => !o.isCollab);
     const collaborators = currentAction.actionOwners.filter((o) => o.isCollab);
 
+
+
     return (
       <div className="mt-10 p-4 bg-white rounded shadow ">
         <h2 className="text-xl font-extrabold text-style mb-2">Vlasnik</h2>
@@ -323,7 +398,13 @@ function ActionViewPage() {
         </h1>
 
         {isOwner && (
-          <div className="flex justify-end mb-4">
+          <div className="flex justify-between mb-4">
+            <button
+              className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-4 rounded"
+              onClick={() => setShowCreateNotifModal(true)}
+            >
+              Kreiraj notifikaciju
+            </button>
             <Link
               className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-4 rounded"
               to={`/editAction/${id}`}
@@ -350,16 +431,14 @@ function ActionViewPage() {
 
               <div className="w-full bg-gray-200 rounded-full h-4 mb-2">
                 <div
-                  className={`h-4 rounded-full ${
-                    progress < 50 ? "bg-orange-400" : "bg-green-500"
-                  }`}
+                  className={`h-4 rounded-full ${progress < 50 ? "bg-orange-400" : "bg-green-500"
+                    }`}
                   style={{ width: `${progress}%` }}
                 />
               </div>
               <p
-                className={`text-sm font-medium mb-4 ${
-                  progress < 50 ? "text-orange-500" : "text-green-600"
-                }`}
+                className={`text-sm font-medium mb-4 ${progress < 50 ? "text-orange-500" : "text-green-600"
+                  }`}
               >
                 {progress}% prikupljeno
               </p>

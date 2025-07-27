@@ -1,11 +1,17 @@
 package project.apis;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import project.classes.Admin;
 import project.repositories.AdminRepository;
 import project.utilities.*;
+import project.dtos.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -27,7 +33,7 @@ public class AdminAPI {
     }
 
     @PostMapping("/adminauth")
-    public ResponseEntity<?> adminLogin(@RequestBody Admin admin) {
+    public ResponseEntity<?> adminLogin(@RequestBody AdminLoginDTO admin) {
         if (admin.getUsername().isBlank() && admin.getPassword().isBlank())
             return ResponseEntity.ok("invalidDataError");
         if (adminRepository.findByusername(admin.getUsername()) == null)
@@ -35,7 +41,13 @@ public class AdminAPI {
         if (!admin.getPassword().equals(adminRepository.findByusername(admin.getUsername()).getPassword()))
             return ResponseEntity.ok("passwordError");
 
-        String token = jwt.generateToken(admin.getUsername());
-        return ResponseEntity.ok(token);
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(admin.getUsername(), null, authorities);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        System.out.println(authentication);
+
+        return ResponseEntity.ok("success");
     }
 }

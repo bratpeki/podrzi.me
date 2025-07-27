@@ -7,8 +7,9 @@ import project.dtos.UserLoginDTO;
 import project.dtos.UserProfileDTO;
 import project.repositories.ActionOwnerRepository;
 import project.repositories.UserRepository;
-import project.utilities.JWT;
+import project.utilities.*;
 
+import java.security.SecureRandom;
 import java.util.Map;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -20,11 +21,39 @@ public class UserAPI {
     private final JWT jwt;
     private final UserRepository userRepository;
     private final ActionOwnerRepository actionOwnerRepository;
+    private final MailService mailService;
 
-    public UserAPI (UserRepository userRepository, JWT jwt, ActionOwnerRepository actionOwnerRepository) {
+    public UserAPI (UserRepository userRepository, JWT jwt, ActionOwnerRepository actionOwnerRepository, MailService mailService) {
         this.userRepository = userRepository;
         this.jwt = jwt;
         this.actionOwnerRepository = actionOwnerRepository;
+        this.mailService = mailService;
+    }
+
+    public String generateRandomPassword(int length) {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%";
+        SecureRandom random = new SecureRandom();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            sb.append(chars.charAt(random.nextInt(chars.length())));
+        }
+        return sb.toString();
+    }
+
+    @PostMapping("/forgotpassword")
+    public ResponseEntity<?> forgotPassword(@RequestParam String email) {
+        User user = userRepository.findByemail(email);
+        if (user == null)
+            return ResponseEntity.ok("emailNotFound");
+
+        String newPassword = generateRandomPassword(10);
+        user.setPassword(newPassword);
+        userRepository.save(user);
+
+        mailService.send(user.getEmail(), "Vasa nova lozinka",
+                "Vasa nova lozinka za prijavu na sistem je: " + newPassword + "\nPromjenite ju sto prije!");
+
+        return ResponseEntity.ok("newPasswordSent");
     }
 
     @GetMapping("/getusers")

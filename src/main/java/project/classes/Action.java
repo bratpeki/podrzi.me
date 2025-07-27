@@ -2,6 +2,9 @@ package project.classes;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Entity
 public class Action {
     @Id
@@ -16,6 +19,10 @@ public class Action {
     @Column(name = "visible", columnDefinition = "TINYINT")
     private Integer visible = 1;
     private String primaryImage;
+    private LocalDateTime endTime;
+    private List<String> tags;
+    private Integer category;
+    private String subtitle;
 
     public Integer getVisible() {
         return visible;
@@ -58,5 +65,29 @@ public class Action {
     }
     public void setPrimaryImage(String primaryImage) {
         this.primaryImage = primaryImage;
+    }
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+    public List<String> getTags() {
+        return tags;
+    }
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+    }
+    public Integer getCategory() {
+        return category;
+    }
+    public void setCategory(Integer category) {
+        this.category = category;
+    }
+    public String getSubtitle() {
+        return subtitle;
+    }
+    public void setSubtitle(String subtitle) {
+        this.subtitle = subtitle;
     }
 }
