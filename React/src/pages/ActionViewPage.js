@@ -38,6 +38,7 @@ function ActionViewPage() {
 
   const [reportContext, setReportContext] = useState(null);
   const [showCreateNotifModal, setShowCreateNotifModal] = useState(false);
+  const [ownerCheckDone, setOwnerCheckDone] = useState(false);
 
   const commentAuthorId = authState.accessToken
     ? jwtDecode(authState.accessToken).id
@@ -81,6 +82,7 @@ function ActionViewPage() {
       setComments([]);
     } finally {
       setLoadingAction(false);
+      setOwnerCheckDone(true);
     }
   };
 
@@ -88,8 +90,8 @@ function ActionViewPage() {
     fetchActionData();
   }, [id]);
 
-  const handleCreateNotification = async () => {
-    if (!notifText.trim()) {
+  const handleCreateNotification = async (text) => {
+    if (!text.trim()) {
       await sweetAlert.fire({
         title: "Greška!",
         text: "Tekst notifikacije ne može biti prazan.",
@@ -101,12 +103,12 @@ function ActionViewPage() {
 
     try {
       const res = await apiRequest(
-        "notifications/create",
+        "notifications/send",
         "POST",
         authState.accessToken,
         {
           idAction: currentAction.idAction,
-          text: notifText,
+          text: text,
         }
       );
 
@@ -118,7 +120,7 @@ function ActionViewPage() {
           confirmButtonText: "OK",
         });
         setShowCreateNotifModal(false);
-        setNotifText("");
+        setNotifText(text);
       } else {
         throw new Error("Neuspješno slanje notifikacije.");
       }
@@ -135,6 +137,7 @@ function ActionViewPage() {
 
 
   useEffect(() => {
+     fetchActionData();
     if (showCreateNotifModal) {
       sweetAlert
         .fire({
@@ -144,14 +147,10 @@ function ActionViewPage() {
           showCancelButton: true,
           confirmButtonText: "Pošalji",
           cancelButtonText: "Otkaži",
-          preConfirm: (text) => {
-            setNotifText(text);
-            return text;
-          },
         })
         .then((result) => {
-          if (result.isConfirmed) {
-            handleCreateNotification();
+          if (result.isConfirmed && result.value.trim()) {
+            handleCreateNotification(result.value);
           } else {
             setShowCreateNotifModal(false);
           }
@@ -397,7 +396,7 @@ function ActionViewPage() {
           subtitle
         </h1>
 
-        {isOwner && (
+        {ownerCheckDone && isOwner && (
           <div className="flex justify-between mb-4">
             <button
               className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-4 rounded"

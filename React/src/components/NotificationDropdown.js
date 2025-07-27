@@ -4,6 +4,8 @@ import { useContext, useEffect, useState } from 'react';
 import { apiRequest } from '../utility/FetchAPI';
 import { AuthStateContext } from '../components/UseAuthState';
 import CollabNotification from './CollabNotifications';
+import { Link } from 'react-router-dom';
+
 
 export default function NotificationDropdown() {
   const { authState } = useContext(AuthStateContext);
@@ -114,7 +116,8 @@ export default function NotificationDropdown() {
             return (
               <DropdownMenu.Item
                 key={notification.id}
-                className="w-full text-left px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 focus:outline-none"
+                className={`w-full text-left px-4 py-2 text-sm cursor-pointer focus:outline-none transition-colors duration-1000
+                   ${notification.seen ? "bg-gray-50 text-gray-500" : "hover:bg-gray-100"}`}
               >
                 <div className="flex items-start gap-3">
                   <img
@@ -123,8 +126,17 @@ export default function NotificationDropdown() {
                     className="w-10 h-10 rounded-full object-cover"
                   />
                   <div className="flex flex-col">
-                    <span className="font-medium">{notification.name}</span>
-                    <span className="text-gray-700">{notification.text}</span>
+                    <Link
+                      to={`/actionView/${notification.idAction}`}
+                      state={{ id: notification.idAction }}
+                      className={`font-medium text-blue-600 hover:underline transition-colors duration-300 ${notification.seen ? "text-gray-500 font-normal" : ""
+                        }`}
+                    >
+                      {notification.name}
+                    </Link>
+                    <span className={`transition-colors duration-300 ${notification.seen ? "text-gray-400 font-normal" : "text-gray-700 font-semibold"}`}>
+                      {notification.text}
+                    </span>
                   </div>
                 </div>
               </DropdownMenu.Item>
