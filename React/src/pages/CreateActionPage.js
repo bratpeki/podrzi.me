@@ -51,8 +51,13 @@ function CreateActionPage() {
         authState.accessToken,
         {
           name: title,
+          subtitle: subtitle,
           desc: description,
           goal: goal,
+          endtime: getFutureDate(duration),
+          tags : tags,
+          category: category
+
         }
       );
       const text = await response;
@@ -175,6 +180,11 @@ function CreateActionPage() {
     // You can store the file in state or FormData for submission
     console.log("Video file selected:", file);
   };
+  function getFutureDate(duration) {
+  const today = new Date();
+  today.setDate(today.getDate() + duration);
+  return today;
+}
   return (
     <div className="min-h-screen text-black gradient-style">
       {/* Top navigation bar */}
@@ -316,9 +326,17 @@ function CreateActionPage() {
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                 >
-                  <option>Umjetnost</option>
+                  <option>Humanitarno</option>
                   <option>Tehnologija</option>
-                  <option>Igrice</option>
+                  <option>Igrica</option>
+                  <option>Umjetnost</option>
+                  <option>Startup</option>
+                  <option>Knjiga</option>
+                  <option>Film</option>
+                  <option>Video</option>
+                  <option>Muzika</option>
+                  <option>Hrana</option>
+                  <option>Moda</option>
                 </select>
               </div>
               <div></div>
