@@ -77,10 +77,13 @@ public class ActionAPI {
 
     @PostMapping("/updateaction")
     public ResponseEntity<?> updateAction(@RequestHeader Map<String, String> token, @RequestBody ActionDTO adto) {
-        ActionOwner ao = actionOwnerRepository.findByidAO_IdAction(adto.getIdAction());
-        if (!ao.getUser().getUsername().equals(jwt.extractUsername(token.get("token")))  ) {
+        List<ActionOwner> ao = actionOwnerRepository.findAllByidAO_IdAction(adto.getIdAction());
+        String requesterUsername = jwt.extractUsername(token.get("token"));
+        boolean isOwner = ao.stream()
+                .anyMatch(a -> a.getUser().getUsername().equals(requesterUsername));
+
+        if (!isOwner)
             return ResponseEntity.ok("invalidUserError");
-        }
 
         //TODO: provjeriti da li postoji akcija sa novim imenom
 

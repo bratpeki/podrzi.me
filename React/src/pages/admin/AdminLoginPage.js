@@ -1,24 +1,22 @@
-import React, { useContext, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { AuthStateContext } from "../components/UseAuthState";
-import NavigationBar from "../components/NavigationHeader";
-import { apiRequest } from "../utility/FetchAPI";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import NavigationBar from "../../components/NavigationHeader";
+import { apiRequest } from "../../utility/FetchAPI";
 
-function LoginPage() {
+function AdminLoginPage() {
+
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [responseMessage, setResponseMessage] = useState("");
 
-  const { authState, authDispatch } = useContext(AuthStateContext);
-
   const handleLogin = async () => {
     try {
       const response = await apiRequest(
-        "users/userauth",
+        "admins/adminauth",
         "POST",
-        authState.accessToken,
+        null,
         {
           username: username,
           password: password,
@@ -26,20 +24,14 @@ function LoginPage() {
       );
 
       const text = await response;
-      if (text == "missingInfoError") {
+      if (text === "success") navigate("/admin/home");
+
+      if (text === "invalidDataError") {
         setResponseMessage("Neuspjesna prijava! Provjerite Vase podatke!");
-      } else if (text == "usernameError") {
+      } else if (text === "usernameError") {
         setResponseMessage("Korisničko ime ne postoji!");
-      } else if (text == "passwordError") {
+      } else if (text === "passwordError") {
         setResponseMessage("Lozinka je pogrešna!");
-      } else {
-        authDispatch({
-          type: "login",
-          payload: {
-            accessToken: text,
-          },
-        });
-        navigate("/home");
       }
     } catch (error) {
       setResponseMessage("Dogodila se greska tokom prijave!");
@@ -59,8 +51,9 @@ function LoginPage() {
       <h1 className="text-4xl font-bold text-cyan-600 mb-8">PODRZI.ME</h1>
 
       <div className="w-full max-w-md bg-white p-8 shadow-md rounded border">
+
         <h2 className="text-2xl font-semibold mb-6">
-          <center>Prijava</center>
+          <center>Prijava <span className="text-red-500">(Admin)</span></center>
         </h2>
 
         <input
@@ -79,40 +72,22 @@ function LoginPage() {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <div className="text-right text-sm mb-4">
-        <Link to="/forgotPassword" className="link-style">
-          Zaboravili ste lozinku?
-        </Link>
-        </div>
-
         <button
           onClick={handleLogin}
-          className="w-full button-style"
+          className="w-full button-style mt-2"
         >
           Prijavi se
         </button>
+
         {responseMessage && (
-          <p className="text-center text-sm text-red-600 mb-2">
+          <p className="text-center text-sm text-red-600 mb-2 mt-2">
             {responseMessage}
           </p>
         )}
-
-        <div className="flex items-center space-x-1 text-sm mt-4">
-          <span>Nemate nalog?</span>
-          <Link to="/register" className="link-style">
-            Registruj se
-          </Link>
-        </div>
-
-        <div className="flex items-center space-x-1 text-sm">
-          <Link to="/admin/login" className="link-style">
-            Admin
-          </Link>
-        </div>
 
       </div>
     </div>
   );
 }
 
-export default LoginPage;
+export default AdminLoginPage;
