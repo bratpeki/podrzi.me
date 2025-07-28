@@ -84,7 +84,7 @@ export default function NotificationDropdown() {
               </span>
             )}
           </div>
-          <span>Notifikacije</span>
+          <span className="hidden sm:inline">Notifikacije</span>
         </button>
       </DropdownMenu.Trigger>
 

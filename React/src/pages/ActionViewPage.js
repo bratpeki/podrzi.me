@@ -75,8 +75,91 @@ function ActionViewPage() {
 
 
   useEffect(() => {
-    fetchActionData(); 
-  }, [id]);
+    if (id) {
+      fetchActionData();
+    }
+  }, [id, authState.accessToken]);
+
+  // Run owner check separately after currentAction and token are ready
+  useEffect(() => {
+    if (currentAction && authState.accessToken) {
+      const decoded = jwtDecode(authState.accessToken);
+      const ownerFound = currentAction.actionOwners?.some(
+        (owner) => owner.idUser === decoded.id
+      );
+      setIsOwner(!!ownerFound);
+    } else {
+      setIsOwner(false);
+    }
+    setOwnerCheckDone(true);
+  }, [currentAction, authState.accessToken]);
+
+  const handleCreateNotification = async (text) => {
+    if (!text.trim()) {
+      await sweetAlert.fire({
+        title: "Greška!",
+        text: "Tekst notifikacije ne može biti prazan.",
+        icon: "error",
+        confirmButtonText: "U redu",
+      });
+      return;
+    }
+
+    try {
+      const res = await apiRequest(
+        "notifications/send",
+        "POST",
+        authState.accessToken,
+        {
+          idAction: currentAction.idAction,
+          text: text,
+        }
+      );
+
+      if (res === "success") {
+        await sweetAlert.fire({
+          title: "Uspješno!",
+          text: "Notifikacija je poslana.",
+          icon: "success",
+          confirmButtonText: "OK",
+        });
+        setShowCreateNotifModal(false);
+        setNotifText(text);
+      } else {
+        throw new Error("Neuspješno slanje notifikacije.");
+      }
+    } catch (err) {
+      console.error("Greška pri slanju notifikacije:", err);
+      await sweetAlert.fire({
+        title: "Greška!",
+        text: err.message || "Došlo je do greške.",
+        icon: "error",
+        confirmButtonText: "U redu",
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchActionData();
+    if (showCreateNotifModal) {
+      sweetAlert
+        .fire({
+          title: "Nova notifikacija",
+          input: "textarea",
+          inputPlaceholder: "Unesite tekst notifikacije...",
+          showCancelButton: true,
+          confirmButtonText: "Pošalji",
+          cancelButtonText: "Otkaži",
+        })
+        .then((result) => {
+          if (result.isConfirmed && result.value.trim()) {
+            handleCreateNotification(result.value);
+          } else {
+            setShowCreateNotifModal(false);
+          }
+        });
+    }
+  }, [showCreateNotifModal]);
 
   const handleDonationSuccess = () => {
     fetchActionData();
@@ -446,16 +529,23 @@ function ActionViewPage() {
               </div>
             )}
             <textarea
-              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500 resize-y"
+              className={`w-full p-3 border rounded-md resize-y focus:outline-none ${
+                !authState.accessToken
+                  ? "border-gray-300 bg-gray-100 cursor-not-allowed"
+                  : "border-gray-300 focus:ring-2 focus:ring-cyan-500"
+              }`}
               rows="3"
               placeholder="Napišite svoj komentar..."
               value={newCommentText}
               onChange={(e) => setNewCommentText(e.target.value)}
-              disabled={submittingComment}
-            ></textarea>
+              disabled={submittingComment || !authState.accessToken}
+            />
+
             <button
               type="submit"
-              className="mt-3 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-4 rounded-md transition duration-200"
+              className={`mt-3 font-semibold button-style ${
+                !authState.accessToken ? "opacity-50 cursor-not-allowed" : ""
+              }`}
               disabled={submittingComment || !authState.accessToken}
             >
               {submittingComment ? "Slanje..." : "Pošalji Komentar"}

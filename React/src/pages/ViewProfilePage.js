@@ -117,7 +117,7 @@ function ViewProfilePage() {
       <NavigationBar />
 
       <div className="flex-grow flex items-center justify-center px-4 py-12">
-        <div className="relative bg-white rounded-lg shadow-md max-w-5xl w-full p-8 mt-10 mb-2">
+        <div className="relative bg-white rounded-lg shadow-md max-w-5xl w-full p-8 mt-20">
           {!isOwnProfile && (
             <button
               onClick={() => handleReportUser(user.idUser)}

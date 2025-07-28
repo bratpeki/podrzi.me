@@ -109,10 +109,14 @@ public class Security {
                         .requestMatchers(PublicMethods).permitAll()     //PUBLIC
                         .requestMatchers(AdminMethods).hasRole("ADMIN") //ADMIN
                         .requestMatchers(UserMethods).hasRole("USER"))//USER
-                .sessionManagement(ses -> ses.sessionCreationPolicy((SessionCreationPolicy.IF_REQUIRED)))
-                .exceptionHandling(ex -> ex.authenticationEntryPoint((request, response, authException) -> {
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Nemate prava!");
-                }));
+                .sessionManagement(ses -> ses.sessionCreationPolicy((SessionCreationPolicy.STATELESS)))
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Nemate prava!");
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Zabranjeno!");
+                        }));
 
 
 

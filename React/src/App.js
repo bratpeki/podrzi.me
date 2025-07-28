@@ -1,6 +1,8 @@
 import "./App.css";
+
 import { useNavigate } from 'react-router-dom';
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import HomePage from "./pages/HomePage";
@@ -15,9 +17,14 @@ import ViewDonationsPage from "./pages/ViewDonationsPage";
 import ReviewPage from './pages/ReviewPage';
 import ViewProfilePage from "./pages/ViewProfilePage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+
+import AdminLoginPage from "./pages/admin/AdminLoginPage";
+import AdminHomePage from "./pages/admin/AdminHomePage";
+
 import CategoryActionsView from "./pages/CategoryActionsView"; 
 
 import { AuthStateContext, useAuth } from "./components/UseAuthState";
+
 import { useEffect } from "react";
 
 function Home() {
@@ -45,7 +52,9 @@ function App() {
       <AuthStateContext value={{ authState, authDispatch }}>
         <Router>
           <Routes>
+
             <Route path="/" element={<Home />} />
+
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/home" element={<HomePage />} />
@@ -61,6 +70,10 @@ function App() {
             <Route path="/category/:categoryName" element={<CategoryActionsView />} /> 
             <Route path="/viewProfile/:id" element={<ViewProfilePage />} />
             <Route path="/review" element={<ReviewPage />} />
+
+            <Route path="/admin/login" element={<AdminLoginPage />} />
+            <Route path="/admin/home" element={<AdminHomePage />} />
+
           </Routes>
         </Router>
       </AuthStateContext>

@@ -19,13 +19,17 @@ import project.utilities.JWT;
 
 @RestController
 @RequestMapping("/api/images")
-public class ImageAPI {
+public class FileAPI {
+
+    private static final String UPLOAD_LINK = "http://podrzime.ddns.net:8080/uploads";
+    //  private static final String UPLOAD_LINK = "http://localhost:8080/uploads";
+
     private final ActionRepository actionRepository;
     private final UserRepository userRepository;
     private final ActionOwnerRepository actionOwnerRepository;
     private final JWT jwt;
 
-    public ImageAPI(ActionRepository actionRepository, UserRepository userRepository, ActionOwnerRepository actionOwnerIdRepository, JWT jwt) {
+    public FileAPI(ActionRepository actionRepository, UserRepository userRepository, ActionOwnerRepository actionOwnerIdRepository, JWT jwt) {
         this.actionRepository = actionRepository;
         this.userRepository = userRepository;
         this.actionOwnerRepository = actionOwnerIdRepository;
@@ -35,21 +39,48 @@ public class ImageAPI {
 
     static {
         try {
-            UPLOAD_FOLDER = new File(".").getCanonicalPath() + "/uploads/images";
+            UPLOAD_FOLDER = new File(".").getCanonicalPath() + "/uploads";
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
     }
 
-    private static final String UPLOAD_LINK = "http://podrzime.ddns.net:8080/uploads/images";
-    //  private static final String UPLOAD_LINK = "http://localhost:8080/uploads/images";
+    @PostMapping("/uploadactionvideo")
+    public ResponseEntity<?> uploadActionVideo(
+            @RequestParam Integer idAction,
+            @RequestParam("file") MultipartFile filen) throws IOException {
+
+        String fileName = filen.getOriginalFilename().toLowerCase();
+
+        // Validate extension
+        if (!(fileName.endsWith(".mp4") || fileName.endsWith(".mov") ||
+                fileName.endsWith(".avi") || fileName.endsWith(".webm") ||
+                fileName.endsWith(".mkv"))) {
+            return ResponseEntity.ok("invalidFileError");
+        }
+
+        // Optional: validate MIME type
+        String contentType = filen.getContentType();
+        if (contentType == null || !contentType.startsWith("video/")) {
+            return ResponseEntity.ok("invalidMimeTypeError");
+        }
+
+        String folderPath = UPLOAD_FOLDER + "/videos/actions/" + idAction + "/";
+        Path dirPath = Paths.get(folderPath);
+        Files.createDirectories(dirPath);
+
+        Path filePath = dirPath.resolve(fileName);
+        Files.copy(filen.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+        return ResponseEntity.ok("success");
+    }
 
     @PostMapping("/removeactionimage")
     public ResponseEntity<?> removeActionImage(@RequestHeader Map<String, String> token, @RequestParam Integer idAction, @RequestParam String url, @RequestParam Boolean isPrimary) {
         if (!actionOwnerRepository.findByidAO_IdAction(idAction).getUser().getUsername().equals(jwt.extractUsername(token.get("token"))))
             return ResponseEntity.ok("invalidUserError");
 
-        String folderPath = UPLOAD_FOLDER + "/actions/" + idAction + "/";
+        String folderPath = UPLOAD_FOLDER + "images/actions/" + idAction + "/";
         Path dirPath = Paths.get(folderPath);
 
         String filen = Paths.get(URI.create(url).getPath()).getFileName().toString();
@@ -75,7 +106,7 @@ public class ImageAPI {
         if (!(file.endsWith(".jpg") || file.endsWith(".png") || file.endsWith(".jpeg")))
             return ResponseEntity.ok("invalidFileError");
 
-        String folderPath = UPLOAD_FOLDER + "/actions/" + idAction + "/";
+        String folderPath = UPLOAD_FOLDER + "/images/actions/" + idAction + "/";
         Path dirPath = Paths.get(folderPath);
         Files.createDirectories(dirPath);
 
@@ -86,7 +117,7 @@ public class ImageAPI {
 
         if (isPrimary == true){
             Action a = actionRepository.findByidAction(idAction);
-            a.setPrimaryImage(UPLOAD_LINK+"/actions/"+idAction+"/"+file);
+            a.setPrimaryImage(UPLOAD_LINK+"/images/actions/"+idAction+"/"+file);
             actionRepository.save(a);
         }
 
@@ -99,7 +130,7 @@ public class ImageAPI {
         if (!(file.endsWith(".jpg") || file.endsWith(".png") || file.endsWith(".jpeg")))
             return ResponseEntity.ok("invalidFileError");
 
-        String folderPath = UPLOAD_FOLDER + "/users/" + idUser + "/";
+        String folderPath = UPLOAD_FOLDER + "/images/users/" + idUser + "/";
         Path dirPath = Paths.get(folderPath);
         Files.createDirectories(dirPath);
 
@@ -110,17 +141,17 @@ public class ImageAPI {
 
         Files.copy(filen.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-        return ResponseEntity.ok(UPLOAD_LINK+"/users/"+idUser+"/"+file);
+        return ResponseEntity.ok(UPLOAD_LINK+"/images/users/"+idUser+"/"+file);
     }
 
     @GetMapping("/getactionimages")
     public ResponseEntity<?> GetActionImages(@RequestParam Integer idAction) throws IOException {
-        Path path = Paths.get(UPLOAD_FOLDER + "/actions/" + idAction + "/");
+        Path path = Paths.get(UPLOAD_FOLDER + "/images/actions/" + idAction + "/");
         if (!Files.exists(path))
             return ResponseEntity.ok("noActionError");
 
         Stream<Path> files = Files.list(path);
-        List<String> urls = files.filter(Files::isRegularFile).map(p -> UPLOAD_LINK + "/actions/" + idAction + "/" + p.getFileName().toString()).toList();
+        List<String> urls = files.filter(Files::isRegularFile).map(p -> UPLOAD_LINK + "/images/actions/" + idAction + "/" + p.getFileName().toString()).toList();
 
         return ResponseEntity.ok(urls);
     }
