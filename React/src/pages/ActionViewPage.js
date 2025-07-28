@@ -561,6 +561,7 @@ function ActionViewPage() {
                             handleEditComment(comment.idComment, comment.text)
                           }
                           onDeleteComment={handleDeleteComment}
+                          //komentar
                           showReportUser={!isAuthor}
                           showReportComment={!isAuthor}
                           showEditComment={isAuthor}
