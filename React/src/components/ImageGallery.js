@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 
 function ImageGallery({ images = [], videoUrl = "" }) {
-  const hasVideo = videoUrl.trim() !== "";
+  const safeVideoUrl = typeof videoUrl === "string" ? videoUrl.trim() : "";
+  const hasVideo = safeVideoUrl !== "";
   const totalItems = (hasVideo ? 1 : 0) + images.length;
 
   // selectedIndex: 0 = video (if exists), 1..images.length = images
@@ -12,7 +13,7 @@ function ImageGallery({ images = [], videoUrl = "" }) {
     if (totalItems > 0) {
       setSelectedIndex(0); // default to video if present, else first image
     }
-  }, [images, videoUrl]);
+  }, [images, safeVideoUrl]);
 
   const handleItemChange = (index) => {
     if (index !== selectedIndex) {
@@ -40,16 +41,16 @@ function ImageGallery({ images = [], videoUrl = "" }) {
 
   if (totalItems === 0) return null;
 
-  // Extract YouTube video ID
   function getYouTubeVideoId(url) {
-    if (!url) return null;
+    const safeUrl = typeof url === "string" ? url : String(url ?? "");
+    if (!safeUrl.trim()) return null;
+
     const regex =
       /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})/;
-    const match = url.match(regex);
+    const match = safeUrl.match(regex);
     return match ? match[1] : null;
   }
 
-  // Get embed URL for iframe
   function getYouTubeEmbedUrl(url) {
     const videoId = getYouTubeVideoId(url);
     return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
@@ -57,7 +58,7 @@ function ImageGallery({ images = [], videoUrl = "" }) {
 
   const isVideoSelected = hasVideo && selectedIndex === 0;
 
-  const videoId = getYouTubeVideoId(videoUrl);
+  const videoId = getYouTubeVideoId(safeVideoUrl);
   const videoThumbnailUrl = videoId
     ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
     : null;
@@ -72,7 +73,7 @@ function ImageGallery({ images = [], videoUrl = "" }) {
             className={`w-full h-full transition-opacity duration-300 ${
               fade ? "opacity-0" : "opacity-100"
             }`}
-            src={getYouTubeEmbedUrl(videoUrl)}
+            src={getYouTubeEmbedUrl(safeVideoUrl)}
             title="Video Player"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -80,8 +81,8 @@ function ImageGallery({ images = [], videoUrl = "" }) {
           />
         ) : (
           <img
-            key={images[selectedIndex - 1]} // images start at index 1 here
-            src={images[selectedIndex - 1]}
+            key={images[selectedIndex - (hasVideo ? 1 : 0)]}
+            src={images[selectedIndex - (hasVideo ? 1 : 0)]}
             alt="Selected"
             className={`w-full h-full object-contain transition-opacity duration-300 ${
               fade ? "opacity-0" : "opacity-100"
