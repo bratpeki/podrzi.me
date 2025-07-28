@@ -35,6 +35,7 @@ function ActionViewPage() {
   const [editingText, setEditingText] = useState("");
   const [notifText, setNotifText] = useState("");
   const sweetAlert = withReactContent(Swal);
+    const [videoLink, setVideoLink] = useState(""); 
 
   const [reportContext, setReportContext] = useState(null);
   const [showCreateNotifModal, setShowCreateNotifModal] = useState(false);
@@ -59,6 +60,7 @@ function ActionViewPage() {
       );
       setCurrentAction(actionData);
       setComments(actionData.comments || []);
+      setVideoLink(actionData.videoLink || []);
 
       if (authState.accessToken && actionData.actionOwners) {
         const decoded = jwtDecode(authState.accessToken);
@@ -431,7 +433,7 @@ function ActionViewPage() {
 
         <div className="flex flex-col md:flex-row gap-10">
           <div className="md:w-3/3">
-            <ImageGallery images={actionImages} />
+            <ImageGallery images={actionImages} videoUrl={videoLink}/>
           </div>
 
           <div className="md:max-w-2/3 w-2/3 bg-white shadow-lg rounded-lg p-6 flex flex-col justify-between">

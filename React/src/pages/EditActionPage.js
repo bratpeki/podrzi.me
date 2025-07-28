@@ -14,7 +14,7 @@ import CollaboratorSearch from "../components/CollaboratorSearch";
 import DeleteDialog from "../components/DeleteDialog";
 import { jwtDecode } from "jwt-decode";
 import TagInput from "../components/TagInput";
-import VideoUpload from "../components/VideoUpload";
+import Swal from "sweetalert2";
 
 //TODO : REMOVE NOVE SLIKE, NOVA SLIKA KAO PRIMARNA
 function EditActionPage() {
@@ -25,7 +25,6 @@ function EditActionPage() {
   const [responseMessage, setResponseMessage] = useState("");
   const { authState, authDispatch } = useContext(AuthStateContext);
 
-  const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState("");
   const [description, setDescription] = useState("");
   const [goal, setGoal] = useState("");
@@ -35,7 +34,7 @@ function EditActionPage() {
   const [category, setCategory] = useState("Humanitarno");
   const [tags, setTags] = useState([]);
   const [actionLocation, setActionLocation] = useState([]);
-  const [duration, setDuration] = useState([]);
+  const [videoUrl, setVideoUrl] = useState("");
 
   const [users, setUsers] = useState({});
   const [collabUsers, setCollabUsers] = useState([]);
@@ -63,7 +62,7 @@ function EditActionPage() {
         setTags(data.tags);
         setGoal(data.goal);
         setActionLocation(data.location);
-        setDuration(data.endTime);
+        setVideoUrl(data.videoLink);
         setPrimaryImage(data.primaryImage);
       })
       .catch((err) => {
@@ -98,6 +97,15 @@ function EditActionPage() {
   }
 
   const handleUpdate = async () => {
+     if (imageFiles.length === 0) {
+          Swal.fire({
+            icon: "warning",
+            title: "Morate postaviti sliku koja će predstaviti Vašu akciju!",
+            confirmButtonText: "U redu",
+          });
+          return;
+        }
+    
     try {
       const response = await apiRequest(
         "actions/updateaction",
@@ -108,10 +116,11 @@ function EditActionPage() {
           subtitle: subtitle,
           desc: description,
           category: category,
-          tags : tags,
+          tags: tags,
           location: actionLocation,
           goal: goal,
           primaryImage: primaryImage,
+          videoLink : videoUrl,
         }
       );
       const text = await response;
@@ -181,9 +190,22 @@ function EditActionPage() {
   };
 
   const handleImageChange = (e) => {
-    const newFiles = Array.from(e.target.files).filter((file) =>
-      ["image/jpeg", "image/png", "image/jpg"].includes(file.type)
-    );
+     const newFiles = Array.from(e.target.files).filter((file) => {
+         const isValidType = ["image/jpeg", "image/png", "image/jpg"].includes(
+           file.type
+         );
+         const isValidSize = file.size <= 3 * 1024 * 1024; // 3MB in bytes
+   
+         if (!isValidSize) {
+           Swal.fire({
+             icon: "error",
+             title: "Slika je prevelika!",
+             text: `Slika "${file.name}" prelazi ograničenje od 3MB.`,
+           });
+         }
+   
+         return isValidType && isValidSize;
+       });
 
     const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
 
@@ -201,9 +223,22 @@ function EditActionPage() {
   const handleDrop = (e) => {
     e.preventDefault();
 
-    const newFiles = Array.from(e.dataTransfer.files).filter((file) =>
-      ["image/jpeg", "image/png", "image/jpg"].includes(file.type)
-    );
+    const newFiles = Array.from(e.dataTransfer.files).filter((file) => {
+         const isValidType = ["image/jpeg", "image/png", "image/jpg"].includes(
+           file.type
+         );
+         const isValidSize = file.size <= 3 * 1024 * 1024;
+   
+         if (!isValidSize) {
+           Swal.fire({
+             icon: "error",
+             title: "Slika je prevelika!",
+             text: `Slika "${file.name}" prelazi ograničenje od 3MB.`,
+           });
+         }
+   
+         return isValidType && isValidSize;
+       });
 
     const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
 
@@ -220,10 +255,6 @@ function EditActionPage() {
 
   const handleDragOver = (e) => {
     e.preventDefault();
-  };
-  const handleVideoFile = (file) => {
-    // You can store the file in state or FormData for submission
-    console.log("Video file selected:", file);
   };
   const removeImage = async (fileToRemove) => {
     // Find the matching image object by comparing names
@@ -397,11 +428,11 @@ function EditActionPage() {
             </div>
 
             <div className="bg-white p-6 shadow border rounded">
-               <CollaboratorSearch
-                  displayNames={displayNames}
-                  userIds={userIds}
-                  onChange={(ids) => setCollabUsers(ids)}
-                />
+              <CollaboratorSearch
+                displayNames={displayNames}
+                userIds={userIds}
+                onChange={(ids) => setCollabUsers(ids)}
+              />
               <button
                 //NEKA BUDE SIMBOL SLANJA
                 className=" font-semibold py-2 px-6  float-right button-style"
@@ -575,8 +606,24 @@ function EditActionPage() {
             </div>
           </div>
         </section>
-        {/* Section: Campaign Video */}
-        <VideoUpload onVideoSelect={handleVideoFile} />
+        {/* section: video link*/}
+        <section className="grid md:grid-cols-2 gap-10 items-center">
+          <div>
+            <h3 className="font-medium text-lg mb-1">Video Link</h3>
+            <p className="text-sm text-gray-600 mb-2">
+              Unesite link do vašeg videa (YouTube).
+            </p>
+          </div>
+          <div>
+            <input
+              type="url"
+              placeholder="https://youtube.com/video"
+              className="w-full border border-gray-300 rounded p-2"
+              value={videoUrl}
+              onChange={(e) => setVideoUrl(e.target.value)}
+            />
+          </div>
+        </section>
 
         {/* Section: Funding Goal */}
         <section>

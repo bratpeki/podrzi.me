@@ -1,31 +1,31 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef } from "react";
 
 const VideoUpload = ({ onVideoSelect }) => {
   const [videoFile, setVideoFile] = useState(null);
   const [videoPreviewUrl, setVideoPreviewUrl] = useState(null);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const inputRef = useRef();
 
   const handleVideoChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    const isMp4 = file.type === 'video/mp4';
+    const isMp4 = file.type.toLowerCase() === "video/mp4";
     const isUnder100MB = file.size <= 100 * 1024 * 1024;
 
     if (!isMp4) {
-      setError('Samo .mp4 video fajlovi su dozvoljeni.');
+      setError("Samo .mp4 video fajlovi su dozvoljeni.");
       clearVideo();
       return;
     }
 
     if (!isUnder100MB) {
-      setError('Video ne smije biti veći od 100MB.');
+      setError("Video ne smije biti veći od 100MB.");
       clearVideo();
       return;
     }
 
-    setError('');
+    setError("");
 
     if (videoPreviewUrl) {
       URL.revokeObjectURL(videoPreviewUrl);
@@ -45,12 +45,12 @@ const VideoUpload = ({ onVideoSelect }) => {
 
     setVideoFile(null);
     setVideoPreviewUrl(null);
-    setError('');
+    setError("");
     if (onVideoSelect) onVideoSelect(null);
 
     // Reset the file input value
     if (inputRef.current) {
-      inputRef.current.value = '';
+      inputRef.current.value = "";
     }
   };
 
@@ -76,9 +76,7 @@ const VideoUpload = ({ onVideoSelect }) => {
             className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-cyan-600 file:text-white hover:file:bg-cyan-700"
           />
 
-          {error && (
-            <p className="text-red-500 text-sm">{error}</p>
-          )}
+          {error && <p className="text-red-500 text-sm">{error}</p>}
 
           {videoFile && (
             <div className="flex items-center justify-between">

@@ -8,6 +8,8 @@ import CollaboratorSearch from "../components/CollaboratorSearch";
 import { jwtDecode } from "jwt-decode";
 import TagInput from "../components/TagInput";
 import VideoUpload from "../components/VideoUpload";
+import logoImage from "../Images/logo.png";
+import Swal from "sweetalert2";
 
 function CreateActionPage() {
   const [responseMessage, setResponseMessage] = useState("");
@@ -21,9 +23,10 @@ function CreateActionPage() {
   const [subtitle, setSubtitle] = useState("");
   const [description, setDescription] = useState("");
   const [goal, setGoal] = useState("");
-  const [imageFiles, setImageFiles] = React.useState([]);
-  const [imagePreviews, setImagePreviews] = React.useState([]);
-  const [primaryImage, setPrimaryImage] = React.useState(null);
+  const [imageFiles, setImageFiles] = useState([]);
+  const [videoUrl, setVideoUrl] = useState("");
+  const [imagePreviews, setImagePreviews] = useState([]);
+  const [primaryImage, setPrimaryImage] = useState(null);
   const [collabUsers, setCollabUsers] = useState([]);
   const [category, setCategory] = useState("Humanitarno");
   const [tags, setTags] = useState([]);
@@ -44,6 +47,15 @@ function CreateActionPage() {
       });
   }, [authState.accessToken, authState.initialized]);
   const handleCreate = async () => {
+    if (imageFiles.length === 0) {
+      Swal.fire({
+        icon: "warning",
+        title: "Morate postaviti sliku koja će predstaviti Vašu akciju!",
+        confirmButtonText: "U redu",
+      });
+      return;
+    }
+
     try {
       const response = await apiRequest(
         "actions/addaction",
@@ -58,6 +70,7 @@ function CreateActionPage() {
           tags: tags,
           category: category,
           location: location,
+          videoLink: videoUrl,
         }
       );
       const text = await response;
@@ -80,6 +93,7 @@ function CreateActionPage() {
     const formData = new FormData();
     formData.append("idAction", idAction);
     formData.append("file", file);
+
     console.log(file);
     console.log(primaryImage);
     if (file == primaryImage) {
@@ -106,9 +120,22 @@ function CreateActionPage() {
   };
 
   const handleImageChange = (e) => {
-    const newFiles = Array.from(e.target.files).filter((file) =>
-      ["image/jpeg", "image/png", "image/jpg"].includes(file.type)
-    );
+    const newFiles = Array.from(e.target.files).filter((file) => {
+      const isValidType = ["image/jpeg", "image/png", "image/jpg"].includes(
+        file.type
+      );
+      const isValidSize = file.size <= 3 * 1024 * 1024; // 3MB in bytes
+
+      if (!isValidSize) {
+        Swal.fire({
+          icon: "error",
+          title: "Slika je prevelika!",
+          text: `Slika "${file.name}" prelazi ograničenje od 3MB.`,
+        });
+      }
+
+      return isValidType && isValidSize;
+    });
 
     const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
 
@@ -126,9 +153,22 @@ function CreateActionPage() {
   const handleDrop = (e) => {
     e.preventDefault();
 
-    const newFiles = Array.from(e.dataTransfer.files).filter((file) =>
-      ["image/jpeg", "image/png", "image/jpg"].includes(file.type)
-    );
+    const newFiles = Array.from(e.dataTransfer.files).filter((file) => {
+      const isValidType = ["image/jpeg", "image/png", "image/jpg"].includes(
+        file.type
+      );
+      const isValidSize = file.size <= 3 * 1024 * 1024;
+
+      if (!isValidSize) {
+        Swal.fire({
+          icon: "error",
+          title: "Slika je prevelika!",
+          text: `Slika "${file.name}" prelazi ograničenje od 3MB.`,
+        });
+      }
+
+      return isValidType && isValidSize;
+    });
 
     const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
 
@@ -176,20 +216,19 @@ function CreateActionPage() {
       setResponseMessage("Greška pri slanju poziva!");
     }
   };
-  const handleVideoFile = (file) => {
-    // You can store the file in state or FormData for submission
-    console.log("Video file selected:", file);
-  };
-  function getFutureDate(duration) {
-    const today = new Date();
-    today.setDate(today.getDate() + duration);
+  function getFutureDate(durationInDays) {
+    const now = new Date();
 
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const day = String(today.getDate()).padStart(2, "0");
-    const hours = String(today.getHours()).padStart(2, "0");
-    const minutes = String(today.getMinutes()).padStart(2, "0");
-    const seconds = String(today.getSeconds()).padStart(2, "0");
+    // Add duration in milliseconds
+    const msToAdd = durationInDays * 24 * 60 * 60 * 1000;
+    const future = new Date(now.getTime() + msToAdd);
+
+    const year = future.getFullYear();
+    const month = String(future.getMonth() + 1).padStart(2, "0");
+    const day = String(future.getDate()).padStart(2, "0");
+    const hours = String(future.getHours()).padStart(2, "0");
+    const minutes = String(future.getMinutes()).padStart(2, "0");
+    const seconds = String(future.getSeconds()).padStart(2, "0");
 
     return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
   }
@@ -469,15 +508,32 @@ function CreateActionPage() {
                   );
                 })}
               </div>
-              <p className="text-xs text-gray-500 mt-2">
-                Maksimalna velicna slike 5MB svaka. Format: JPG, JPEG, PNG.
+              <p className="text-sm text-gray-500 mt-2">
+                Maksimalna veličina slike: <strong>3MB</strong>. Format: JPG,
+                JPEG, PNG.
               </p>
             </div>
           </div>
         </section>
         <hr className="border-t border-gray-300" />
-        {/* Section: Campaign Video */}
-        <VideoUpload onVideoSelect={handleVideoFile} />
+        {/* section: video link*/}
+        <section className="grid md:grid-cols-2 gap-10 items-center">
+          <div>
+            <h3 className="font-medium text-lg mb-1">Video Link</h3>
+            <p className="text-sm text-gray-600 mb-2">
+              Unesite link do vašeg videa (YouTube).
+            </p>
+          </div>
+          <div>
+            <input
+              type="url"
+              placeholder="https://youtube.com/video"
+              className="w-full border border-gray-300 rounded p-2"
+              value={videoUrl}
+              onChange={(e) => setVideoUrl(e.target.value)}
+            />
+          </div>
+        </section>
 
         <hr className="border-t border-gray-300" />
         {/* Section: Funding Goal */}
