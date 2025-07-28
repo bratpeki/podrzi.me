@@ -551,21 +551,22 @@ function ActionViewPage() {
                       <span className="text-sm text-gray-500 ml-auto mr-4">
                         {new Date(comment.created).toLocaleString()}
                       </span>
-
-                      <CommentDropdown
-                        commentId={comment.idComment}
-                        userId={comment.idUser}
-                        onReportUser={handleReportUser}
-                        onReportComment={handleReportComment}
-                        onEditComment={() =>
-                          handleEditComment(comment.idComment, comment.text)
-                        }
-                        onDeleteComment={handleDeleteComment}
-                        showReportUser={!isAuthor}
-                        showReportComment={!isAuthor}
-                        showEditComment={isAuthor}
-                        showDeleteComment={isAuthor}
-                      />
+                      {authState.accessToken && (
+                        <CommentDropdown
+                          commentId={comment.idComment}
+                          userId={comment.idUser}
+                          onReportUser={handleReportUser}
+                          onReportComment={handleReportComment}
+                          onEditComment={() =>
+                            handleEditComment(comment.idComment, comment.text)
+                          }
+                          onDeleteComment={handleDeleteComment}
+                          showReportUser={!isAuthor}
+                          showReportComment={!isAuthor}
+                          showEditComment={isAuthor}
+                          showDeleteComment={isAuthor}
+                        />
+                      )}
                     </div>
 
                     {editingId === comment.idComment ? (
@@ -642,7 +643,7 @@ function ActionViewPage() {
             )}
           </form>
         </div>
-        {!isOwner && (
+        {!isOwner && authState.accessToken && (
           <div className="flex justify-end pt-4">
             <button
               className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded transition"
