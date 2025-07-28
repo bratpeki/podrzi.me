@@ -21,6 +21,8 @@ import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import AdminLoginPage from "./pages/admin/AdminLoginPage";
 import AdminHomePage from "./pages/admin/AdminHomePage";
 
+import CategoryActionsView from "./pages/CategoryActionsView"; 
+
 import { AuthStateContext, useAuth } from "./components/UseAuthState";
 
 import { useEffect } from "react";
@@ -38,7 +40,7 @@ function Home() {
     <div className="App">
 
     </div>
-  );
+  );    
 }
 
 function App() {
@@ -65,7 +67,8 @@ function App() {
             <Route path="/editAction/:id" element={<EditActionPage />} />
             <Route path="/viewDonations/" element={<ViewDonationsPage />} />
             <Route path="/forgotPassword/" element={<ForgotPasswordPage />} />
-             <Route path="/viewProfile/:id" element={<ViewProfilePage />} />
+            <Route path="/category/:categoryName" element={<CategoryActionsView />} /> 
+            <Route path="/viewProfile/:id" element={<ViewProfilePage />} />
             <Route path="/review" element={<ReviewPage />} />
 
             <Route path="/admin/login" element={<AdminLoginPage />} />

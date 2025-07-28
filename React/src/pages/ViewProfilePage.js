@@ -19,7 +19,7 @@ function ViewProfilePage() {
   const [retryCount, setRetryCount] = useState(0);
   const [reportContext, setReportContext] = useState(null);
   const sweetAlert = withReactContent(Swal);
-  const { id: urlId } = useParams(); // <-- get from URL
+  const { id: urlId } = useParams();
 
   const tokenId = authState?.accessToken
     ? jwtDecode(authState.accessToken).id
@@ -29,11 +29,12 @@ function ViewProfilePage() {
 
   const fetchUserProfile = async () => {
     try {
-      const endpoint = isOwnProfile
-        ? "users/showprofile"
-        : `users/showuserprofile?idUser=${viewedId}`;
+      const endpoint =
+        tokenId === viewedId
+          ? "users/showprofile"
+          : `users/showuserprofile?idUser=${viewedId}`;
 
-      const res = await apiRequest(endpoint, "GET", authState.accessToken);
+      const res = await apiRequest(endpoint, "GET", authState?.accessToken);
 
       if (!res) throw new Error("Neuspješno dohvaćanje profila");
 
@@ -49,16 +50,12 @@ function ViewProfilePage() {
       const actionsRes = await apiRequest(
         `actions/getuseractions?idUser=${viewedId}`,
         "GET",
-        authState.accessToken
+        authState?.accessToken
       );
 
-      if (actionsRes) {
-        setActions(Array.isArray(actionsRes) ? actionsRes : [actionsRes]);
-      } else {
-        setActions([]);
-      }
+      setActions(Array.isArray(actionsRes) ? actionsRes : []);
     } catch (err) {
-      console.error("Greška pri učitavanju profila ili akcija:", err);
+      console.error("Greška pri učitavanju profila:", err);
       setTimeout(() => setRetryCount((prev) => prev + 1), 2000);
     }
   };
@@ -97,8 +94,8 @@ function ViewProfilePage() {
   };
 
   useEffect(() => {
-    if (viewedId && authState?.accessToken) fetchUserProfile();
-  }, [retryCount, viewedId, authState]);
+    if (viewedId) fetchUserProfile();
+  }, [retryCount, viewedId]);
 
   if (!user) {
     return (
@@ -118,14 +115,15 @@ function ViewProfilePage() {
 
       <div className="flex-grow flex items-center justify-center px-4 py-12">
         <div className="relative bg-white rounded-lg shadow-md max-w-5xl w-full p-8 mt-20">
-          {!isOwnProfile && (
-            <button
-              onClick={() => handleReportUser(user.idUser)}
-              className="absolute top-4 right-4  py-2 px-4 button-style shadow-lg"
-            >
-              Prijavi korisnika
-            </button>
-          )}
+          {!isOwnProfile &&
+            authState.accessToken && (
+              <button
+                onClick={() => handleReportUser(user.idUser)}
+                className="bg-red-600 hover:bg-red-700 text-white font-semibold rounded transition absolute top-4 right-4  py-2 px-4  shadow-lg"
+              >
+                Prijavi korisnika
+              </button>
+            )}
 
           <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
             {isOwnProfile ? "Moj profil" : "Profil korisnika"}

@@ -9,7 +9,6 @@ import InfoFooter from "../components/InfoFooter";
 import { apiRequest } from "../utility/FetchAPI";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
-import withReactContent from "sweetalert2-react-content";
 
 function ViewDonationsPage() {
   const location = useLocation();
@@ -22,8 +21,6 @@ function ViewDonationsPage() {
   const [selectedDonationId, setSelectedDonationId] = useState(null);
 
   const { authState } = useContext(AuthStateContext);
-  const sweetAlert= withReactContent(Swal);
-
   useEffect(() => {
     const fetchDons = async () => {
       try {
@@ -90,12 +87,7 @@ function ViewDonationsPage() {
   const confirmRefund = async (reason) => {
     setShowDialog(false);
     if (!reason.trim()) {
-       await sweetAlert.fire({
-          title: "Neuspješno!",
-          text: "Morate unijeti razlog.",
-          icon: "error",
-          confirmButtonText: "U redu",
-        });
+      alert("Morate unijeti razlog.");
       return;
     }
 
@@ -111,34 +103,18 @@ function ViewDonationsPage() {
       );
 
       if (res === "success") {
-       await sweetAlert.fire({
-          title: "Uspješno!",
-          text: "Povrat je zatražen.",
-          icon: "success",
-          confirmButtonText: "U redu",
-        });
+        alert("Povrat je zatražen.");
       } else {
-        await sweetAlert.fire({
-          title: "Greška!",
-          text: res,
-          icon: "error",
-          confirmButtonText: "U redu",
-        });
+        alert("Greška: " + res);
       }
     } catch (err) {
       console.error("Greška pri zahtjevu za povrat:", err);
-        await sweetAlert.fire({
-          title: "Neuspejšno!",
-          text: "Došlo je do greške.",
-          icon: "error",
-          confirmButtonText: "U redu",
-        }); 
+      alert("Došlo je do greške.");
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col gradient-style">
-      {/* Navigation Bar */}
+    <div className="min-h-screen flex flex-col bg-gray-100">
       <NavigationBar showSearch={false} />
 
       <header className="text-center mt-12 mb-6 pt-10">
@@ -150,7 +126,7 @@ function ViewDonationsPage() {
       <div className="flex justify-center mb-6">
         <button
           onClick={generateReport}
-          className="button-style font-medium "
+          className="bg-cyan-600 hover:bg-cyan-700 text-white font-medium py-2 px-4 rounded"
         >
           Generiši Izvještaj
         </button>
@@ -162,7 +138,6 @@ function ViewDonationsPage() {
         </p>
       )}
 
-      {/* Margina se stavlja na bottom da blok ne upada u footer */}
       <div className="mb-14 w-1/2 mx-auto">
         {dons.map((donation) => (
           <div key={donation.idDonation} className="w-full">
@@ -193,7 +168,6 @@ function ViewDonationsPage() {
               </div>
             </Link>
 
-            {/* Refund button directly below each card */}
             <div className="flex justify-end mb-6">
               <button
                 onClick={() => handleRefund(donation.idDonation)}
@@ -205,7 +179,6 @@ function ViewDonationsPage() {
           </div>
         ))}
       </div>
-      {/* Footer */}
       <InfoFooter />
       <RefundDialog
         show={showDialog}
