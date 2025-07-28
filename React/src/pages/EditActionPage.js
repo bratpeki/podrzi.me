@@ -1,4 +1,10 @@
-import React, { useState, useContext, useEffect, useCallback } from "react";
+import React, {
+  useState,
+  useContext,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { AuthStateContext } from "../components/UseAuthState";
 import InfoFooter from "../components/InfoFooter";
@@ -7,26 +13,34 @@ import { apiRequest } from "../utility/FetchAPI";
 import CollaboratorSearch from "../components/CollaboratorSearch";
 import DeleteDialog from "../components/DeleteDialog";
 import { jwtDecode } from "jwt-decode";
+import TagInput from "../components/TagInput";
+import VideoUpload from "../components/VideoUpload";
 
 //TODO : REMOVE NOVE SLIKE, NOVA SLIKA KAO PRIMARNA
 function EditActionPage() {
   const location = useLocation();
   const { id } = location.state || {};
   const [currentAction, setCurrentAction] = useState("");
-  const [users, setUsers] = useState({}); // ← keep raw object here
-  const userIds = React.useMemo(() => Object.keys(users), [users]);
-  const displayNames = React.useMemo(() => Object.values(users), [users]);
-  const [collabUsers, setCollabUsers] = useState([]);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [goal, setGoal] = useState("");
-  const [imageFiles, setImageFiles] = useState([]);
   const [newImageFiles, setNewImageFiles] = useState([]);
-  const [imagePreviews, setImagePreviews] = useState([]);
-  const [primaryImage, setPrimaryImage] = useState(null);
   const [responseMessage, setResponseMessage] = useState("");
   const { authState, authDispatch } = useContext(AuthStateContext);
 
+  const [title, setTitle] = useState("");
+  const [subtitle, setSubtitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [goal, setGoal] = useState("");
+  const [imageFiles, setImageFiles] = React.useState([]);
+  const [imagePreviews, setImagePreviews] = React.useState([]);
+  const [primaryImage, setPrimaryImage] = React.useState(null);
+  const [category, setCategory] = useState("Humanitarno");
+  const [tags, setTags] = useState([]);
+  const [actionLocation, setActionLocation] = useState([]);
+  const [duration, setDuration] = useState([]);
+
+  const [users, setUsers] = useState({});
+  const [collabUsers, setCollabUsers] = useState([]);
+  const userIds = React.useMemo(() => Object.keys(users), [users]);
+  const displayNames = React.useMemo(() => Object.values(users), [users]);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const navigate = useNavigate();
   const ownerId = authState.accessToken
@@ -43,9 +57,13 @@ function EditActionPage() {
       .then((res) => res)
       .then((data) => {
         setCurrentAction(data);
-        setName(data.name);
+        setSubtitle(data.subtitle);
         setDescription(data.desc);
+        setCategory(data.category);
+        setTags(data.tags);
         setGoal(data.goal);
+        setActionLocation(data.location);
+        setDuration(data.endTime);
         setPrimaryImage(data.primaryImage);
       })
       .catch((err) => {
@@ -73,7 +91,6 @@ function EditActionPage() {
         console.error("Failed to fetch action:", err);
       });
   }, [id, authState.accessToken]);
-
   if (!currentAction) {
     return (
       <div className="p-8 text-center text-gray-500">Učitavanje akcije...</div>
@@ -88,8 +105,11 @@ function EditActionPage() {
         authState.accessToken,
         {
           idAction: parseInt(currentAction.idAction),
-          name: name,
+          subtitle: subtitle,
           desc: description,
+          category: category,
+          tags : tags,
+          location: actionLocation,
           goal: goal,
           primaryImage: primaryImage,
         }
@@ -112,17 +132,12 @@ function EditActionPage() {
   const handleSendCollabRequests = async () => {
     try {
       const promises = collabUsers.map((receiverId) =>
-        apiRequest(
-          "notifications/sendcollab",
-          "POST",
-          authState.accessToken,
-          {
-            idAction: id,
-            idSender: ownerId,
-            type: 0,
-            idUser: receiverId,
-          }
-        )
+        apiRequest("notifications/sendcollab", "POST", authState.accessToken, {
+          idAction: id,
+          idSender: ownerId,
+          type: 0,
+          idUser: receiverId,
+        })
       );
       await Promise.all(promises); // wait for them all to finish
       setResponseMessage("Pozivi poslani!");
@@ -206,7 +221,10 @@ function EditActionPage() {
   const handleDragOver = (e) => {
     e.preventDefault();
   };
-
+  const handleVideoFile = (file) => {
+    // You can store the file in state or FormData for submission
+    console.log("Video file selected:", file);
+  };
   const removeImage = async (fileToRemove) => {
     // Find the matching image object by comparing names
     const matchedFile = imageFiles.find((file) => {
@@ -292,47 +310,39 @@ function EditActionPage() {
         <section className="pt-4">
           <h2 className="text-4xl font-semibold mb-1">Počni od osnova</h2>
           <p className="text-sm text-gray-600 mb-6">
-             Učini da ljudi lako razumiju tvoj projekat.
+            Učini da ljudi lako razumiju tvoj projekat.
           </p>
 
           <div className="grid md:grid-cols-2 gap-10">
             <div>
               <h3 className="font-medium text-lg mb-1">Naziv projekta</h3>
               <p className="text-sm text-gray-600 mb-4">
-               Napiši jasan i kratak naslov i podnaslov kako bi ljudi lako razumjeli tvoj projekat. 
-               Oba naslova će biti prikazani na stranici projekta i na stranici prije pokretanja.
+                Napiši jasan i kratak naslov i podnaslov kako bi ljudi lako
+                razumjeli tvoj projekat. Oba naslova će biti prikazani na
+                stranici projekta i na stranici prije pokretanja.
               </p>
               <p className="text-sm text-gray-500">
-               Potencijalni podržavaoci će ih takođe vidjeti na stranicama kategorija,
-               u rezultatima pretrage ili u e-mailovima.
+                Potencijalni podržavaoci će ih takođe vidjeti na stranicama
+                kategorija, u rezultatima pretrage ili u e-mailovima.
               </p>
             </div>
 
             <div className="bg-white p-6 shadow border rounded">
-              <label className="block text-sm font-medium mb-1">Naslov</label>
-              <input
-                type="text"
-                className="w-full border border-gray-300 rounded p-2 mb-4"
-                maxLength={60}
-                placeholder="npr. EkoMisija: Inovacije za zelenu planetu"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-
-              <label className="block text-sm font-medium mb-1">Podnaslov</label>
+              <label className="block text-sm font-medium mb-1">
+                Podnaslov
+              </label>
               <input
                 className="w-full border border-gray-300 rounded p-2"
                 maxLength={135}
                 rows={3}
                 placeholder="npr. Mi smo kolektiv posvećen očuvanju planete..."
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                value={subtitle}
+                onChange={(e) => setSubtitle(e.target.value)}
                 required
               ></input>
 
               <p className="mt-2 text-sm">
-                 Ostavite najbolji prvi utisak na podržavaoce uz odlične naslove.{" "}
+                Ostavite najbolji prvi utisak na podržavaoce uz odlične naslove.{" "}
                 <a href="#" className="underline">
                   Saznaj više...
                 </a>
@@ -340,7 +350,31 @@ function EditActionPage() {
             </div>
           </div>
         </section>
+        {/* Section: Description*/}
+        <section className="pt-4">
+          <h3 className="font-medium text-lg mb-1">Opis Akcije</h3>
+          <div className="grid md:grid-cols-2 gap-10">
+            <div>
+              <p className="text-sm text-gray-500">
+                Opišite u detaljima svoju akciju, ili podelite priču odnosno
+                kontekst koji Vas je doveo do kreiranja ove akcije.
+              </p>
+            </div>
 
+            <div className="bg-white p-6 shadow border rounded">
+              <label className="block text-sm font-medium mb-1">Opis</label>
+              <textarea
+                className="w-full border border-gray-300 rounded p-2"
+                maxLength={500}
+                rows={3}
+                placeholder="npr. Mi smo kolektiv posvećen očuvanju planete..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+              ></textarea>
+            </div>
+          </div>
+        </section>
         <hr className="border-t border-gray-300" />
 
         <section>
@@ -348,23 +382,26 @@ function EditActionPage() {
             <div>
               <h3 className="font-medium text-lg mb-1">Kolaboratori</h3>
               <p className="text-sm text-gray-600 mb-4">
-                  Kolaboratori su korisnici koji su aktivno uključeni u doprinošenje određenoj akciji ili kampanji na platformi. 
-                  Oni mogu pomagati u upravljanju akcijom, objavljivanju ažuriranja ili interakciji s podržavaocima. 
-                  Dodavanjem kolaboratora omogućava se da više pouzdanih korisnika zajedno radi na istoj akciji, 
-                  čime se poboljšavaju komunikacija, efikasnost i transparentnost za one koji prate ili podržavaju kampanju.   
+                Kolaboratori su korisnici koji su aktivno uključeni u
+                doprinošenje određenoj akciji ili kampanji na platformi. Oni
+                mogu pomagati u upravljanju akcijom, objavljivanju ažuriranja
+                ili interakciji s podržavaocima. Dodavanjem kolaboratora
+                omogućava se da više pouzdanih korisnika zajedno radi na istoj
+                akciji, čime se poboljšavaju komunikacija, efikasnost i
+                transparentnost za one koji prate ili podržavaju kampanju.
               </p>
               <p className="text-sm text-gray-500">
-                  Potencijalni podržavaoci će ih takođe vidjeti na stranicama kategorija, 
-                  u rezultatima pretrage ili putem e-mailova.
+                Potencijalni podržavaoci će ih takođe vidjeti na stranicama
+                kategorija, u rezultatima pretrage ili putem e-mailova.
               </p>
             </div>
 
             <div className="bg-white p-6 shadow border rounded">
-              <CollaboratorSearch
-                displayNames={displayNames}
-                userIds={userIds}
-                onChange={(ids) => setCollabUsers(ids)} // Will now be array of user IDs
-              />
+               <CollaboratorSearch
+                  displayNames={displayNames}
+                  userIds={userIds}
+                  onChange={(ids) => setCollabUsers(ids)}
+                />
               <button
                 //NEKA BUDE SIMBOL SLANJA
                 className=" font-semibold py-2 px-6  float-right button-style"
@@ -386,7 +423,8 @@ function EditActionPage() {
                 lakše pronašli tvoj projekat.
               </p>
               <p className="text-sm text-gray-500">
-                Ove opcije možeš mijenjati u bilo kojem trenutku prije i tokom kampanje.
+                Ove opcije možeš mijenjati u bilo kojem trenutku prije i tokom
+                kampanje.
               </p>
             </div>
 
@@ -395,38 +433,60 @@ function EditActionPage() {
                 <label className="block text-sm font-medium mb-1">
                   Glavna kategorija
                 </label>
-                <select className="w-full border border-gray-300 rounded p-2">
-                  <option>Umjetnost</option>
+                <select
+                  className="w-full border border-gray-300 rounded p-2"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                >
+                  <option>Humanitarno</option>
                   <option>Tehnologija</option>
-                  <option>Igrice</option>
+                  <option>Igrica</option>
+                  <option>Umjetnost</option>
+                  <option>Startup</option>
+                  <option>Knjiga</option>
+                  <option>Film</option>
+                  <option>Video</option>
+                  <option>Muzika</option>
+                  <option>Hrana</option>
+                  <option>Moda</option>
                 </select>
               </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Glavna podkategorija
-                </label>
-                <select className="w-full border border-gray-300 rounded p-2">
-                  <option>Keramika</option>
-                  <option>Aplikacije</option>
-                  <option>Društvene igre</option>
-                </select>
-              </div>
-
               <div></div>
+            </div>
+          </div>
+        </section>
+        <hr className="border-t border-gray-300" />
+        {/* Section: Project Tags */}
+        <section>
+          <div className="grid md:grid-cols-2 gap-10">
+            <div>
+              <h3 className="font-medium text-lg mb-1">Tagovi projekta</h3>
+              <p className="text-sm text-gray-600 mb-2">
+                Napišite listu tagova pomoću kojih će korisnici moći prepoznati
+                i asocirati se sa Vašom akcijom.
+              </p>
+              <p className="text-sm text-gray-500">
+                Tagovi se mogu dodati i brisati u bilo kojem trenutku.
+              </p>
+            </div>
+            <div className="bg-white p-6 shadow border rounded grid gap-4">
+              <label className="block text-sm font-medium mb-1">Tagovi</label>
+              <div className="">
+                <TagInput tags={tags} setTags={setTags} />
+              </div>
             </div>
           </div>
         </section>
 
         <hr className="border-t border-gray-300" />
-
         {/* Section: Project location */}
         <section>
           <div className="grid md:grid-cols-2 gap-10">
             <div>
               <h3 className="font-medium text-lg mb-1">Lokacija projekta</h3>
               <p className="text-sm text-gray-600">
-                  Unesi lokaciju koja najbolje opisuje gdje se vaš projekat nalazi.
+                Unesi lokaciju koja najbolje opisuje gdje se vaš projekat
+                nalazi.
               </p>
             </div>
 
@@ -436,6 +496,8 @@ function EditActionPage() {
                 type="text"
                 placeholder="Unesite vašu lokaciju projekta..."
                 className="w-full border border-gray-300 rounded p-2"
+                value={actionLocation}
+                onChange={(e) => setActionLocation(e.target.value)}
               />
             </div>
           </div>
@@ -448,11 +510,13 @@ function EditActionPage() {
             <div>
               <h3 className="font-medium text-lg mb-1">Slike projekta</h3>
               <p className="text-sm text-gray-600">
-                  Dodaj slike koje vizuelno oslikavaju tvoj projekat i koje zadržavaju kvalitet u svim dimenzijama.
+                Dodaj slike koje vizuelno oslikavaju tvoj projekat i koje
+                zadržavaju kvalitet u svim dimenzijama.
               </p>
               <p className="text-sm text-gray-500 mt-2">
-                    Slike treba da budu najmanje 1024×576 piksela.
-                    Maksimalna veličina fajla: 5MB po slici. Dozvoljeni formati: JPG, PNG, JPEG.
+                Slike treba da budu najmanje 1024×576 piksela. Maksimalna
+                veličina fajla: 5MB po slici. Dozvoljeni formati: JPG, PNG,
+                JPEG.
               </p>
             </div>
 
@@ -506,18 +570,22 @@ function EditActionPage() {
                 })}
               </div>
               <p className="text-xs text-gray-500 mt-2">
-                Maksimalna velicna slike  5MB svaka. Format: JPG, JPEG, PNG.
+                Maksimalna velicna slike 5MB svaka. Format: JPG, JPEG, PNG.
               </p>
             </div>
           </div>
         </section>
+        {/* Section: Campaign Video */}
+        <VideoUpload onVideoSelect={handleVideoFile} />
+
         {/* Section: Funding Goal */}
         <section>
           <div className="grid md:grid-cols-2 gap-10">
             <div>
               <h3 className="font-medium text-lg mb-1">Ciljani iznos</h3>
               <p className="text-sm text-gray-600">
-                Unesi iznos novca koji je potreban za finansiranje ovog projekta.
+                Unesi iznos novca koji je potreban za finansiranje ovog
+                projekta.
               </p>
             </div>
 
@@ -536,6 +604,55 @@ function EditActionPage() {
             </div>
           </div>
         </section>
+        <hr className="border-t border-gray-300" />
+        {/* Section: Bank details */}
+        <section>
+          <div className="grid md:grid-cols-2 gap-10">
+            <div>
+              <h3 className="font-medium text-lg mb-1">Bankovni podaci</h3>
+              <p className="text-sm text-gray-600 mb-2">
+                Unesi tačne bankovne podatke kako bi mogao/la primati isplate.
+              </p>
+              <p className="text-sm text-gray-500">
+                Ove informacije su povjerljive i neće biti javno prikazane.
+              </p>
+            </div>
+
+            <div className="bg-white p-6 shadow border rounded grid grid-cols-2 gap-4">
+              <div className="col-span-2">
+                <label className="block text-sm font-medium mb-1">
+                  Naziv banke
+                </label>
+                <input
+                  type="text"
+                  placeholder="npr. UniCredit Bank"
+                  className="w-full border border-gray-300 rounded p-2"
+                />
+              </div>
+
+              <div className="col-span-2">
+                <label className="block text-sm font-medium mb-1">IBAN</label>
+                <input
+                  type="text"
+                  placeholder="npr. BA391290079401028489"
+                  className="w-full border border-gray-300 rounded p-2"
+                />
+              </div>
+
+              <div className="col-span-2">
+                <label className="block text-sm font-medium mb-1">
+                  SWIFT/BIC (opcionalno)
+                </label>
+                <input
+                  type="text"
+                  placeholder="npr. UNCRBA22"
+                  className="w-full border border-gray-300 rounded p-2"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+        <hr className="border-t border-gray-300" />
         <section className="pb-8">
           {responseMessage && (
             <p className="text-center text-xl  text-red-600 mb-2">

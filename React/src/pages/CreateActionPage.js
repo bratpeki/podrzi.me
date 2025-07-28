@@ -54,11 +54,10 @@ function CreateActionPage() {
           subtitle: subtitle,
           desc: description,
           goal: goal,
-          endtime: getFutureDate(duration),
-          tags : tags,
+          endTime: getFutureDate(duration),
+          tags: tags,
           category: category,
-          location: location
-
+          location: location,
         }
       );
       const text = await response;
@@ -66,9 +65,9 @@ function CreateActionPage() {
         setResponseMessage("Ime akcije zauzeto");
       } else {
         setResponseMessage("Uploadujemo!");
+        sendCollabRequests(parseInt(text));
         for (const file of imageFiles) {
           uploadImage(parseInt(text), file);
-          sendCollabRequests(parseInt(text));
         }
       }
     } catch (error) {
@@ -165,7 +164,7 @@ function CreateActionPage() {
       const promises = collabUsers.map((receiverId) =>
         apiRequest("notifications/sendcollab", "POST", authState.accessToken, {
           idAction: actionId,
-          idSender: ownerId,
+          idSender: ownerId.idUser,
           type: 0,
           idUser: receiverId,
         })
@@ -182,10 +181,19 @@ function CreateActionPage() {
     console.log("Video file selected:", file);
   };
   function getFutureDate(duration) {
-  const today = new Date();
-  today.setDate(today.getDate() + duration);
-  return today;
-}
+    const today = new Date();
+    today.setDate(today.getDate() + duration);
+
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    const hours = String(today.getHours()).padStart(2, "0");
+    const minutes = String(today.getMinutes()).padStart(2, "0");
+    const seconds = String(today.getSeconds()).padStart(2, "0");
+
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+  }
+
   return (
     <div className="min-h-screen text-black gradient-style">
       {/* Top navigation bar */}
@@ -295,13 +303,14 @@ function CreateActionPage() {
                 <CollaboratorSearch
                   displayNames={displayNames}
                   userIds={userIds}
-                  onChange={(ids) => setCollabUsers(ids)} // Will now be array of user IDs
+                  onChange={(ids) => setCollabUsers(ids)}
                 />
               </div>
             </div>
           </div>
         </section>
         <hr className="border-t border-gray-300" />
+
         {/* Section: Project category */}
         <section>
           <div className="grid md:grid-cols-2 gap-10">
@@ -360,12 +369,10 @@ function CreateActionPage() {
               </p>
             </div>
             <div className="bg-white p-6 shadow border rounded grid gap-4">
-               <label className="block text-sm font-medium mb-1">
-                  Tagovi
-                </label>
-            <div className="">
-              <TagInput tags={tags} setTags={setTags} />
-            </div>
+              <label className="block text-sm font-medium mb-1">Tagovi</label>
+              <div className="">
+                <TagInput tags={tags} setTags={setTags} />
+              </div>
             </div>
           </div>
         </section>
@@ -472,7 +479,6 @@ function CreateActionPage() {
         {/* Section: Campaign Video */}
         <VideoUpload onVideoSelect={handleVideoFile} />
 
-
         <hr className="border-t border-gray-300" />
         {/* Section: Funding Goal */}
         <section>
@@ -525,8 +531,8 @@ function CreateActionPage() {
                   type="number"
                   min={1}
                   max={90}
-                  value = {duration}
-                   onChange={(e) => setDuration(e.target.value)}
+                  value={duration}
+                  onChange={(e) => setDuration(e.target.value)}
                   placeholder="npr. 30"
                   className="w-full border border-gray-300 rounded p-2"
                 />
