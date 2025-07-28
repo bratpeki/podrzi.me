@@ -2,8 +2,14 @@
 <project version="4">
   <component name="dataSourceStorageLocal" created-in="IU-251.26927.53">
     <data-source name="Database" uuid="4ab7c52a-694e-4141-bd79-a9125c4bce3b">
-      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="MYSQL" />
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="MYSQL">
+        <extra-name-characters>#@</extra-name-characters>
+        <identifier-quote-string>`</identifier-quote-string>
+      </database-info>
+      <case-sensitivity plain-identifiers="lower" quoted-identifiers="lower" />
+      <user-name>pdme</user-name>
       <schema-mapping />
+      <load-sources>user_and_system_sources</load-sources>
     </data-source>
   </component>
 </project>
