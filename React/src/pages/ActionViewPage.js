@@ -557,7 +557,7 @@ function ActionViewPage() {
             )}
           </form>
         </div>
-        {!isOwner && (
+        {!isOwner && authState.accessToken && (
           <div className="flex justify-end pt-4">
             <button
               className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded transition"
