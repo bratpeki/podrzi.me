@@ -10,7 +10,7 @@ import logo from "../Images/logo.png";
 import defaultUser from "../Images/defaultUser.png";
 import { apiRequest } from "../utility/FetchAPI.js";
 
-function NavigationBar({ showSearch = true, showNotification = true }) {
+function NavigationBar({ showSearch = true, showNotification = true, showLoginPrompt = true }) {
   const { authState, authDispatch } = useContext(AuthStateContext);
   const navigate = useNavigate();
   const [matchingActions, setMatchingActions] = useState([]);
@@ -142,7 +142,7 @@ function NavigationBar({ showSearch = true, showNotification = true }) {
         )}
 
         {/* Show login button if not logged in */}
-        {!authState.accessToken && (
+        {!authState.accessToken && showLoginPrompt && (
           <button
             className="hover:underline"
             onClick={() => navigate("/login")}
