@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { AuthStateContext } from "../../components/UseAuthState";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import NavigationBar from "../../components/NavigationHeader";
 import { apiRequest } from "../../utility/FetchAPI";
 
