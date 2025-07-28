@@ -59,7 +59,6 @@ public class FileAPI {
             return ResponseEntity.ok("invalidFileError");
         }
 
-        // Optional: validate MIME type
         String contentType = filen.getContentType();
         if (contentType == null || !contentType.startsWith("video/")) {
             return ResponseEntity.ok("invalidMimeTypeError");
