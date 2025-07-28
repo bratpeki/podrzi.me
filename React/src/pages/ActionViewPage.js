@@ -135,9 +135,8 @@ function ActionViewPage() {
     }
   };
 
-
   useEffect(() => {
-     fetchActionData();
+    fetchActionData();
     if (showCreateNotifModal) {
       sweetAlert
         .fire({
@@ -331,8 +330,6 @@ function ActionViewPage() {
     const owner = currentAction.actionOwners.filter((o) => !o.isCollab);
     const collaborators = currentAction.actionOwners.filter((o) => o.isCollab);
 
-
-
     return (
       <div className="mt-10 p-4 bg-white rounded shadow ">
         <h2 className="text-xl font-extrabold text-style mb-2">Vlasnik</h2>
@@ -393,9 +390,11 @@ function ActionViewPage() {
         </h1>
 
         <h1 className="text-2xl font-bold text-style mb-4 text-center">
-          subtitle
+          {currentAction.subtitle}
         </h1>
-
+        <p className="text-md text-gray-600 mb-6 text-center">
+          <span className="font-semibold">{currentAction.category}</span>
+        </p>
         {ownerCheckDone && isOwner && (
           <div className="flex justify-between mb-4">
             <button
@@ -424,42 +423,80 @@ function ActionViewPage() {
               <p className="text-3xl font-extrabold text-style mb-2">
                 {currentAction.collected.toLocaleString()}KM prikupljeno
               </p>
-              <p className="text-sm text-gray-600 mb-4">
+              <p className="text-sm text-gray-600 mb-1">
                 od ciljanih {currentAction.goal.toLocaleString()}KM
               </p>
 
               <div className="w-full bg-gray-200 rounded-full h-4 mb-2">
                 <div
-                  className={`h-4 rounded-full ${progress < 50 ? "bg-orange-400" : "bg-green-500"
-                    }`}
+                  className={`h-4 rounded-full ${
+                    progress < 50 ? "bg-orange-400" : "bg-green-500"
+                  }`}
                   style={{ width: `${progress}%` }}
                 />
               </div>
               <p
-                className={`text-sm font-medium mb-4 ${progress < 50 ? "text-orange-500" : "text-green-600"
-                  }`}
+                className={`text-sm font-medium mb-1 ${
+                  progress < 50 ? "text-orange-500" : "text-green-600"
+                }`}
               >
                 {progress}% prikupljeno
               </p>
 
-              <p className="text-md font-medium text-gray-700 mb-6">
+              <p className="text-md font-medium text-gray-700 mb-1">
                 👥 Broj podržavalaca:{" "}
                 <span className="font-bold">{currentAction.backers || 0}</span>
               </p>
+
+              <p className="text-md font-medium text-gray-700 mb-1">
+                📅 Datum završetka akcije:{" "}
+                <span className="font-semibold">
+                  {new Date(currentAction.endTime).toLocaleDateString()}
+                </span>
+              </p>
+
+              <p className="text-md font-medium text-gray-700 mb-4 flex items-center gap-1">
+                🧭 Lokacija:{" "}
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                    currentAction.location
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 underline hover:text-blue-800 font-semibold"
+                >
+                  {currentAction.location || "N/A"}
+                </a>
+              </p>
+
+              {currentAction.tags && currentAction.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {currentAction.tags.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="bg-cyan-100 text-cyan-800 px-3 py-1 rounded-full text-sm font-medium"
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
 
             <button
-              className="button-style w-full"
+              className="button-style w-full mt-6"
               onClick={() => setShowDonateModal(true)}
             >
               Doniraj
             </button>
+
             {showCollaborations()}
           </div>
         </div>
 
-        <div className="mt-10 p-4 bg-white rounded-lg shadow-lg">
-          <p className="text-lg text-gray-700 whitespace-pre-line">
+        <div className="mt-10 p-4 bg-white rounded-lg shadow-lg text-center">
+          <h2 className="text-2xl font-bold text-style mb-4">OPIS</h2>
+          <p className="text-lg text-gray-700 whitespace-pre-line text-left">
             {currentAction.desc}
           </p>
         </div>

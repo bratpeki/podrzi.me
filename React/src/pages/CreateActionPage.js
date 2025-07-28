@@ -25,7 +25,7 @@ function CreateActionPage() {
   const [imagePreviews, setImagePreviews] = React.useState([]);
   const [primaryImage, setPrimaryImage] = React.useState(null);
   const [collabUsers, setCollabUsers] = useState([]);
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState("Humanitarno");
   const [tags, setTags] = useState([]);
   const [location, setLocation] = useState([]);
   const [duration, setDuration] = useState([]);
@@ -56,7 +56,8 @@ function CreateActionPage() {
           goal: goal,
           endtime: getFutureDate(duration),
           tags : tags,
-          category: category
+          category: category,
+          location: location
 
         }
       );
@@ -162,7 +163,7 @@ function CreateActionPage() {
   const sendCollabRequests = async (actionId) => {
     try {
       const promises = collabUsers.map((receiverId) =>
-        apiRequest("notifications/send", "POST", authState.accessToken, {
+        apiRequest("notifications/sendcollab", "POST", authState.accessToken, {
           idAction: actionId,
           idSender: ownerId,
           type: 0,
