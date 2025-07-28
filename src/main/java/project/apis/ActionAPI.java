@@ -76,7 +76,7 @@ public class ActionAPI {
     }
 
     @PostMapping("/updateaction")
-    public ResponseEntity<?> updateAction(@RequestHeader Map<String, String> token, @RequestBody ActionDTO adto) {
+    public ResponseEntity<?> updateAction(@RequestHeader Map<String, String> token, @RequestBody ActionUpdateDTO adto) {
         List<ActionOwner> ao = actionOwnerRepository.findAllByidAO_IdAction(adto.getIdAction());
         String requesterUsername = jwt.extractUsername(token.get("token"));
         boolean isOwner = ao.stream()
@@ -88,9 +88,6 @@ public class ActionAPI {
         //TODO: provjeriti da li postoji akcija sa novim imenom
 
         Action a  =  actionRepository.findByidAction(adto.getIdAction());
-
-        if (!adto.getName().equals(a.getName()))
-            a.setName(adto.getName());
 
         if (!adto.getLocation().equals(a.getLocation()))
             a.setLocation(adto.getLocation());
@@ -104,17 +101,11 @@ public class ActionAPI {
         if (!adto.getSubtitle().equals(a.getSubtitle()))
             a.setSubtitle(adto.getSubtitle());
 
-        if (!adto.getTags().equals(a.getTags()))
-            a.setTags(adto.getTags());
-
         if (!adto.getDesc().equals(a.getDesc()))
             a.setDesc(adto.getDesc());
 
         if (!adto.getGoal().equals(a.getGoal()))
             a.setGoal(adto.getGoal());
-
-        if (!adto.getEndTime().equals(a.getEndTime()))
-            a.setEndTime(adto.getEndTime());
 
         if (adto.getPrimaryImage() != null)
             if (!(adto.getPrimaryImage().equals(a.getPrimaryImage()) || adto.getPrimaryImage().isBlank()))
