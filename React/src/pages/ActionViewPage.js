@@ -8,7 +8,7 @@ import ImageGallery from "../components/ImageGallery.js";
 import { apiRequest } from "../utility/FetchAPI.js";
 import { jwtDecode } from "jwt-decode";
 import DonateFormModal from "../components/DonateFormModal.js";
-import CommentDropdown from "../components/CommentDropdown.js";
+import ActionDropdown from "../components/ActionDropdown.js";
 import ReportDialog from "../components/ReportDialog.js";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
@@ -556,20 +556,39 @@ function ActionViewPage() {
                         {new Date(comment.created).toLocaleString()}
                       </span>
                       {authState.accessToken && (
-                        <CommentDropdown
-                          commentId={comment.idComment}
-                          userId={comment.idUser}
-                          onReportUser={handleReportUser}
-                          onReportComment={handleReportComment}
-                          onEditComment={() =>
-                            handleEditComment(comment.idComment, comment.text)
-                          }
-                          onDeleteComment={handleDeleteComment}
-                          showReportUser={!isAuthor}
-                          showReportComment={!isAuthor}
-                          showEditComment={isAuthor}
-                          showDeleteComment={isAuthor}
+
+                        <ActionDropdown
+
+                          actions={[
+
+                            !isAuthor && {
+                              text: "Prijavi korisnika",
+                              onClick: () => handleReportUser(comment.idUser),
+                              type: 'destructive',
+                            },
+
+                            !isAuthor && {
+                              text: "Prijavi komentar",
+                              onClick: () => handleReportComment(comment.idComment),
+                              type: 'destructive',
+                            },
+
+                            isAuthor && {
+                              text: "Izmjeni Komentar",
+                              onClick: () => handleEditComment(comment.idComment, comment.text),
+                              type: 'normal',
+                            },
+
+                            isAuthor && {
+                              text: "Obriši Komentar",
+                              onClick: () => handleDeleteComment(comment.idComment),
+                              type: 'destructive',
+                            }
+
+                          ].filter(Boolean)} // Filtriramo samo po onim vrijednostima koje su tačne
+
                         />
+
                       )}
                     </div>
 
