@@ -9,6 +9,7 @@ import ActionDropdown from "../../components/ActionDropdown";
 function AdminViewAccounts() {
 
   const [users, setUsers] = useState({});
+  const [searchTerm, setSearchTerm] = useState("");
 
     useEffect( () => {
 
@@ -30,6 +31,12 @@ function AdminViewAccounts() {
 
     const navigate = useNavigate();
 
+	const filteredUsers = Object.entries(users).filter(([, name]) => {
+		return name.toLowerCase().includes(searchTerm.toLowerCase());
+	});
+
+	const showNoUsersMessage = Object.keys(users).length === 0 && searchTerm === "";
+
     return (
 
         <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-start pt-10 gradient-style">
@@ -45,17 +52,26 @@ function AdminViewAccounts() {
 
             <div className="mt-16"></div>
 
-            <div className="flex flex-col bg-white rounded-lg shadow-md w-2/5 h-full p-8 mt-2 items-center justify-center p-20">
+			{ /* TODO: Tekst izgleda loše na malim širinama */ }
+            <div className="flex flex-col bg-white rounded-lg shadow-md w-2/5 h-full p-8 mt-2 mb-8 items-center justify-center p-20">
 
                 <h1 className="text-4xl font-bold text-cyan-900 mb-8 drop-shadow-md"> Pregled korisnika </h1>
 
+				<input
+					type="text"
+					placeholder="Pretraži po korisničkom imenu..."
+					value={searchTerm}
+					onChange={(e) => setSearchTerm(e.target.value)}
+					className="mb-6 p-2 border border-gray-300 rounded w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
+				/>
+
                 <div className="flex flex-col items-center w-full">
 
-                    { Object.entries(users).length > 0 ? (
+                    { filteredUsers.length > 0 ? (
 
                         <ul className="w-full text-center">
 
-							{Object.entries(users).map(([id, name]) => (
+							{filteredUsers.map(([id, name]) => (
 
 								<li key={id} className="flex justify-between items-center bg-gray-100 p-3 mb-2 rounded shadow-sm text-lg text-gray-700">
 
@@ -71,13 +87,13 @@ function AdminViewAccounts() {
 
 											{
 												text: "Pregled profila",
-												onClick: () => {},
+												onClick: () => { navigate(`/viewProfile/${id}`); },
 												type: 'normal',
 											},
 
 											{
 												text: "Suspendovanje profila",
-												onClick: () => {},
+												onClick: () => { /* TODO */ },
 												type: 'destructive',
 											}
 
@@ -93,8 +109,14 @@ function AdminViewAccounts() {
                         </ul>
 
 						) : (
-                        	<p className="text-gray-600">Nema pronađenih korisnika.</p>
-                   		)
+                        	
+							searchTerm !== "" ? (
+								<p className="text-gray-600">Nema pronađenih korisnika za "{searchTerm}".</p>
+							) : showNoUsersMessage && (
+								<p className="text-gray-600">Nema pronađenih korisnika.</p>
+                   			)
+
+						)
 
 					}
 
