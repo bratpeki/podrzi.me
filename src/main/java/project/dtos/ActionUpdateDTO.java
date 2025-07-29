@@ -13,8 +13,9 @@ public class ActionUpdateDTO {
     private String desc;
     private String primaryImage;
     private List<String> tags;
+    private String videoLink;
 
-    public ActionUpdateDTO(Integer idAction, Float goal, String subtitle, String location, Action.ACategory category, String desc, String primaryImage, List<String> tags) {
+    public ActionUpdateDTO(Integer idAction, Float goal, String subtitle, String location, Action.ACategory category, String desc, String primaryImage, List<String> tags, String videoLink) {
         this.idAction = idAction;
         this.goal = goal;
         this.subtitle = subtitle;
@@ -23,8 +24,15 @@ public class ActionUpdateDTO {
         this.desc = desc;
         this.primaryImage = primaryImage;
         this.tags = tags;
+        this.videoLink = videoLink;
     }
 
+    public String getVideoLink() {
+        return videoLink;
+    }
+    public void setVideoLink(String videoLink) {
+        this.videoLink = videoLink;
+    }
     public Integer getIdAction() {
         return idAction;
     }

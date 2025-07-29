@@ -38,7 +38,14 @@ public class Action {
     private ACategory category;
     private String subtitle;
     private String location;
+    private String videoLink;
 
+    public String getVideoLink() {
+        return videoLink;
+    }
+    public void setVideoLink(String videoLink) {
+        this.videoLink = videoLink;
+    }
     public Integer getVisible() {
         return visible;
     }
