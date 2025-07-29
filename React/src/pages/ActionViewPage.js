@@ -516,7 +516,7 @@ function ActionViewPage() {
 
         <div className="mt-10 p-4 bg-white rounded-lg shadow-lg text-center">
           <h2 className="text-2xl font-bold text-style mb-4">OPIS</h2>
-          <p className="text-lg text-gray-700 whitespace-pre-line text-left">
+          <p className="text-lg text-gray-700 whitespace-pre-line text-left  break-words overflow-hidden">
             {currentAction.desc}
           </p>
         </div>
