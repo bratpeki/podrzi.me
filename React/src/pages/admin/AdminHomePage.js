@@ -30,9 +30,14 @@ function AdminHomePage() {
                     Pregled akcija
                 </Link>
 
-                { /* TODO */ }
-                <Link to={"/admin/viewReports"} className="button-style text-3xl w-72 h-20 flex items-center justify-center">
+                { /* TODO: Peki */ }
+                <Link to={"/admin/viewReports"} className="button-style text-3xl w-72 h-20 mb-8 flex items-center justify-center">
                     Pregled prijava
+                </Link>
+
+                { /* TODO */ }
+                <Link to={"/admin/viewRefunds"} className="button-style text-3xl w-72 h-20 flex items-center justify-center text-center">
+                    Pregled zahtjeva za povrat novca
                 </Link>
 
             </div>

@@ -3,6 +3,7 @@ import NavigationBar from "../../components/NavigationHeader";
 import { useNavigate } from "react-router-dom";
 import { apiRequest } from "../../utility/FetchAPI";
 import AdminHeader from "./AdminHeader";
+import { Link } from "react-router-dom";
 
 import ActionDropdown from "../../components/ActionDropdown";
 
@@ -61,7 +62,9 @@ function AdminViewAccounts() {
 
 								<li key={id} className="flex justify-between items-center bg-gray-100 p-3 mb-2 rounded shadow-sm text-lg text-gray-700">
 
-									Username: {name} (ID: {id})
+									<Link to={`/viewProfile/${id}`} className="w-5/6 h-full text-left">
+										Username: {name} (ID: {id})
+									</Link>
 
 									<button
 										className="bottom-2 right-2 w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-600 text-xl flex items-center justify-center shadow"
@@ -95,7 +98,7 @@ function AdminViewAccounts() {
                         </ul>
 
 						) : (
-                        	
+
 							searchTerm !== "" ? (
 								<p className="text-gray-600">Nema pronađenih korisnika za "{searchTerm}".</p>
 							) : showNoUsersMessage && (
