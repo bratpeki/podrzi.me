@@ -48,23 +48,32 @@ function AdminViewAccounts() {
                 <h1 className="text-4xl font-bold text-cyan-900 mb-8 drop-shadow-md"> Pregled korisnika </h1>
 
                 <div className="flex flex-col items-center w-full">
-                {Object.entries(users).length > 0 ? (
-                    <ul className="w-full text-center">
-                    {Object.entries(users).map(([id, name]) => (
-                        <li key={id} className="bg-gray-100 p-3 mb-2 rounded shadow-sm text-lg text-gray-700">
-                        User ID: {id} - Username: {name}
-                        <button
-                            onClick={() => navigate(`/viewProfile/${id}`)}
-                            className="ml-4 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-                        >
-                            View Profile
-                        </button>
-                        </li>
-                    ))}
-                    </ul>
-                ) : (
-                    <p className="text-gray-600">Nema pronađenih korisnika.</p>
-                )}
+
+                    { Object.entries(users).length > 0 ? (
+
+                        <ul className="w-full text-center">
+							{Object.entries(users).map(([id, name]) => (
+								<li key={id} className="bg-gray-100 p-3 mb-2 rounded shadow-sm text-lg text-gray-700">
+								User ID: {id} - Username: {name}
+
+								<button
+									onClick={() => navigate(`/viewProfile/${id}`)}
+									className="ml-4 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+								>
+									View Profile
+								</button>
+
+								</li>
+
+							))}
+                        </ul>
+
+						) : (
+                        	<p className="text-gray-600">Nema pronađenih korisnika.</p>
+                   		)
+
+					}
+
                 </div>
 
             </div>
