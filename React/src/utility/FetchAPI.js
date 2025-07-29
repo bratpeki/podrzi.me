@@ -1,4 +1,4 @@
-const BASE_URL = "http://podrzime.ddns.net:8080/api";
+const BASE_URL = "http://podrzi-me.ddns.net:8080/api";
 // Endpoint example: users/userauth (automatically add / between api i users)
 // Parsemethod is set to GET if left empty
 export async function apiRequest(endpoint, parseMethod = "GET", token = null, body = null) {
