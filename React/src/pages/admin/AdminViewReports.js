@@ -1,6 +1,7 @@
 
 import NavigationBar from "../../components/NavigationHeader";
 import { useNavigate } from "react-router-dom";
+import AdminHeader from "./AdminHeader";
 
 function AdminViewReports() {
 
@@ -10,14 +11,7 @@ function AdminViewReports() {
 
         <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-start pt-10 gradient-style">
 
-            <NavigationBar
-                showSearch={false}
-                showCreate={false}
-                showProfile={false}
-                showNotification={false}
-                showLogout={false}
-                showLoginPrompt={false}
-            />
+            <AdminHeader></AdminHeader>
 
             <div className="mt-16"></div>
 

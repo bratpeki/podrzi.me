@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import NavigationBar from "../../components/NavigationHeader";
 import { apiRequest } from "../../utility/FetchAPI";
+import AdminHeader from "./AdminHeader";
 
 function AdminLoginPage() {
 
@@ -41,13 +42,7 @@ function AdminLoginPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-start pt-10 gradient-style">
-      <NavigationBar
-        showSearch={false}
-        showCreate={false}
-        showProfile={false}
-        showNotification={false}
-        showLogout={false}
-      />
+      <AdminHeader></AdminHeader>
       <h1 className="text-4xl font-bold text-cyan-600 mb-8">PODRZI.ME</h1>
 
       <div className="w-full max-w-md bg-white p-8 shadow-md rounded border">
