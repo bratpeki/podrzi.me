@@ -87,7 +87,7 @@ function EditActionPage() {
         setUsers(data);
       })
       .catch((err) => {
-        console.error("Failed to fetch action:", err);
+        console.error("Failed to fetch users:", err);
       });
   }, [id, authState.accessToken]);
   if (!currentAction) {

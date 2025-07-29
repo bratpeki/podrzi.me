@@ -7,6 +7,7 @@ function AdminHomePage() {
     const navigate = useNavigate();
 
     return (
+
         <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-start pt-10 gradient-style">
 
             <NavigationBar
@@ -25,23 +26,24 @@ function AdminHomePage() {
                 <h1 className="text-4xl font-bold text-cyan-900 mb-8 drop-shadow-md"> Administratorski panel </h1>
 
                 { /* TODO */ }
-                <button onClick={ () => navigate("/viewDonations", {}) } className="button-style text-3xl w-72 h-20 mb-8">
+                <button onClick={ () => navigate("/admin/viewAccounts", {}) } className="button-style text-3xl w-72 h-20 mb-8">
                     Pregled korisnika
                 </button>
 
                 { /* TODO */ }
-                <button onClick={ () => navigate("/viewDonations", {}) } className="button-style text-3xl w-72 h-20 mb-8">
+                <button onClick={ () => navigate("/admin/viewActions", {}) } className="button-style text-3xl w-72 h-20 mb-8">
                     Pregled akcija
                 </button>
 
                 { /* TODO */ }
-                <button onClick={ () => navigate("/viewDonations", {}) } className="button-style text-3xl w-72 h-20">
+                <button onClick={ () => navigate("/admin/viewReports", {}) } className="button-style text-3xl w-72 h-20">
                     Pregled prijava
                 </button>
 
             </div>
 
         </div>
+
     );
 
 }

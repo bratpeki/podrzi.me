@@ -21,6 +21,9 @@ import GuidePage from "./pages/GuidePage.js";
 
 import AdminLoginPage from "./pages/admin/AdminLoginPage";
 import AdminHomePage from "./pages/admin/AdminHomePage";
+import AdminViewAccounts from "./pages/admin/AdminViewAccounts";
+import AdminViewActions from "./pages/admin/AdminViewActions";
+import AdminViewReports from "./pages/admin/AdminViewReports";
 
 import CategoryActionsView from "./pages/CategoryActionsView"; 
 
@@ -75,6 +78,9 @@ function App() {
 
             <Route path="/admin/login" element={<AdminLoginPage />} />
             <Route path="/admin/home" element={<AdminHomePage />} />
+            <Route path="/admin/viewAccounts" element={<AdminViewAccounts />} />
+            <Route path="/admin/viewActions" element={<AdminViewActions />} />
+            <Route path="/admin/viewReports" element={<AdminViewReports />} />
 
           </Routes>
         </Router>
