@@ -6,7 +6,7 @@ function InfoFooter() {
   return (
     <footer className="bg-cyan-500 text-white py-3 bottom-0 w-full z-50 shadow-inner font-bold drop-shadow-md">
       <div className="container mx-auto px-4 flex justify-center space-x-6 text-sm">
-        <Link to="/vodic" className="hover:underline">
+        <Link to="/guide" className="hover:underline">
           Vodič 
         </Link>
         <Link to="/about" className="hover:underline">

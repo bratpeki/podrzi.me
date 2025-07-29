@@ -22,9 +22,13 @@ function HomePage() {
       setError(null);
       try {
         console.log("Attempting to fetch actions...");
-        const allActions = await apiRequest("actions/getvisibleactions", "GET", authState.accessToken);
+        const allActions = await apiRequest(
+          "actions/getvisibleactions",
+          "GET",
+          authState.accessToken
+        );
         console.log("Actions fetched successfully:", allActions);
-        
+
         const grouped = allActions.reduce((acc, action) => {
           const category = action.category || "Ostalo";
           if (!acc[category]) {
@@ -37,7 +41,9 @@ function HomePage() {
         console.log("Categorized actions:", grouped);
       } catch (err) {
         console.error("Error fetching actions in HomePage:", err); // Detaljnije logovanje
-        setError("Došlo je do greške prilikom učitavanja akcija. Provjerite konzolu za detalje.");
+        setError(
+          "Došlo je do greške prilikom učitavanja akcija. Provjerite konzolu za detalje."
+        );
       } finally {
         setLoading(false);
       }
@@ -49,7 +55,6 @@ function HomePage() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-cyan-50 to-cyan-100">
       <NavigationBar showSearch={true} />
-
       <header className="text-center mt-16 mb-8 pt-10">
         <h1 className="text-4xl font-extrabold text-cyan-900 drop-shadow-md">
           Aktivne Akcije
@@ -57,6 +62,32 @@ function HomePage() {
         <p className="text-gray-600 text-lg mt-2">
           Podržite akcije koje vas inspirišu
         </p>
+
+        <div className="mt-4 flex flex-wrap justify-center gap-4 px-4">
+          {[
+            "Humanitarno",
+            "Tehnologija",
+            "Igrica",
+            "Umjetnost",
+            "Startup",
+            "Knjiga",
+            "Film",
+            "Video",
+            "Muzika",
+            "Hrana",
+            "Moda",
+          ].map((category) => (
+            <a
+              key={category}
+              href={`/category/${category}`}
+              className="text-cyan-800 hover:text-cyan-600 font-medium transition duration-200"
+            >
+              {category}
+            </a>
+          ))}
+        </div>
+
+        <hr className="mt-4 border-t border-cyan-300 w-3/4 mx-auto" />
       </header>
 
       <div className="flex-grow px-6 pb-16 max-w-7xl mx-auto w-full">
@@ -65,9 +96,7 @@ function HomePage() {
             Učitavanje akcija...
           </div>
         ) : error ? (
-          <div className="text-center text-red-600 text-lg mt-10">
-            {error}
-          </div>
+          <div className="text-center text-red-600 text-lg mt-10">{error}</div>
         ) : Object.keys(categorizedActions).length === 0 ? (
           <div className="text-center text-gray-500 text-lg mt-10">
             Trenutno nema aktivnih akcija.

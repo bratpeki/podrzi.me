@@ -67,7 +67,6 @@ function NavigationBar({ showSearch = true, showNotification = true, showLoginPr
       <div className="w-1/4 h-full">
         {showSearch && (
           <ActionSearchBar
-            onResults={setMatchingActions}
             className="relative"
           />
         )}

@@ -17,6 +17,7 @@ import ViewDonationsPage from "./pages/ViewDonationsPage";
 import ReviewPage from './pages/ReviewPage';
 import ViewProfilePage from "./pages/ViewProfilePage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import GuidePage from "./pages/GuidePage.js";
 
 import AdminLoginPage from "./pages/admin/AdminLoginPage";
 import AdminHomePage from "./pages/admin/AdminHomePage";
@@ -70,6 +71,7 @@ function App() {
             <Route path="/category/:categoryName" element={<CategoryActionsView />} /> 
             <Route path="/viewProfile/:id" element={<ViewProfilePage />} />
             <Route path="/review" element={<ReviewPage />} />
+            <Route path="/guide" element={<GuidePage />} />
 
             <Route path="/admin/login" element={<AdminLoginPage />} />
             <Route path="/admin/home" element={<AdminHomePage />} />

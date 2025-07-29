@@ -26,11 +26,11 @@ function LoginPage() {
       );
 
       const text = await response;
-      if (text == "missingInfoError") {
-        setResponseMessage("Neuspjesna prijava! Provjerite Vase podatke!");
-      } else if (text == "usernameError") {
+      if (text === "missingInfoError") {
+        setResponseMessage("Neuspješna prijava! Provjerite Vaše podatke!");
+      } else if (text === "usernameError") {
         setResponseMessage("Korisničko ime ne postoji!");
-      } else if (text == "passwordError") {
+      } else if (text === "passwordError") {
         setResponseMessage("Lozinka je pogrešna!");
       } else {
         authDispatch({
@@ -42,8 +42,14 @@ function LoginPage() {
         navigate("/home");
       }
     } catch (error) {
-      setResponseMessage("Dogodila se greska tokom prijave!");
+      setResponseMessage("Dogodila se greška tokom prijave!");
       console.error(error);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleLogin();
     }
   };
 
@@ -64,11 +70,12 @@ function LoginPage() {
         </h2>
 
         <input
-          type="username"
-          placeholder="Korisnicko ime"
+          type="text"
+          placeholder="Korisničko ime"
           className="w-full mb-4 p-2 border border-cyan-600 rounded"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          onKeyDown={handleKeyDown}
         />
 
         <input
@@ -77,20 +84,19 @@ function LoginPage() {
           className="w-full mb-2 p-2 border border-cyan-600 rounded"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          onKeyDown={handleKeyDown}
         />
 
         <div className="text-right text-sm mb-4">
-        <Link to="/forgotPassword" className="link-style">
-          Zaboravili ste lozinku?
-        </Link>
+          <Link to="/forgotPassword" className="link-style">
+            Zaboravili ste lozinku?
+          </Link>
         </div>
 
-        <button
-          onClick={handleLogin}
-          className="w-full button-style"
-        >
+        <button onClick={handleLogin} className="w-full button-style">
           Prijavi se
         </button>
+
         {responseMessage && (
           <p className="text-center text-sm text-red-600 mb-2">
             {responseMessage}
@@ -109,7 +115,6 @@ function LoginPage() {
             Admin
           </Link>
         </div>
-
       </div>
     </div>
   );

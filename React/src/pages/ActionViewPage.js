@@ -657,6 +657,17 @@ function ActionViewPage() {
             </button>
           </div>
         )}
+
+        {isOwner && authState.accessToken && (
+          <div className="flex justify-end pt-4">
+            <button
+              className="button-style"
+            >
+              Finalizuj Akciju
+            </button>
+          </div>
+        )}
+      
       </main>
 
       <InfoFooter />
