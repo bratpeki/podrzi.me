@@ -5,6 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+/* TODO: Zbog StrictMode-a, AdminViewAccount useEffect se izvrši dvaput */
 root.render(
   <React.StrictMode>
     <App />
