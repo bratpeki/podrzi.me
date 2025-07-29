@@ -1,6 +1,7 @@
 
 import NavigationBar from "../../components/NavigationHeader";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function AdminHomePage() {
 
@@ -25,20 +26,20 @@ function AdminHomePage() {
 
                 <h1 className="text-4xl font-bold text-cyan-900 mb-8 drop-shadow-md"> Administratorski panel </h1>
 
-                { /* TODO */ }
-                <button onClick={ () => navigate("/admin/viewAccounts", {}) } className="button-style text-3xl w-72 h-20 mb-8">
+                { /* TODO: Peki */ }
+                <Link to={"/admin/viewAccounts"} className="button-style text-3xl w-72 h-20 mb-8 flex items-center justify-center">
                     Pregled korisnika
-                </button>
+                </Link>
 
-                { /* TODO */ }
-                <button onClick={ () => navigate("/admin/viewActions", {}) } className="button-style text-3xl w-72 h-20 mb-8">
+                { /* TODO: Pero */ }
+                <Link to={"/admin/viewActions"} className="button-style text-3xl w-72 h-20 mb-8 flex items-center justify-center">
                     Pregled akcija
-                </button>
+                </Link>
 
                 { /* TODO */ }
-                <button onClick={ () => navigate("/admin/viewReports", {}) } className="button-style text-3xl w-72 h-20">
+                <Link to={"/admin/viewReports"} className="button-style text-3xl w-72 h-20 flex items-center justify-center">
                     Pregled prijava
-                </button>
+                </Link>
 
             </div>
 

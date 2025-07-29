@@ -4,6 +4,8 @@ import NavigationBar from "../../components/NavigationHeader";
 import { useNavigate } from "react-router-dom";
 import { apiRequest } from "../../utility/FetchAPI";
 
+import ActionDropdown from "../../components/ActionDropdown";
+
 function AdminViewAccounts() {
 
   const [users, setUsers] = useState({});
@@ -43,7 +45,7 @@ function AdminViewAccounts() {
 
             <div className="mt-16"></div>
 
-            <div className="flex flex-col bg-white rounded-lg shadow-md w-2/5 h-full p-8 mt-20 items-center justify-center p-20">
+            <div className="flex flex-col bg-white rounded-lg shadow-md w-2/5 h-full p-8 mt-2 items-center justify-center p-20">
 
                 <h1 className="text-4xl font-bold text-cyan-900 mb-8 drop-shadow-md"> Pregled korisnika </h1>
 
@@ -52,16 +54,38 @@ function AdminViewAccounts() {
                     { Object.entries(users).length > 0 ? (
 
                         <ul className="w-full text-center">
-							{Object.entries(users).map(([id, name]) => (
-								<li key={id} className="bg-gray-100 p-3 mb-2 rounded shadow-sm text-lg text-gray-700">
-								User ID: {id} - Username: {name}
 
-								<button
-									onClick={() => navigate(`/viewProfile/${id}`)}
-									className="ml-4 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-								>
-									View Profile
-								</button>
+							{Object.entries(users).map(([id, name]) => (
+
+								<li key={id} className="flex justify-between items-center bg-gray-100 p-3 mb-2 rounded shadow-sm text-lg text-gray-700">
+
+									Username: {name} (ID: {id})
+
+									<button
+										className="bottom-2 right-2 w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-600 text-xl flex items-center justify-center shadow"
+									>
+
+									<ActionDropdown
+
+										actions={[
+
+											{
+												text: "Pregled profila",
+												onClick: () => {},
+												type: 'normal',
+											},
+
+											{
+												text: "Suspendovanje profila",
+												onClick: () => {},
+												type: 'destructive',
+											}
+
+										]}
+
+										/>
+
+									</button>
 
 								</li>
 
