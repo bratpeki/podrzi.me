@@ -62,7 +62,13 @@ function AdminViewActions() {
                   className="flex justify-between items-center bg-gray-100 p-3 mb-2 rounded shadow-sm text-lg text-gray-700"
                 >
                   <div className="text-left">
-                    <p className="font-semibold">{action.name}</p>
+                    <Link
+                      to={`/actionView/${action.idAction}`}
+                      state={{ id : action.idAction }}
+                      className="text-style hover:underline"
+                    >
+                      {action.name}
+                    </Link>
                     <p className="text-sm text-gray-500">{action.subtitle}</p>
                     <p className="text-xs text-gray-400 mt-1">
                       ID: {action.idAction}
