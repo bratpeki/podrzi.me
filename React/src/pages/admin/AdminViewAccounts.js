@@ -62,7 +62,7 @@ function AdminViewAccounts() {
 
 								<li key={id} className="flex justify-between items-center bg-gray-100 p-3 mb-2 rounded shadow-sm text-lg text-gray-700">
 
-									<Link to={`/viewProfile/${id}`} className="w-5/6 h-full text-left">
+									<Link to={`/viewProfile/${id}`} className="text-left text-style hover:underline">
 										Username: {name} (ID: {id})
 									</Link>
 
