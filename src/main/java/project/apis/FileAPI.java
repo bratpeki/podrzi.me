@@ -45,35 +45,6 @@ public class FileAPI {
         }
     }
 
-    @PostMapping("/uploadactionvideo")
-    public ResponseEntity<?> uploadActionVideo(
-            @RequestParam Integer idAction,
-            @RequestParam("file") MultipartFile filen) throws IOException {
-
-        String fileName = filen.getOriginalFilename().toLowerCase();
-
-        // Validate extension
-        if (!(fileName.endsWith(".mp4") || fileName.endsWith(".mov") ||
-                fileName.endsWith(".avi") || fileName.endsWith(".webm") ||
-                fileName.endsWith(".mkv"))) {
-            return ResponseEntity.ok("invalidFileError");
-        }
-
-        String contentType = filen.getContentType();
-        if (contentType == null || !contentType.startsWith("video/")) {
-            return ResponseEntity.ok("invalidMimeTypeError");
-        }
-
-        String folderPath = UPLOAD_FOLDER + "/videos/actions/" + idAction + "/";
-        Path dirPath = Paths.get(folderPath);
-        Files.createDirectories(dirPath);
-
-        Path filePath = dirPath.resolve(fileName);
-        Files.copy(filen.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-        return ResponseEntity.ok("success");
-    }
-
     @PostMapping("/removeactionimage")
     public ResponseEntity<?> removeActionImage(@RequestHeader Map<String, String> token, @RequestParam Integer idAction, @RequestParam String url, @RequestParam Boolean isPrimary) {
         if (!actionOwnerRepository.findByidAO_IdAction(idAction).getUser().getUsername().equals(jwt.extractUsername(token.get("token"))))

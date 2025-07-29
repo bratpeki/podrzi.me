@@ -19,9 +19,10 @@ public class ActionDTO {
     private Action.ACategory category;
     private String subtitle;
     private String location;
+    private String videoLink;
 
     public ActionDTO(String name, Float goal, Float collected, String desc, String primaryimage, Integer idAction, List<ActionOwnerDTO> actionOwners,
-                     List<CommentDTO> comments, LocalDateTime endtime, List<String> tags, Action.ACategory category, String subtitle, String location) {
+                     List<CommentDTO> comments, LocalDateTime endtime, List<String> tags, Action.ACategory category, String subtitle, String location, String videoLink) {
         this.idAction = idAction;
         this.name = name;
         this.goal = goal;
@@ -35,8 +36,15 @@ public class ActionDTO {
         this.category = category;
         this.subtitle = subtitle;
         this.location = location;
+        this.videoLink = videoLink;
     }
 
+    public String getVideoLink() {
+        return videoLink;
+    }
+    public void setVideoLink(String videoLink) {
+        this.videoLink = videoLink;
+    }
     public String getLocation() {
         return location;
     }
