@@ -1,120 +1,346 @@
-import { useEffect, useState } from "react";
-import NavigationBar from "../../components/NavigationHeader";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiRequest } from "../../utility/FetchAPI";
 import AdminHeader from "./AdminHeader";
-import { Link } from "react-router-dom";
-
+import Swal from "sweetalert2";
+import { AuthStateContext } from "../../components/UseAuthState";
 import ActionDropdown from "../../components/ActionDropdown";
+import AdminConfirmDialogue from "../../components/AdminConfirmDialogue";
 
 function AdminViewReports() {
-  const [users, setUsers] = useState({});
+  const [detailedReports, setDetailedReports] = useState([]); // reports with fetched detail info
   const [searchTerm, setSearchTerm] = useState("");
+  const { authState } = useContext(AuthStateContext);
+  const navigate = useNavigate();
 
+  // Confirm dialog state
+  const [confirmDialog, setConfirmDialog] = useState({
+    show: false,
+    title: "",
+    message: "",
+    onConfirm: null,
+    onCancel: null,
+    showReasonInput: false,
+  });
+
+  // Helper to fetch reported entity info
+  async function fetchReportedEntity(report) {
+    try {
+      if (report.idUserReported) {
+        const user = await apiRequest(
+          `users/showuserprofile?idUser=${report.idUserReported}`,
+          "GET",
+          authState.adminToken
+        );
+        return { ...report, reportedEntity: user, entityType: "user" };
+      } else if (report.idActionReported) {
+        const action = await apiRequest(
+          `actions/getaction?idAction=${report.idActionReported}`,
+          "GET",
+          authState.adminToken
+        );
+        return { ...report, reportedEntity: action, entityType: "action" };
+      } else if (report.idCommentReported) {
+        const comment = await apiRequest(
+          `comments/getbyid?idComment=${report.idCommentReported}`,
+          "GET",
+          authState.adminToken
+        );
+        return { ...report, reportedEntity: comment, entityType: "comment" };
+      } else {
+        return { ...report, reportedEntity: null, entityType: null };
+      }
+    } catch (error) {
+      console.error("Failed to fetch reported entity:", error);
+      return { ...report, reportedEntity: null, entityType: null };
+    }
+  }
+
+  // Fetch all reports + details on mount or when token changes
   useEffect(() => {
-    const func = async () => {
+    const fetchReportsWithDetails = async () => {
       try {
-        const response = await apiRequest("users/getusers", "GET");
-        setUsers(response);
+        const allReports = await apiRequest(
+          "reports/getallunhandled",
+          "GET",
+          authState.adminToken
+        );
+        const withDetails = await Promise.all(
+          allReports.map(fetchReportedEntity)
+        );
+        setDetailedReports(withDetails);
       } catch (err) {
-        console.error("Failed to fetch users:", err);
+        console.error("Failed to fetch reports:", err);
       }
     };
+    if (authState.adminToken) {
+      fetchReportsWithDetails();
+    }
+  }, [authState.adminToken]);
 
-    func();
-  }, []);
+  // Helper to open confirm dialogs
+  function openConfirmDialog({
+    title,
+    message,
+    onConfirm,
+    onCancel,
+    showReasonInput = false,
+  }) {
+    setConfirmDialog({
+      show: true,
+      title,
+      message,
+      onConfirm: (reason) => {
+        setConfirmDialog((prev) => ({ ...prev, show: false }));
+        onConfirm(reason);
+      },
+      onCancel: () => {
+        setConfirmDialog((prev) => ({ ...prev, show: false }));
+        if (onCancel) onCancel();
+      },
+      showReasonInput,
+    });
+  }
 
-    { /* TODO: OVO JE KOPIRANO OD KORISNIKA */ }
+  // Action handlers using confirm dialog + SweetAlert for results
 
-    const navigate = useNavigate();
+  const handleSuspendUser = (userId) => {
+    openConfirmDialog({
+      title: "Da li ste sigurni da želite suspendovati korisnika?",
+      message:
+        "Ova akcija će suspendovati korisnika i on neće moći pristupiti sistemu.",
+      showReasonInput: false,
+      onConfirm: async () => {
+        try {
+          const formData = new FormData();
+          formData.append("idUser", userId);
 
-	const filteredUsers = Object.entries(users).filter(([, name]) => {
-		return name.toLowerCase().includes(searchTerm.toLowerCase());
-	});
+          await apiRequest(
+            `admins/suspenduser`,
+            "POST",
+            authState.adminToken,
+            formData
+          );
+          Swal.fire("Suspendovan!", "Korisnik je suspendovan.", "success");
+          // Optionally refresh list here
+        } catch {
+          Swal.fire("Greška", "Neuspjela akcija suspendovanja.", "error");
+        }
+      },
+    });
+  };
 
-	const showNoUsersMessage = Object.keys(users).length === 0 && searchTerm === "";
+  const handleDeleteAction = (actionId) => {
+    openConfirmDialog({
+      title: "Da li ste sigurni da želite obrisati akciju?",
+      message: "Ova akcija će trajno obrisati prijavljenu akciju.",
+      showReasonInput: false,
+      onConfirm: async () => {
+        try {
+          await apiRequest(
+            `admins/removeaction?idAction=${actionId}`,
+            "POST",
+            authState.adminToken,
+            {
+              idAction: actionId,
+            }
+          );
+          Swal.fire("Obrisano!", "Akcija je obrisana.", "success");
+          // Optionally refresh list here
+        } catch {
+          Swal.fire("Greška", "Neuspjelo brisanje akcije.", "error");
+        }
+      },
+    });
+  };
+
+  const handleDeleteComment = (commentId) => {
+    openConfirmDialog({
+      title: "Da li ste sigurni da želite obrisati komentar?",
+      message: "Ova akcija će trajno obrisati prijavljeni komentar.",
+      showReasonInput: false,
+      onConfirm: async () => {
+        try {
+          await apiRequest(
+            `admins/removecomment?idComment=${commentId}`,
+            "POST",
+            authState.adminToken
+          );
+          Swal.fire("Obrisano!", "Komentar je obrisan.", "success");
+          // Optionally refresh list here
+        } catch {
+          Swal.fire("Greška", "Neuspjelo brisanje komentara.", "error");
+        }
+      },
+    });
+  };
+
+  // Filter reports by search term (by reporting user or reported entity)
+  const filteredReports = detailedReports.filter((report) => {
+    const searchLower = searchTerm.toLowerCase();
+
+    return (
+      report.userReportee?.username?.toLowerCase().includes(searchLower) ||
+      (report.reportedEntity &&
+        (report.reportedEntity.username?.toLowerCase().includes(searchLower) ||
+          report.reportedEntity.name?.toLowerCase().includes(searchLower) ||
+          report.reportedEntity.title?.toLowerCase().includes(searchLower) ||
+          report.reportedEntity.text?.toLowerCase().includes(searchLower)))
+    );
+  });
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-start pt-10 gradient-style">
-      <AdminHeader></AdminHeader>
+      <AdminHeader />
+      <div className="mt-16" />
 
-      <div className="mt-16"></div>
+      <div className="flex flex-col bg-white rounded-lg shadow-md w-3/5 h-full p-8 mt-2 mb-8 items-center justify-center p-20 max-w-6xl">
+        <h1 className="text-4xl font-bold text-cyan-900 mb-8 drop-shadow-md">
+          Pregled prijava
+        </h1>
 
-			{ /* TODO: Tekst izgleda loše na malim širinama */ }
-            <div className="flex flex-col bg-white rounded-lg shadow-md w-2/5 h-full p-8 mt-2 mb-8 items-center justify-center p-20">
+        <input
+          type="text"
+          placeholder="Pretraži po korisničkom imenu ili imenu prijavljenog..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="mb-6 p-2 border border-gray-300 rounded w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
+        />
 
-                <h1 className="text-4xl font-bold text-cyan-900 mb-8 drop-shadow-md"> Pregled korisnika </h1>
+        <div className="flex flex-col items-center w-full max-h-[600px] overflow-y-auto">
+          {filteredReports.length > 0 ? (
+            <ul className="w-full text-left space-y-4">
+              {filteredReports.map((report) => (
+                <li
+                  key={report.idReport}
+                  className="bg-gray-100 p-4 rounded shadow-sm text-gray-800"
+                >
+                  <div className="flex justify-between items-center mb-2">
+                    <div>
+                      <strong>Prijavio:</strong>{" "}
+                      {report.userReportee?.username || "Nepoznato"} (ID:{" "}
+                      {report.userReportee?.idUser || "N/A"})
+                    </div>
+                    <ActionDropdown
+                      actions={[
+                        {
+                          text: "Pregled profila prijavitelja",
+                          onClick: () =>
+                            navigate(
+                              `/viewProfile/${report.userReportee?.idUser}`
+                            ),
+                          type: "normal",
+                        },
+                        ...(report.entityType === "user"
+                          ? [
+                              {
+                                text: "Suspenduj korisnika",
+                                onClick: () =>
+                                  handleSuspendUser(report.idUserReported),
+                                type: "destructive",
+                              },
+                            ]
+                          : []),
+                        ...(report.entityType === "action"
+                          ? [
+                              {
+                                text: "Obriši akciju",
+                                onClick: () =>
+                                  handleDeleteAction(report.idActionReported),
+                                type: "destructive",
+                              },
+                            ]
+                          : []),
+                        ...(report.entityType === "comment"
+                          ? [
+                              {
+                                text: "Obriši komentar",
+                                onClick: () =>
+                                  handleDeleteComment(report.idCommentReported),
+                                type: "destructive",
+                              },
+                            ]
+                          : []),
+                      ]}
+                    />
+                  </div>
+                  <p className="text-sm text-gray-700 mb-1">
+                    <strong>Razlog prijave:</strong> {report.text}
+                  </p>
 
-				<input
-					type="text"
-					placeholder="Pretraži po korisničkom imenu..."
-					value={searchTerm}
-					onChange={(e) => setSearchTerm(e.target.value)}
-					className="mb-6 p-2 border border-gray-300 rounded w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
-				/>
-
-                <div className="flex flex-col items-center w-full">
-
-                    { filteredUsers.length > 0 ? (
-
-                        <ul className="w-full text-center">
-
-							{filteredUsers.map(([id, name]) => (
-
-								<li key={id} className="flex justify-between items-center bg-gray-100 p-3 mb-2 rounded shadow-sm text-lg text-gray-700">
-
-									<Link to={`/viewProfile/${id}`} className="w-5/6 h-full text-left">
-										Username: {name} (ID: {id})
-									</Link>
-
-									<button
-										className="bottom-2 right-2 w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-600 text-xl flex items-center justify-center shadow"
-									>
-
-									<ActionDropdown
-
-										actions={[
-
-											{
-												text: "Pregled profila",
-												onClick: () => { navigate(`/viewProfile/${id}`); },
-												type: 'normal',
-											},
-
-											{
-												text: "Suspendovanje profila",
-												onClick: () => { /* TODO */ },
-												type: 'destructive',
-											}
-
-										]}
-
-										/>
-
-									</button>
-
-								</li>
-
-							))}
-                        </ul>
-
-						) : (
-
-							searchTerm !== "" ? (
-								<p className="text-gray-600">Nema pronađenih korisnika za "{searchTerm}".</p>
-							) : showNoUsersMessage && (
-								<p className="text-gray-600">Nema pronađenih korisnika.</p>
-                   			)
-
-						)
-
-					}
-
-                </div>
-
-            </div>
-
+                  {/* Display reported entity info */}
+                  <div className="bg-white border rounded p-3 mt-3">
+                    {report.reportedEntity ? (
+                      <>
+                        {report.entityType === "user" && (
+                          <>
+                            <p>
+                              <strong>Korisničko ime:</strong>{" "}
+                              {report.reportedEntity.username}
+                            </p>
+                            <p>
+                              <strong>Datum:</strong>{" "}
+                              {new Date(
+                                report.reportedEntity.created
+                              ).toLocaleString()}
+                            </p>
+                          </>
+                        )}
+                        {report.entityType === "action" && (
+                          <>
+                            <p>
+                              <strong>Naziv akcije:</strong>{" "}
+                              {report.reportedEntity.name}
+                            </p>
+                            <p>
+                              <strong>Datum:</strong>{" "}
+                              {new Date(
+                                report.reportedEntity.created
+                              ).toLocaleString()}
+                            </p>
+                          </>
+                        )}
+                        {report.entityType === "comment" && (
+                          <>
+                            <p>
+                              <strong>Korisnik:</strong>{" "}
+                              {report.reportedEntity.displayName}
+                            </p>
+                            <p>
+                              <strong>Komentar:</strong>{" "}
+                              {report.reportedEntity.text}
+                            </p>
+                            <p>
+                              <strong>Datum:</strong>{" "}
+                              {new Date(
+                                report.reportedEntity.created
+                              ).toLocaleString()}
+                            </p>
+                          </>
+                        )}
+                      </>
+                    ) : (
+                      <p>Nema dostupnih informacija.</p>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-600">Nema pronađenih prijava.</p>
+          )}
         </div>
+      </div>
+
+      <AdminConfirmDialogue
+        show={confirmDialog.show}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        onCancel={confirmDialog.onCancel}
+        onConfirm={confirmDialog.onConfirm}
+        showReasonInput={confirmDialog.showReasonInput}
+      />
+    </div>
   );
 }
 

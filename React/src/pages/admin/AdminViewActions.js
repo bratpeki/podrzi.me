@@ -5,13 +5,18 @@ import { apiRequest } from "../../utility/FetchAPI";
 import { AuthStateContext } from "../../components/UseAuthState";
 import ActionDropdown from "../../components/ActionDropdown";
 import AdminHeader from "./AdminHeader";
+import AdminConfirmDialogue from "../../components/AdminConfirmDialogue";
+import Swal from "sweetalert2";
 
 function AdminViewActions() {
   const navigate = useNavigate();
   const { authState } = useContext(AuthStateContext);
   const [allActions, setAllActions] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [dialogVisible, setDialogVisible] = useState(false);
+  const [selectedAction, setSelectedAction] = useState(null);
 
+  // Fetch actions
   useEffect(() => {
     const fetchActions = async () => {
       try {
@@ -33,18 +38,58 @@ function AdminViewActions() {
     action.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const openDeleteDialog = (action) => {
+    setSelectedAction(action);
+    setDialogVisible(true);
+  };
+
+  const handleDeleteAction = async () => {
+    try {
+      await apiRequest(`admins/removeaction?idAction=${selectedAction.idAction}`, "POST", authState.adminToken, {
+        idAction: selectedAction.idAction,
+      });
+
+      setDialogVisible(false);
+      setSelectedAction(null);
+
+      // Refresh the actions list
+      const refreshedActions = await apiRequest(
+        "actions/getvisibleactions",
+        "GET",
+        authState.accessToken
+      );
+      setAllActions(refreshedActions);
+
+      await Swal.fire({
+        icon: "success",
+        title: "Akcija uklonjena",
+        text: `Akcija "${selectedAction.name}" je uspješno uklonjena.`,
+        timer: 2500,
+        timerProgressBar: true,
+        showConfirmButton: false,
+      });
+    } catch (error) {
+      setDialogVisible(false);
+      console.error("Greška pri uklanjanju akcije:", error);
+      await Swal.fire({
+        icon: "error",
+        title: "Greška",
+        text: "Došlo je do greške pri uklanjanju akcije.",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-start pt-10 gradient-style">
-      <AdminHeader></AdminHeader>
+      <AdminHeader />
 
-      <div className="mt-16"></div>
+      <div className="mt-16" />
 
       <div className="flex flex-col bg-white rounded-lg shadow-md w-2/5 h-full p-8 mt-2 items-center justify-center p-20">
         <h1 className="text-4xl font-bold text-cyan-900 mb-8 drop-shadow-md">
           Pregled akcija
         </h1>
 
-        {/* Search Input */}
         <input
           type="text"
           placeholder="Pretraži po imenu akcije..."
@@ -64,7 +109,7 @@ function AdminViewActions() {
                   <div className="text-left">
                     <Link
                       to={`/actionView/${action.idAction}`}
-                      state={{ id : action.idAction }}
+                      state={{ id: action.idAction }}
                       className="text-style hover:underline"
                     >
                       {action.name}
@@ -88,7 +133,7 @@ function AdminViewActions() {
                         },
                         {
                           text: "Ukloni akciju",
-                          onClick: () => {},
+                          onClick: () => openDeleteDialog(action),
                           type: "destructive",
                         },
                       ]}
@@ -102,6 +147,18 @@ function AdminViewActions() {
           )}
         </div>
       </div>
+
+      {/* Confirm dialog for deleting action */}
+      <AdminConfirmDialogue
+        show={dialogVisible}
+        title="Potvrda uklanjanja akcije"
+        message={`Da li ste sigurni da želite ukloniti akciju "${selectedAction?.name}"?`}
+        onCancel={() => {
+          setDialogVisible(false);
+          setSelectedAction(null);
+        }}
+        onConfirm={handleDeleteAction}
+      />
     </div>
   );
 }

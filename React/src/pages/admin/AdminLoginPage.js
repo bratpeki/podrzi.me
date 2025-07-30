@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import NavigationBar from "../../components/NavigationHeader";
 import { apiRequest } from "../../utility/FetchAPI";
 import AdminHeader from "./AdminHeader";
+import { AuthStateContext } from "../../components/UseAuthState";
 
 function AdminLoginPage() {
-
   const navigate = useNavigate();
+  const { authDispatch } = useContext(AuthStateContext);
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -14,18 +15,12 @@ function AdminLoginPage() {
 
   const handleLogin = async () => {
     try {
-      const response = await apiRequest(
-        "admins/adminauth",
-        "POST",
-        null,
-        {
-          username: username,
-          password: password,
-        }
-      );
+      const response = await apiRequest("admins/adminauth", "POST", null, {
+        username,
+        password,
+      });
 
       const text = await response;
-      if (text === "success") navigate("/admin/home");
 
       if (text === "invalidDataError") {
         setResponseMessage("Neuspjesna prijava! Provjerite Vase podatke!");
@@ -33,6 +28,16 @@ function AdminLoginPage() {
         setResponseMessage("Korisničko ime ne postoji!");
       } else if (text === "passwordError") {
         setResponseMessage("Lozinka je pogrešna!");
+      } else {
+        // success: store admin token
+        authDispatch({
+          type: "adminLogin",
+          payload: {
+            adminToken: text, // assuming server returns token string
+          },
+        });
+
+        navigate("/admin/home");
       }
     } catch (error) {
       setResponseMessage("Dogodila se greska tokom prijave!");
@@ -42,18 +47,16 @@ function AdminLoginPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-start pt-10 gradient-style">
-      <AdminHeader></AdminHeader>
       <h1 className="text-4xl font-bold text-cyan-600 mb-8">PODRZI.ME</h1>
 
       <div className="w-full max-w-md bg-white p-8 shadow-md rounded border">
-
-        <h2 className="text-2xl font-semibold mb-6">
-          <center>Prijava <span className="text-red-500">(Admin)</span></center>
+        <h2 className="text-2xl font-semibold mb-6 text-center">
+          Prijava <span className="text-red-500">(Admin)</span>
         </h2>
 
         <input
-          type="username"
-          placeholder="Korisnicko ime"
+          type="text"
+          placeholder="Korisničko ime"
           className="w-full mb-4 p-2 border border-cyan-600 rounded"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
@@ -67,10 +70,7 @@ function AdminLoginPage() {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button
-          onClick={handleLogin}
-          className="w-full button-style mt-2"
-        >
+        <button onClick={handleLogin} className="w-full button-style mt-2">
           Prijavi se
         </button>
 
@@ -79,7 +79,6 @@ function AdminLoginPage() {
             {responseMessage}
           </p>
         )}
-
       </div>
     </div>
   );

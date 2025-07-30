@@ -1,49 +1,71 @@
 import { useEffect, createContext, useReducer } from "react";
 
 const initialAuthStateContext = {
-  initialized: false, // Postaje true kada se može raditi sa tokenom (kad je inicijalizovan)
-  loggedIn: false, // Ako korisnik nije gost
-  accessToken: null, // Šalje se sa svakim zahtjevom u fetch-u ("token": authState.accessToken)
+  initialized: false,
+  loggedIn: false,
+  accessToken: null,      // for normal users
+  adminToken: null,       // for admins
+  isAdmin: false,         // helper flag
 };
 
-const localStorageKey = "accessToken";
+const accessTokenKey = "accessToken";
+const adminTokenKey = "adminToken";
 
 function authStateReducer(state, action) {
-  if (!"type" in action)
-    throw new Error("authState action must have a defined type");
-
   switch (action.type) {
     case "authCheck": {
-      const localStorageAccessToken = localStorage.getItem(localStorageKey);
-
-      if (!localStorageAccessToken)
-        return {
-          ...state,
-          loggedIn: false,
-          accessToken: null,
-          initialized: true,
-        };
+      const accessToken = localStorage.getItem(accessTokenKey);
+      const adminToken = localStorage.getItem(adminTokenKey);
 
       return {
         ...state,
-        loggedIn: true,
-        accessToken: localStorageAccessToken,
+        accessToken,
+        adminToken,
+        loggedIn: !!accessToken || !!adminToken,
+        isAdmin: !!adminToken,
         initialized: true,
       };
     }
+
     case "login": {
       const { accessToken } = action.payload;
-      localStorage.setItem(localStorageKey, accessToken);
-      return { ...state, loggedIn: true, accessToken: accessToken };
+      localStorage.setItem(accessTokenKey, accessToken);
+      return {
+        ...state,
+        accessToken,
+        loggedIn: true,
+        isAdmin: false,
+      };
     }
+
+    case "adminLogin": {
+      const { adminToken } = action.payload;
+      localStorage.setItem(adminTokenKey, adminToken);
+      return {
+        ...state,
+        adminToken,
+        loggedIn: true,
+        isAdmin: true,
+      };
+    }
+
     case "logout": {
-      localStorage.removeItem(localStorageKey);
-      return { ...state, loggedIn: false, accessToken: null };
+      localStorage.removeItem(accessTokenKey);
+      localStorage.removeItem(adminTokenKey);
+      return {
+        ...state,
+        accessToken: null,
+        adminToken: null,
+        loggedIn: false,
+        isAdmin: false,
+      };
     }
+
     default:
       throw new Error("Unsupported authState action called");
   }
 }
+
 
 export function useAuth() {
   const [authState, authDispatch] = useReducer(
@@ -52,9 +74,7 @@ export function useAuth() {
   );
 
   useEffect(() => {
-    authDispatch({
-      type: "authCheck",
-    });
+    authDispatch({ type: "authCheck" });
   }, []);
 
   return { authState, authDispatch };
