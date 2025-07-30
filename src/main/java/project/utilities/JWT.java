@@ -26,10 +26,12 @@ public class JWT {
 
     public String generateToken(String username) {
         Integer id = userRepository.findByusername(username).getIdUser();
+        Integer state = userRepository.findByusername(username).getState();
         return Jwts.builder()
                 .setSubject(username)
                 .claim("id", id)
                 .claim("role", "USER")
+                .claim("state", state)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 2019200000L))
                 .signWith(key)

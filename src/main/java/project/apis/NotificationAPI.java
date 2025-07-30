@@ -99,12 +99,6 @@ public class NotificationAPI {
         return ResponseEntity.ok("success");
     }
 
-    @PostMapping("/sendall")
-    public ResponseEntity<?> sendNotificationsAll() {
-
-        return ResponseEntity.ok("success");
-    }
-
     @PostMapping("/acceptcollab")
     public ResponseEntity<?> acceptCollab(@RequestHeader Map<String, String> token, @RequestParam Integer idAction, @RequestParam Integer idNotification) {
         User u = userRepository.findByidUser(jwt.extractId(token.get("token")));

@@ -11,6 +11,7 @@ import project.repositories.*;
 import project.utilities.*;
 import project.dtos.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,8 +27,9 @@ public class AdminAPI {
     private final ActionOwnerRepository actionOwnerRepository;
     private final CommentRepository commentRepository;
     private final PasswordEncoder passwordEncoder;
+    private final NotificationRepository notificationRepository;
 
-    public AdminAPI (AdminRepository adminRepository, JWT jwt, UserRepository userRepository, MailService mailService, ActionRepository actionRepository, ActionOwnerRepository actionOwnerRepository, CommentRepository commentRepository, PasswordEncoder passwordEncoder) {
+    public AdminAPI (AdminRepository adminRepository, JWT jwt, UserRepository userRepository, MailService mailService, ActionRepository actionRepository, ActionOwnerRepository actionOwnerRepository, CommentRepository commentRepository, PasswordEncoder passwordEncoder, NotificationRepository notificationRepository) {
         this.adminRepository = adminRepository;
         this.jwt = jwt;
         this.userRepository = userRepository;
@@ -36,6 +38,7 @@ public class AdminAPI {
         this.actionOwnerRepository = actionOwnerRepository;
         this.commentRepository = commentRepository;
         this.passwordEncoder = passwordEncoder;
+        this.notificationRepository = notificationRepository;
     }
 
     @PostMapping("/addadmin")
@@ -52,7 +55,7 @@ public class AdminAPI {
             return ResponseEntity.ok("invalidDataError");
         if (adminRepository.findByusername(admin.getUsername()) == null)
             return ResponseEntity.ok("usernameError");
-        if (!passwordEncoder.matches(admin.getPassword(), passwordEncoder.encode("69")))
+        if (!passwordEncoder.matches(admin.getPassword(), adminRepository.findByusername(admin.getUsername()).getPassword()))
             return ResponseEntity.ok("passwordError");
 
         String jwtt = jwt.generateTokenAdmin(admin.getUsername());
@@ -67,6 +70,8 @@ public class AdminAPI {
         if (u != null && u.getState() == 0) {
             u.setState(1);
             userRepository.save(u);
+            if (reason == null)
+                reason = "Prijavljeni ste za neprikladno ponasanje!";
 
             mailService.send(u.getEmail(), "Suspenzija naloga",
                     "Vas nalog " + u.getUsername()+ " (" + u.getDisplayName() + ") " + " je suspendovan sa nase platforme!\nRazlog za suspenziju: " + reason);
@@ -112,5 +117,24 @@ public class AdminAPI {
         }
 
         return ResponseEntity.ok("userNotValid");
+    }
+
+    @PostMapping("/sendall")
+    public ResponseEntity<?> sendAllNotification(@RequestParam String text) {
+        List<User> lu = userRepository.findAll();
+
+        for (User u : lu) {
+            Notification n = new Notification();
+            n.setUser(u);
+            n.setUserSender(null);
+            n.setSeen(false);
+            n.setType(2);
+            n.setAction(null);
+            n.setCreated(LocalDateTime.now());
+            n.setText(text);
+            notificationRepository.save(n);
+        }
+
+        return ResponseEntity.ok("success");
     }
 }

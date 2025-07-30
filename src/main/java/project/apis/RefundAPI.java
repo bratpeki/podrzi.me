@@ -52,6 +52,6 @@ public class RefundAPI {
 
     @GetMapping("/getallunhandled")
     public ResponseEntity<?>  getAllUnhandledRefunds() {
-        return ResponseEntity.ok(refundRepository.findByrequestedRefund(true));
+        return ResponseEntity.ok(refundRepository.findByrequestedRefund());
     }
 }
