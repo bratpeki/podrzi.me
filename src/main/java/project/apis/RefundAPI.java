@@ -25,9 +25,6 @@ public class RefundAPI {
         this.refundRepository = refundRepository;
     }
 
-    //@GetMapping("/getall")
-
-
     @PostMapping("/request")
     public ResponseEntity<?> requestRefund(@RequestHeader Map<String, String> token, @RequestBody RefundDTO rdto) {
         User u = userRepository.findByidUser(jWT.extractId(token.get("token")));
@@ -45,10 +42,16 @@ public class RefundAPI {
             r.setRequestedRefund(true);
             r.setDonation(d);
             r.setReason(rdto.getReason());
+            r.setAccepted(false);
             refundRepository.save(r);
 
             return ResponseEntity.ok("success");
         } else
             return ResponseEntity.ok("invalidDonationError");
+    }
+
+    @GetMapping("/getallunhandled")
+    public ResponseEntity<?>  getAllUnhandledRefunds() {
+        return ResponseEntity.ok(refundRepository.findByrequestedRefund(true));
     }
 }

@@ -12,7 +12,14 @@ public class Refund {
     @JoinColumn(name = "idDonation")
     private Donation donation;
     private Boolean requestedRefund;
+    private Boolean accepted;
 
+    public Boolean getAccepted() {
+        return accepted;
+    }
+    public void setAccepted(Boolean accepted) {
+        this.accepted = accepted;
+    }
     public Boolean getRequestedRefund() {
         return requestedRefund;
     }

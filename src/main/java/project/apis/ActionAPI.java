@@ -128,8 +128,10 @@ public class ActionAPI {
         User u = userRepository.findByidUser(jwt.extractId(token.get("token")));
         if (u.getPassword().equals(password)) {
             Action a = actionRepository.findByidAction(idAction);
-            ActionOwner ao = actionOwnerRepository.findByidAO_IdAction(idAction);
-            actionOwnerRepository.delete(ao);
+            List<ActionOwner> ao = actionOwnerRepository.findAllByidAO_IdAction(idAction);
+
+            for (ActionOwner a1 : ao)
+                actionOwnerRepository.delete(a1);
             actionRepository.delete(a);
             return ResponseEntity.ok("success");
         }

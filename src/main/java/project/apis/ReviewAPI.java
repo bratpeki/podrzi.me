@@ -37,4 +37,9 @@ public class ReviewAPI {
         else
             return ResponseEntity.ok("reviewExistsError");
     }
+
+    @GetMapping("/getall")
+    public ResponseEntity<?> getAllReviews() {
+        return ResponseEntity.ok(reviewRepository.findAll());
+    }
 }

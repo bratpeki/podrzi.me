@@ -24,6 +24,7 @@ public class Security {
             "/api/users/getnamebyid",
             "/api/users/showuserprofile",
             "/api/users/forgotpassword",
+            "/api/users/getusers",
 
             "/api/messages/send",
 
@@ -53,7 +54,6 @@ public class Security {
             "/api/users/showprofile",
 
             "/api/users/updateprofile",
-            "/api/users/getusers",
             "/api/users/removeuser",
 
             "/api/reviews/addreview",
@@ -76,7 +76,6 @@ public class Security {
             "/api/notifications/denycollab",
 
             "/api/reports/create",
-            "/api/reports/getallunhandled",
 
             "/api/comments/add",
             "/api/comments/remove",
@@ -94,12 +93,16 @@ public class Security {
 
             "/api/notifications/sendall",
 
-            "/api/reports/getall",
+            "/api/reports/getallunhandled",
             "/api/reports/handle",
 
             "/api/admins/addadmin",
+            "/api/admins/suspenduser",
+            "/api/admins/removeaction",
 
-            "/api/reports/getallunhandled"
+            "/api/refunds/getallunhandled",
+
+            "/api/reviews/getall",
     };
 
     @Bean
@@ -109,14 +112,7 @@ public class Security {
                         .requestMatchers(PublicMethods).permitAll()     //PUBLIC
                         .requestMatchers(AdminMethods).hasRole("ADMIN") //ADMIN
                         .requestMatchers(UserMethods).hasRole("USER"))//USER
-                .sessionManagement(ses -> ses.sessionCreationPolicy((SessionCreationPolicy.STATELESS)))
-                .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint((request, response, authException) -> {
-                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Nemate prava!");
-                        })
-                        .accessDeniedHandler((request, response, accessDeniedException) -> {
-                            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Zabranjeno!");
-                        }));
+                .sessionManagement(ses -> ses.sessionCreationPolicy((SessionCreationPolicy.STATELESS)));
 
 
 

@@ -5,8 +5,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import project.classes.Admin;
-import project.repositories.AdminRepository;
+import project.classes.*;
+import project.repositories.*;
 import project.utilities.*;
 import project.dtos.*;
 
@@ -19,10 +19,20 @@ import java.util.Map;
 public class AdminAPI {
     private final AdminRepository adminRepository;
     private final JWT jwt;
+    private final UserRepository userRepository;
+    private final MailService mailService;
+    private final ActionRepository actionRepository;
+    private final ActionOwnerRepository actionOwnerRepository;
+    private final CommentRepository commentRepository;
 
-    public AdminAPI (AdminRepository adminRepository, JWT jwt) {
+    public AdminAPI (AdminRepository adminRepository, JWT jwt, UserRepository userRepository, MailService mailService, ActionRepository actionRepository, ActionOwnerRepository actionOwnerRepository, CommentRepository commentRepository) {
         this.adminRepository = adminRepository;
         this.jwt = jwt;
+        this.userRepository = userRepository;
+        this.mailService = mailService;
+        this.actionRepository = actionRepository;
+        this.actionOwnerRepository = actionOwnerRepository;
+        this.commentRepository = commentRepository;
     }
 
     @PostMapping("/addadmin")
@@ -41,12 +51,43 @@ public class AdminAPI {
         if (!admin.getPassword().equals(adminRepository.findByusername(admin.getUsername()).getPassword()))
             return ResponseEntity.ok("passwordError");
 
-        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        return ResponseEntity.ok("success");
+    }
 
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(admin.getUsername(), null, authorities);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        System.out.println(authentication);
+    @PostMapping("/suspenduser")
+    public ResponseEntity<?> suspendUser(@RequestParam String reason, @RequestParam Integer idUser) {
+        User u = userRepository.findByidUser(idUser);
+
+        if (u != null && u.getState() == 0) {
+            u.setState(1);
+            userRepository.save(u);
+
+            mailService.send(u.getEmail(), "Suspenzija naloga",
+                    "Vas nalog " + u.getUsername()+ " (" + u.getDisplayName() + ") " + " je suspendovan sa nase platforme!\n Razlog za suspenziju: " + reason);
+
+            return ResponseEntity.ok("success");
+        }
+
+        return ResponseEntity.ok("userNotValid");
+    }
+
+    @PostMapping("/removeaction")
+    public ResponseEntity<?> removeAction(@RequestParam Integer idAction) {
+        Action a = actionRepository.findByidAction(idAction);
+        List<ActionOwner> ao = actionOwnerRepository.findAllByidAO_IdAction(idAction);
+
+        for(ActionOwner a1 : ao)
+            actionOwnerRepository.delete(a1);
+        actionRepository.delete(a);
+
+        return ResponseEntity.ok("success");
+    }
+
+    @PostMapping("/removecomment")
+    public ResponseEntity<?> removeComment(@RequestParam Integer idComment) {
+
+        Comment a = commentRepository.findByidComment(idComment);
+        commentRepository.delete(a);
 
         return ResponseEntity.ok("success");
     }

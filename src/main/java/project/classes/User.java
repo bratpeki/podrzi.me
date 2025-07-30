@@ -14,7 +14,14 @@ public class User {
     @Column(name = "`desc`", length = 2000)
     private String desc;
     private String imagePath = "";
+    private Integer state;
 
+    public Integer getState() {
+        return state;
+    }
+    public void setState(Integer state) {
+        this.state = state;
+    }
     public String getDesc() {
         return desc;
     }
