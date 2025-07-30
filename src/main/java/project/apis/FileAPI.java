@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 import project.classes.Action;
+import project.utilities.Compression;
 import project.utilities.JWT;
 
 @RestController
@@ -82,8 +83,12 @@ public class FileAPI {
 
         Path filePath = dirPath.resolve(file);
 
-        if (!Files.exists(filePath))
-            Files.copy(filen.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        Path tempPath = dirPath.resolve("temp_" + file);
+        Files.copy(filen.getInputStream(), tempPath, StandardCopyOption.REPLACE_EXISTING);
+
+        Compression.compressImage(tempPath.toFile(), filePath.toFile().getAbsolutePath());
+
+        Files.deleteIfExists(tempPath);
 
         if (isPrimary == true){
             Action a = actionRepository.findByidAction(idAction);
@@ -104,12 +109,16 @@ public class FileAPI {
         Path dirPath = Paths.get(folderPath);
         Files.createDirectories(dirPath);
 
+        Path tempPath = dirPath.resolve("temp_" + file);
+        Files.copy(filen.getInputStream(), tempPath, StandardCopyOption.REPLACE_EXISTING);
+
         Path filePath = dirPath.resolve(file);
 
-        if (!Files.exists(filePath))
-            Files.copy(filen.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        Path finalPath = dirPath.resolve(file);
+        Compression.compressImage(tempPath.toFile(), finalPath.toFile().getAbsolutePath());
 
-        Files.copy(filen.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        Files.deleteIfExists(tempPath); // Cleanup
+
 
         return ResponseEntity.ok(UPLOAD_LINK+"/images/users/"+idUser+"/"+file);
     }
