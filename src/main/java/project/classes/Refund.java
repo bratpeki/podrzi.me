@@ -11,9 +11,17 @@ public class Refund {
     @ManyToOne
     @JoinColumn(name = "idDonation")
     private Donation donation;
+    @Column(name = "idDonation", insertable = false, updatable = false)
+    private Integer idDonation;
     private Boolean requestedRefund;
     private Boolean accepted;
 
+    public Integer getIdDonation() {
+        return idDonation;
+    }
+    public void setIdDonation(Integer idDonation) {
+        this.idDonation = idDonation;
+    }
     public Boolean getAccepted() {
         return accepted;
     }

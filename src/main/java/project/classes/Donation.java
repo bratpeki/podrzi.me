@@ -13,6 +13,8 @@ public class Donation {
     @ManyToOne
     @JoinColumn(name = "idAction")
     private Action action;
+    @Column(name = "idAction", insertable = false, updatable = false)
+    private Integer idAction;
 
     @ManyToOne
     @JoinColumn(name = "idUser")
@@ -21,6 +23,12 @@ public class Donation {
     private Float amount;
     private LocalDateTime donationTime = LocalDateTime.now();
 
+    public Integer getIdAction() {
+        return idAction;
+    }
+    public void setIdAction(Integer idAction) {
+        this.idAction = idAction;
+    }
     public Integer getIdDonation() {
         return idDonation;
     }
