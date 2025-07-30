@@ -73,6 +73,6 @@ public class CommentAPI {
     @GetMapping("/getbyid")
     public ResponseEntity<?> getByID(@RequestParam Integer idComment) {
         Comment c = commentRepository.findByidComment(idComment);
-        return ResponseEntity.ok(new CommentDTO(c.getText(), c.getAction().getIdAction(), c.getCreated(), c.getUser().getIdUser(), c.getUser().getDisplayName(), c.getUser().getImagePath(), c.getIdComment()));
+        return ResponseEntity.ok(new CommentDTO(c.getText(), c.getIdAction(), c.getCreated(), c.getUser().getIdUser(), c.getUser().getDisplayName(), c.getUser().getImagePath(), c.getIdComment()));
     }
 }

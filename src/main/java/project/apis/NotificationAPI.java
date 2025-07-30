@@ -45,8 +45,8 @@ public class NotificationAPI {
                 new NotificationDTO(a.getAction().getIdAction(),
                         a.getText(),
                         a.getType(),
-                        a.getAction().getName(),
-                        a.getAction().getPrimaryImage(),
+                        (a.getAction().getName() != null ? a.getAction().getName() : "Akcija obrisana"),
+                        (a.getAction().getPrimaryImage() != null ? a.getAction().getPrimaryImage() : "Akcija obrisana"),
                         a.getIdNotification(),
                         a.getUserSender().getIdUser(),
                         a.getUserSender().getDisplayName(),
@@ -60,7 +60,7 @@ public class NotificationAPI {
         User u = userRepository.findByidUser(jwt.extractId(token.get("token")));
         Notification n = new Notification();
 
-        if (!actionOwnerRepository.findAll().stream().filter(ao->ao.getUser().getIdUser().equals(notif.getIdUser()) && ao.getAction().getIdAction().equals(notif.getIdAction())).toList().isEmpty())
+        if (!actionOwnerRepository.findAll().stream().filter(ao->ao.getUser().getIdUser().equals(notif.getIdUser()) && ao.getIdAction().equals(notif.getIdAction())).toList().isEmpty())
             return ResponseEntity.ok("existsAOError");
 
         n.setText(u.getDisplayName() + " vas je pozvao da budete kolaborator na akciji " + actionRepository.findByidAction(notif.getIdAction()).getName());
@@ -99,19 +99,13 @@ public class NotificationAPI {
         return ResponseEntity.ok("success");
     }
 
-    @PostMapping("/sendall")
-    public ResponseEntity<?> sendNotificationsAll() {
-
-        return ResponseEntity.ok("success");
-    }
-
     @PostMapping("/acceptcollab")
     public ResponseEntity<?> acceptCollab(@RequestHeader Map<String, String> token, @RequestParam Integer idAction, @RequestParam Integer idNotification) {
         User u = userRepository.findByidUser(jwt.extractId(token.get("token")));
         Action a = actionRepository.findByidAction(idAction);
         Notification n = notificationRepository.findByidNotification(idNotification);
 
-        if (!(n.getAction().getIdAction().equals(idAction) && n.getUser().getIdUser().equals(u.getIdUser())))
+        if (!(n.getIdAction().equals(idAction) && n.getUser().getIdUser().equals(u.getIdUser())))
             return ResponseEntity.ok("invalidActionError");
         else {
             ActionOwner ao = new ActionOwner();

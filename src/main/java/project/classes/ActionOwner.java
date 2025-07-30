@@ -11,14 +11,42 @@ public class ActionOwner {
     @MapsId("idUser")
     @JoinColumn(name = "idUser")
     private User user;
+    @Column(name = "idUser", insertable = false, updatable = false)
+    private Integer idUser;
 
     @ManyToOne
     @MapsId("idAction")
     @JoinColumn(name = "idAction")
     private Action action;
+    @Column(name = "idAction", insertable = false, updatable = false)
+    private Integer idAction;
 
     @Column(columnDefinition ="TINYINT")
     private Boolean isCollab = false;
+
+    public Integer getIdUser() {
+        return idUser;
+    }
+
+    public void setIdUser(Integer idUser) {
+        this.idUser = idUser;
+    }
+
+    public Integer getIdAction() {
+        return idAction;
+    }
+
+    public void setIdAction(Integer idAction) {
+        this.idAction = idAction;
+    }
+
+    public Boolean getCollab() {
+        return isCollab;
+    }
+
+    public void setCollab(Boolean collab) {
+        isCollab = collab;
+    }
 
     public Boolean getIsCollab() {
         return isCollab;

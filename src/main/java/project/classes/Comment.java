@@ -17,7 +17,15 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "idAction")
     private Action action;
+    @Column(name = "idAction", insertable = false, updatable = false)
+    private Integer idAction;
 
+    public Integer getIdAction() {
+        return idAction;
+    }
+    public void setIdAction(Integer idAction) {
+        this.idAction = idAction;
+    }
     public Integer getIdComment() { return idComment; }
     public void setIdComment(Integer idComment) { this.idComment = idComment; }
     public String getText() { return text; }

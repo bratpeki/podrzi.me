@@ -24,11 +24,19 @@ public class Notification {
     @ManyToOne
     @JoinColumn(name ="idActionSender")
     private Action action;
+    @Column(name = "idActionSender", insertable = false, updatable = false)
+    private Integer idAction;
 
     @ManyToOne
     @JoinColumn(name = "idUserSender")
     private User userSender;
 
+    public Integer getIdAction() {
+        return idAction;
+    }
+    public void setIdAction(Integer idAction) {
+        this.idAction = idAction;
+    }
     public User getUserSender() {
         return userSender;
     }

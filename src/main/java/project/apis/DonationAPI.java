@@ -44,7 +44,7 @@ public class DonationAPI {
 
         List <Donation> donations = donationRepository.findByUser_idUser(idUser);
         return ResponseEntity.ok(donations.stream().map(d ->
-                new DonationDTO(d.getIdDonation(), d.getAction().getIdAction(), d.getAction().getName(), d.getUser().getDisplayName(), d.getAmount(), d.getDonationTime())).toList());
+                new DonationDTO(d.getIdDonation(), d.getIdAction(), (d.getAction().getName() != null ? d.getAction().getName() : "Akcija obrisana"), d.getUser().getDisplayName(), d.getAmount(), d.getDonationTime())).toList());
     }
 
     @PostMapping("/adddonation")

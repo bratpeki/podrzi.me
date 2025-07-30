@@ -90,8 +90,6 @@ public class Security {
 
             "/api/donations/getdonations",
 
-            "/api/notifications/sendall",
-
             "/api/reports/getallunhandled",
             "/api/reports/handle",
 
@@ -99,6 +97,7 @@ public class Security {
             "/api/admins/suspenduser",
             "/api/admins/unsuspenduser",
             "/api/admins/removeaction",
+            "/api/admins/sendall",
 
             "/api/refunds/getallunhandled",
 

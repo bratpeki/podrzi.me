@@ -17,11 +17,13 @@ public class ReportAPI {
     private final ReportRepository reportRepository;
     private final JWT jwt;
     private final UserRepository userRepository;
+    private final AdminRepository adminRepository;
 
-    public ReportAPI(UserRepository userRepository, ReportRepository reportRepository, JWT jwt) {
+    public ReportAPI(UserRepository userRepository, ReportRepository reportRepository, JWT jwt, AdminRepository adminRepository) {
         this.userRepository = userRepository;
         this.jwt = jwt;
         this.reportRepository = reportRepository;
+        this.adminRepository = adminRepository;
     }
 
     @GetMapping("/getallunhandled")
@@ -29,13 +31,10 @@ public class ReportAPI {
         return ResponseEntity.ok(reportRepository.findAll().stream().filter(a->a.getAdmin() == null));
     }
 
-    @GetMapping("/getall")
-    public ResponseEntity<?> getAllReports() {
-        return ResponseEntity.ok(reportRepository.findAll());
-    }
-
     @PostMapping("/handle")
-    public ResponseEntity<?> handleReport() {
+    public ResponseEntity<?> handleReport(@RequestHeader Map<String, String> token, @RequestParam Integer idReport) {
+        Report r = reportRepository.findByidReport(idReport);
+        r.setAdmin(adminRepository.findByusername(jwt.extractUsername(token.get(token))));
 
         return ResponseEntity.ok("success");
     }
