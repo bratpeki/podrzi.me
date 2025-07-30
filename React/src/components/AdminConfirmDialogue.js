@@ -8,6 +8,7 @@ const AdminConfirmDialogue = ({
   onConfirm,
   showReasonInput = false,
   reasonLabel = "Razlog",
+  confirmButtonClass,
 }) => {
   const [reason, setReason] = useState("");
 
@@ -46,7 +47,9 @@ const AdminConfirmDialogue = ({
           </button>
           <button
             onClick={() => onConfirm(reason)}
-            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+            className={`text-white font-bold py-2 px-4 rounded ${
+              confirmButtonClass ?? "button-style"
+            }`}
           >
             Potvrdi
           </button>

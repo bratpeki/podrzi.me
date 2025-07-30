@@ -12,6 +12,7 @@ import ActionDropdown from "../components/ActionDropdown.js";
 import ReportDialog from "../components/ReportDialog.js";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import defaultUser from "../Images/defaultUser.png";
 
 function ActionViewPage() {
   const location = useLocation();
@@ -362,9 +363,9 @@ function ActionViewPage() {
             >
               <li className="flex items-center gap-3 hover:underline drop-shadow-md">
                 <img
-                  src={o.imagePath}
+                  src={o.imagePath || defaultUser}
                   alt={o.displayName}
-                  className="w-8 h-8 rounded-full object-cover border"
+                  className="w-8 h-8 rounded-full object-fit border"
                 />
                 <span>{o.displayName}</span>
               </li>
@@ -385,9 +386,9 @@ function ActionViewPage() {
                 >
                   <li className="flex items-center gap-3 hover:underline drop-shadow-md">
                     <img
-                      src={c.imagePath}
+                      src={c.imagePath ||defaultUser }
                       alt={c.displayName}
-                      className="w-8 h-8 rounded-full object-cover border"
+                      className="w-8 h-8 rounded-full object-fit border"
                     />
                     <span>{c.displayName}</span>
                   </li>
@@ -462,12 +463,6 @@ function ActionViewPage() {
               >
                 {progress}% prikupljeno
               </p>
-
-              <p className="text-md font-medium text-gray-700 mb-1">
-                👥 Broj podržavalaca:{" "}
-                <span className="font-bold">{currentAction.backers || 0}</span>
-              </p>
-
               <p className="text-md font-medium text-gray-700 mb-1">
                 📅 Datum završetka akcije:{" "}
                 <span className="font-semibold">
