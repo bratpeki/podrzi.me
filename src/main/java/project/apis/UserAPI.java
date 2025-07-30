@@ -1,6 +1,7 @@
 package project.apis;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import project.classes.User;
 import project.dtos.UserLoginDTO;
@@ -10,6 +11,7 @@ import project.repositories.UserRepository;
 import project.utilities.*;
 
 import java.security.SecureRandom;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -22,12 +24,14 @@ public class UserAPI {
     private final UserRepository userRepository;
     private final ActionOwnerRepository actionOwnerRepository;
     private final MailService mailService;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserAPI (UserRepository userRepository, JWT jwt, ActionOwnerRepository actionOwnerRepository, MailService mailService) {
+    public UserAPI (UserRepository userRepository, JWT jwt, ActionOwnerRepository actionOwnerRepository, MailService mailService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.jwt = jwt;
         this.actionOwnerRepository = actionOwnerRepository;
         this.mailService = mailService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public String generateRandomPassword(int length) {
@@ -47,7 +51,9 @@ public class UserAPI {
             return ResponseEntity.ok("emailNotFound");
 
         String newPassword = generateRandomPassword(10);
-        user.setPassword(newPassword);
+        String newPasswordEn = passwordEncoder.encode(newPassword);
+
+        user.setPassword(newPasswordEn);
         userRepository.save(user);
 
         mailService.send(user.getEmail(), "Vasa nova lozinka",
@@ -58,13 +64,26 @@ public class UserAPI {
 
     @GetMapping("/getusers")
     public ResponseEntity<?> getUsers() {
-        Map<Integer, String> map = userRepository.findAllidUsersAnddisplayNamesExcluding(58).stream()
+        Map<Integer, String> map = userRepository.findAllUsersForAdmin(58).stream()
                 .collect(Collectors.toMap(
                         row -> (Integer) row[0],
                         row -> (String) row[1]
                 ));
 
         return ResponseEntity.ok(map);
+    }
+    @GetMapping("/getusersstate")
+    public ResponseEntity<?> getUsersState() {
+    List<Map<String, Object>> list = userRepository.findAllUsersForAdmin(58).stream()
+            .map(row -> {
+                Map<String, Object> map = new HashMap<>();
+                map.put("id", row[0]);
+                map.put("name", row[1]);
+                map.put("state", row[2]);
+                return map;
+            }).collect(Collectors.toList());
+
+    return ResponseEntity.ok(list);
     }
 
     @PostMapping("/userauth")
@@ -73,7 +92,7 @@ public class UserAPI {
             return ResponseEntity.ok("missingInfoError");
         if (userRepository.findByusername(uldto.getUsername()) == null)
             return ResponseEntity.ok("usernameError");
-        if (!uldto.getPassword().equals(userRepository.findByusername(uldto.getUsername()).getPassword()))
+        if (!passwordEncoder.matches(uldto.getPassword(), userRepository.findByusername(uldto.getUsername()).getPassword()))
             return ResponseEntity.ok("passwordError");
 
         String jwtt = jwt.generateToken(uldto.getUsername());
@@ -94,6 +113,7 @@ public class UserAPI {
         if (userRepository.findBydisplayName(user.getDisplayName()) != null)
             return ResponseEntity.ok("displayNameError");
 
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
         return ResponseEntity.ok("success");
     }
@@ -135,11 +155,11 @@ public class UserAPI {
         if (updto.getImagePath() != null && !updto.getImagePath().isBlank())
             user.setImagePath(updto.getImagePath());
 
-        if (!updto.getOldPassword().equals(user.getPassword()))
+        if (!passwordEncoder.matches(updto.getOldPassword(), user.getPassword()))
             return ResponseEntity.ok("invalidOldPassword");
 
         if (updto.getPassword() != null && !updto.getPassword().isBlank())
-            user.setPassword(updto.getPassword());
+            user.setPassword(passwordEncoder.encode(updto.getPassword()));
 
         userRepository.save(user);
         return ResponseEntity.ok("success");

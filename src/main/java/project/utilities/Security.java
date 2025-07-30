@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -25,6 +27,7 @@ public class Security {
             "/api/users/showuserprofile",
             "/api/users/forgotpassword",
             "/api/users/getusers",
+            "/api/users/getusersstate",
 
             "/api/messages/send",
 
@@ -43,11 +46,7 @@ public class Security {
 
             "/api/admins/adminauth",
 
-            "/uploads/**"
-
-
-
-            //"/api/reports/getall"
+            "/uploads/**",
     };
 
     public static String[] UserMethods = {
@@ -81,7 +80,7 @@ public class Security {
             "/api/comments/remove",
             "/api/comments/edit",
 
-            "/api/refunds/request"
+            "/api/refunds/request",
 
     };
 
@@ -98,12 +97,20 @@ public class Security {
 
             "/api/admins/addadmin",
             "/api/admins/suspenduser",
+            "/api/admins/unsuspenduser",
             "/api/admins/removeaction",
 
             "/api/refunds/getallunhandled",
 
             "/api/reviews/getall",
+
+            "/api/comments/getbyid",
     };
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
