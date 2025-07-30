@@ -94,8 +94,14 @@ function ViewDonationsPage() {
 
   const confirmRefund = async (reason) => {
     setShowDialog(false);
+
     if (!reason.trim()) {
-      alert("Morate unijeti razlog.");
+      await Swal.fire({
+        icon: "warning",
+        title: "Unesite razlog",
+        text: "Morate unijeti razlog za povrat donacije.",
+        confirmButtonText: "U redu",
+      });
       return;
     }
 
@@ -111,13 +117,28 @@ function ViewDonationsPage() {
       );
 
       if (res === "success") {
-        alert("Povrat je zatražen.");
+        await Swal.fire({
+          icon: "success",
+          title: "Zahtjev poslan",
+          text: "Zahtjev za povrat je uspješno poslan.",
+          timer: 2500,
+          showConfirmButton: false,
+          timerProgressBar: true,
+        });
       } else {
-        alert("Greška: " + res);
+        await Swal.fire({
+          icon: "error",
+          title: "Greška",
+          text: "Greška: " + res,
+        });
       }
     } catch (err) {
       console.error("Greška pri zahtjevu za povrat:", err);
-      alert("Došlo je do greške.");
+      await Swal.fire({
+        icon: "error",
+        title: "Greška",
+        text: "Došlo je do greške prilikom slanja zahtjeva.",
+      });
     }
   };
 
@@ -147,47 +168,47 @@ function ViewDonationsPage() {
       )}
 
       <div className="mb-14 w-1/2 mx-auto">
-        {dons.map((donation) => (
-          <div key={donation.idDonation} className="w-full">
-            <Link
-              to={`/actionView/${donation.idAction}`}
-              state={{ id: donation.idAction }}
-              className="block"
-            >
-              <div className="bg-white rounded-lg shadow-md p-6 mb-2 border border-gray-200 hover:bg-gray-200 flex justify-between items-center">
-                <div className="w-2/3">
-                  <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                    Akcija: {donation.actionName}
-                  </h3>
-                  <p className="text-gray-700 mb-1">
-                    <span className="font-medium">Iznos donacije:</span>{" "}
-                    {donation.amount} KM
-                  </p>
-                  <p className="text-gray-600 text-sm">
-                    <span className="font-medium">Vrijeme donacije:</span>{" "}
-                    {new Date(donation.donationTime).toLocaleString()}
-                  </p>
-                </div>
-                <img
-                  src={
-                    donation.img || noImagePlaceholder
-                  }
-                  alt={`Image for ${donation.actionName}`}
-                  className="h-48 w-1/3 object-fit rounded-md ml-4"
-                />
-              </div>
-            </Link>
-
-            <div className="flex justify-end mb-6">
-              <button
-                onClick={() => handleRefund(donation.idDonation)}
-                className="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-2 rounded shadow"
+        {dons
+          .filter((donation) => donation.refunded === false)
+          .map((donation) => (
+            <div key={donation.idDonation} className="w-full">
+              <Link
+                to={`/actionView/${donation.idAction}`}
+                state={{ id: donation.idAction }}
+                className="block"
               >
-                Zatraži povrat
-              </button>
+                <div className="bg-white rounded-lg shadow-md p-6 mb-2 border border-gray-200 hover:bg-gray-200 flex justify-between items-center">
+                  <div className="w-2/3">
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                      Akcija: {donation.actionName}
+                    </h3>
+                    <p className="text-gray-700 mb-1">
+                      <span className="font-medium">Iznos donacije:</span>{" "}
+                      {donation.amount} KM
+                    </p>
+                    <p className="text-gray-600 text-sm">
+                      <span className="font-medium">Vrijeme donacije:</span>{" "}
+                      {new Date(donation.donationTime).toLocaleString()}
+                    </p>
+                  </div>
+                  <img
+                    src={donation.img || noImagePlaceholder}
+                    alt={`Image for ${donation.actionName}`}
+                    className="h-48 w-1/3 object-fit rounded-md ml-4"
+                  />
+                </div>
+              </Link>
+
+              <div className="flex justify-end mb-6">
+                <button
+                  onClick={() => handleRefund(donation.idDonation)}
+                  className="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-2 rounded shadow"
+                >
+                  Zatraži povrat
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
       <InfoFooter />
       <RefundDialog
