@@ -42,14 +42,14 @@ public class NotificationAPI {
     public ResponseEntity<?> getNotifications(@RequestHeader Map<String, String> token) {
         List<Notification> n = notificationRepository.findTop10ByUserIdOrderByCreatedDesc(jwt.extractId(token.get("token")));
         return ResponseEntity.ok(n.stream().map(a->
-                new NotificationDTO(a.getAction().getIdAction(),
+                new NotificationDTO(a.getIdAction(),
                         a.getText(),
                         a.getType(),
-                        (a.getAction().getName() != null ? a.getAction().getName() : "Akcija obrisana"),
-                        (a.getAction().getPrimaryImage() != null ? a.getAction().getPrimaryImage() : "Akcija obrisana"),
+                        (a.getAction() != null ? a.getAction().getName() : "Nema Akcije"),
+                        (a.getAction() != null ? a.getAction().getPrimaryImage() : null),
                         a.getIdNotification(),
-                        a.getUserSender().getIdUser(),
-                        a.getUserSender().getDisplayName(),
+                        (a.getUserSender() != null ? a.getUserSender().getIdUser() : 0),
+                        (a.getUserSender() != null ? a.getUserSender().getDisplayName() : "Nema Korisnika"),
                         a.getSeen(),
                         null))
         );

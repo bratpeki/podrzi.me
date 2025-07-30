@@ -2,11 +2,24 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../Images/logo.png";
+import { AuthStateContext } from "../../components/UseAuthState";
 
 function AdminHeader() {
+
+  const { authState, authDispatch } = useContext(AuthStateContext);
+
   return (
     <nav className="bg-cyan-500 fixed top-0 w-full p-4 flex items-center justify-between text-white shadow-md z-50 h-20">
-     
+
+      <div className="w-24"></div>
+      <Link
+        to="/home"
+        onClick={() => authDispatch({ type: "logout" })}
+        className="text-white no-underline font-semibold hover:underline ml-4"
+      >
+        Vrati se na početak
+      </Link>
+
       {/* Center: Logo */}
       <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center">
         <Link

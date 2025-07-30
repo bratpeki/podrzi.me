@@ -44,7 +44,7 @@ public class DonationAPI {
 
         List <Donation> donations = donationRepository.findByUser_idUser(idUser);
         return ResponseEntity.ok(donations.stream().map(d ->
-                new DonationDTO(d.getIdDonation(), d.getIdAction(), (d.getAction().getName() != null ? d.getAction().getName() : "Akcija obrisana"), d.getUser().getDisplayName(), d.getAmount(), d.getDonationTime())).toList());
+                new DonationDTO(d.getIdDonation(), d.getIdAction(), (d.getAction() != null ? d.getAction().getName() : "Akcija obrisana"), d.getUser().getDisplayName(), d.getAmount(), d.getDonationTime(), d.getRefunded())).toList());
     }
 
     @PostMapping("/adddonation")
@@ -64,6 +64,7 @@ public class DonationAPI {
         donation.setUser(u);
         donation.setAmount(drdto.getAmount());
         donation.setDonationTime(LocalDateTime.now());
+        donation.setRefunded(false);
 
         donationRepository.save(donation);
         return ResponseEntity.ok("success");
