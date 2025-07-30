@@ -51,7 +51,9 @@ public class AdminAPI {
         if (!admin.getPassword().equals(adminRepository.findByusername(admin.getUsername()).getPassword()))
             return ResponseEntity.ok("passwordError");
 
-        return ResponseEntity.ok("success");
+        String jwtt = jwt.generateToken(admin.getUsername());
+
+        return ResponseEntity.ok(jwtt);
     }
 
     @PostMapping("/suspenduser")

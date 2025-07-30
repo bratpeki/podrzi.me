@@ -1,5 +1,7 @@
 package project.utilities;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,6 +15,7 @@ import project.repositories.AdminRepository;
 import project.repositories.UserRepository;
 
 import java.io.IOException;
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,23 +38,19 @@ public class JWTFilter extends OncePerRequestFilter {
 
         if (jwt.validateToken(token)) {
             String username = jwt.extractUsername(token);
+            Key tokenKey = jwt.resolveKey(token);
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(tokenKey)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
 
-            if (userRepository.findByusername(username) != null) {
-                List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-                authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+            String role = claims.get("role", String.class);
+            List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
 
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                System.out.println(authentication);
-            }
-            else if (adminRepository.findByusername(username) != null) {
-                List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-                authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                System.out.println(authentication);
-            }
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(username, null, authorities);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
         filterChain.doFilter(request, response);
