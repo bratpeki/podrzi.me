@@ -25,6 +25,10 @@ function AdminHomePage() {
             showCancelButton: true,
             confirmButtonText: "Pošalji",
             cancelButtonText: "Otkaži",
+            customClass: {
+                confirmButton: "button-style",
+                cancelButton: "button-style",
+            },
         });
 
         const text = result.value;
@@ -35,7 +39,7 @@ function AdminHomePage() {
                     `admins/sendall?text=${text}`,
                     "POST",
                     authState.adminToken,
-                    
+
                 );
 
                 if (res === "success") {
@@ -44,6 +48,9 @@ function AdminHomePage() {
                         text: "Globalna notifikacija je poslana.",
                         icon: "success",
                         confirmButtonText: "OK",
+                        customClass: {
+                            confirmButtonText: "button-style",
+                        },
                     });
                 } else {
                     throw new Error("Neuspješno slanje.");
@@ -55,6 +62,9 @@ function AdminHomePage() {
                     text: err.message || "Došlo je do greške.",
                     icon: "error",
                     confirmButtonText: "U redu",
+                    customClass: {
+                        confirmButtonText: "button-style",
+                    },
                 });
             }
         }
