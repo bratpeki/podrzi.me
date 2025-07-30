@@ -12,6 +12,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     User findByemail(String email);
     User findBydisplayName(String dn);
 
-    @Query("SELECT u.idUser, u.displayName FROM User u WHERE u.idUser <> :excludedId")
-    List<Object[]> findAllidUsersAnddisplayNamesExcluding(@Param("excludedId") Integer excludedId);
+    @Query("SELECT u.idUser, u.displayName, u.state FROM User u WHERE u.idUser <> :excludedId")
+    List<Object[]> findAllUsersForAdmin(@Param("excludedId") Integer excludedId);
 }
