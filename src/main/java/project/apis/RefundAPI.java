@@ -17,12 +17,14 @@ public class RefundAPI {
     private final JWT jWT;
     private final DonationRepository donationRepository;
     private final RefundRepository refundRepository;
+    private final ActionRepository actionRepository;
 
-    public RefundAPI(UserRepository userRepository, JWT jWT, DonationRepository donationRepository, RefundRepository refundRepository) {
+    public RefundAPI(UserRepository userRepository, JWT jWT, DonationRepository donationRepository, RefundRepository refundRepository, ActionRepository actionRepository) {
         this.userRepository = userRepository;
         this.jWT = jWT;
         this.donationRepository = donationRepository;
         this.refundRepository = refundRepository;
+        this.actionRepository = actionRepository;
     }
 
     @PostMapping("/request")
@@ -42,12 +44,38 @@ public class RefundAPI {
             r.setRequestedRefund(true);
             r.setDonation(d);
             r.setReason(rdto.getReason());
-            r.setAccepted(false);
+            r.setAccepted(null);
             refundRepository.save(r);
 
             return ResponseEntity.ok("success");
         } else
             return ResponseEntity.ok("invalidDonationError");
+    }
+
+    @PostMapping("/accept")
+    public ResponseEntity<?> acceptRefund(@RequestParam Integer idRefund) {
+
+        Refund r = refundRepository.findByidRefund(idRefund);
+        r.setAccepted(true);
+        refundRepository.save(r);
+
+        Donation d = donationRepository.findByidDonation(r.getIdDonation());
+        Action a = actionRepository.findByidAction(d.getIdAction());
+
+        a.setCollected(a.getCollected()-d.getAmount());
+        d.setRefunded(true);
+        donationRepository.save(d);
+        actionRepository.save(a);
+
+        return ResponseEntity.ok("success");
+    }
+
+    @PostMapping("/deny")
+    public ResponseEntity<?> denyRefund(@RequestParam Integer idRefund) {
+        Refund r = refundRepository.findByidRefund(idRefund);
+        r.setAccepted(false);
+        refundRepository.save(r);
+        return ResponseEntity.ok("success");
     }
 
     @GetMapping("/getallunhandled")

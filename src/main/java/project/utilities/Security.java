@@ -97,9 +97,12 @@ public class Security {
             "/api/admins/suspenduser",
             "/api/admins/unsuspenduser",
             "/api/admins/removeaction",
+            "/api/admins/removecomment",
             "/api/admins/sendall",
 
             "/api/refunds/getallunhandled",
+            "/api/refunds/accept",
+            "/api/refunds/deny",
 
             "/api/reviews/getall",
 

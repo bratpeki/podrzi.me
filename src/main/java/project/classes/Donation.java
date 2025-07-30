@@ -23,6 +23,14 @@ public class Donation {
     private Float amount;
     private LocalDateTime donationTime = LocalDateTime.now();
 
+    private Boolean refunded;
+
+    public Boolean getRefunded() {
+        return refunded;
+    }
+    public void setRefunded(Boolean refunded) {
+        this.refunded = refunded;
+    }
     public Integer getIdAction() {
         return idAction;
     }

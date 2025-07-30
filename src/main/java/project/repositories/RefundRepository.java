@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface RefundRepository extends JpaRepository<Refund, Integer> {
     Refund findBydonation_idDonation(Integer idDonation);
+    Refund findByidRefund(Integer idRefund);
 
     @Query("""
     SELECT r.idRefund, r.reason, r.requestedRefund, r.accepted,
