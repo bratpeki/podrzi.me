@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import project.classes.*;
 import project.repositories.*;
@@ -24,8 +25,9 @@ public class AdminAPI {
     private final ActionRepository actionRepository;
     private final ActionOwnerRepository actionOwnerRepository;
     private final CommentRepository commentRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public AdminAPI (AdminRepository adminRepository, JWT jwt, UserRepository userRepository, MailService mailService, ActionRepository actionRepository, ActionOwnerRepository actionOwnerRepository, CommentRepository commentRepository) {
+    public AdminAPI (AdminRepository adminRepository, JWT jwt, UserRepository userRepository, MailService mailService, ActionRepository actionRepository, ActionOwnerRepository actionOwnerRepository, CommentRepository commentRepository, PasswordEncoder passwordEncoder) {
         this.adminRepository = adminRepository;
         this.jwt = jwt;
         this.userRepository = userRepository;
@@ -33,10 +35,12 @@ public class AdminAPI {
         this.actionRepository = actionRepository;
         this.actionOwnerRepository = actionOwnerRepository;
         this.commentRepository = commentRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/addadmin")
     public ResponseEntity<?> addAdmin(@RequestBody Admin admin) {
+        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
         admin.setOwner(false);
         adminRepository.save(admin);
         return ResponseEntity.ok("success");
@@ -48,10 +52,10 @@ public class AdminAPI {
             return ResponseEntity.ok("invalidDataError");
         if (adminRepository.findByusername(admin.getUsername()) == null)
             return ResponseEntity.ok("usernameError");
-        if (!admin.getPassword().equals(adminRepository.findByusername(admin.getUsername()).getPassword()))
+        if (!passwordEncoder.matches(admin.getPassword(), passwordEncoder.encode("69")))
             return ResponseEntity.ok("passwordError");
 
-        String jwtt = jwt.generateToken(admin.getUsername());
+        String jwtt = jwt.generateTokenAdmin(admin.getUsername());
 
         return ResponseEntity.ok(jwtt);
     }
@@ -65,7 +69,7 @@ public class AdminAPI {
             userRepository.save(u);
 
             mailService.send(u.getEmail(), "Suspenzija naloga",
-                    "Vas nalog " + u.getUsername()+ " (" + u.getDisplayName() + ") " + " je suspendovan sa nase platforme!\n Razlog za suspenziju: " + reason);
+                    "Vas nalog " + u.getUsername()+ " (" + u.getDisplayName() + ") " + " je suspendovan sa nase platforme!\nRazlog za suspenziju: " + reason);
 
             return ResponseEntity.ok("success");
         }
@@ -92,5 +96,21 @@ public class AdminAPI {
         commentRepository.delete(a);
 
         return ResponseEntity.ok("success");
+    }
+
+    @PostMapping("/unsuspenduser")
+    public ResponseEntity<?> unsuspendUser(@RequestParam Integer idUser) {
+        User u = userRepository.findByidUser(idUser);
+        if (u != null && u.getState() == 1) {
+            u.setState(0);
+            userRepository.save(u);
+
+            mailService.send(u.getEmail(), "Suspenzija naloga",
+                    "Suspenzija za Vas nalog " + u.getUsername()+ " (" + u.getDisplayName() + ") " + " je uklonjena!");
+
+            return ResponseEntity.ok("success");
+        }
+
+        return ResponseEntity.ok("userNotValid");
     }
 }

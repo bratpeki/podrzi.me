@@ -1,6 +1,7 @@
 package project.apis;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import project.classes.*;
@@ -23,13 +24,15 @@ public class ActionAPI {
     private final ActionOwnerRepository actionOwnerRepository;
     private final CommentRepository commentRepository;
     private final JWT jwt;
+    private final PasswordEncoder passwordEncoder;
 
-    public ActionAPI (ActionRepository actionRepository, ActionOwnerRepository actionOwnerRepository, JWT jwt, UserRepository userRepository, CommentRepository commentRepository) {
+    public ActionAPI (ActionRepository actionRepository, ActionOwnerRepository actionOwnerRepository, JWT jwt, UserRepository userRepository, CommentRepository commentRepository, PasswordEncoder passwordEncoder) {
         this.actionRepository = actionRepository;
         this.actionOwnerRepository = actionOwnerRepository;
         this.jwt = jwt;
         this.userRepository = userRepository;
         this.commentRepository = commentRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/getaction")
@@ -126,7 +129,7 @@ public class ActionAPI {
     @PostMapping("/removeaction")
     public ResponseEntity<?> removeAction(@RequestHeader Map<String, String> token, @RequestParam Integer idAction, @RequestParam String password) {
         User u = userRepository.findByidUser(jwt.extractId(token.get("token")));
-        if (u.getPassword().equals(password)) {
+        if (passwordEncoder.matches(password, u.getPassword())) {
             Action a = actionRepository.findByidAction(idAction);
             List<ActionOwner> ao = actionOwnerRepository.findAllByidAO_IdAction(idAction);
 
