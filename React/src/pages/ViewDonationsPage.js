@@ -9,6 +9,7 @@ import InfoFooter from "../components/InfoFooter";
 import { apiRequest } from "../utility/FetchAPI";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
+import noImagePlaceholder from "../Images/noImagePlaceholder.png";
 
 function ViewDonationsPage() {
   const location = useLocation();
@@ -38,13 +39,20 @@ function ViewDonationsPage() {
 
         const data = responseBodyText;
         for (let i = 0; i < data.length; i++) {
-          let resImg = await apiRequest(
-            "images/getprimaryimage?idAction=" + data[i].idAction,
-            "GET",
-            authState.accessToken
-          );
-          let imgResponse = await resImg;
-          data[i].img = imgResponse;
+          try {
+            const resImg = await apiRequest(
+              "images/getprimaryimage?idAction=" + data[i].idAction,
+              "GET",
+              authState.accessToken
+            );
+
+            const imgUrl = typeof resImg === "string" ? resImg.trim() : "";
+
+            data[i].img = imgUrl !== "" ? imgUrl : noImagePlaceholder;
+          } catch (err) {
+            console.warn("Image fetch failed:", err);
+            data[i].img = noImagePlaceholder;
+          }
         }
 
         setDons(data);
@@ -161,9 +169,11 @@ function ViewDonationsPage() {
                   </p>
                 </div>
                 <img
-                  src={donation.img}
+                  src={
+                    donation.img || noImagePlaceholder
+                  }
                   alt={`Image for ${donation.actionName}`}
-                  className="h-48 w-1/3 object-cover rounded-md ml-4"
+                  className="h-48 w-1/3 object-fit rounded-md ml-4"
                 />
               </div>
             </Link>

@@ -1,11 +1,16 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthStateContext } from "../components/UseAuthState";
 import NavigationBar from "../components/NavigationHeader";
 import { apiRequest } from "../utility/FetchAPI";
+import { jwtDecode } from "jwt-decode";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 function LoginPage() {
   const navigate = useNavigate();
+
+  const sweetAlert=withReactContent(Swal);
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -26,6 +31,20 @@ function LoginPage() {
       );
 
       const text = await response;
+
+      if (jwtDecode(text).state) {
+
+        sweetAlert.fire({
+          title: "Greška!",
+          text: "Vaš nalog je suspendovan! Provjerite Vašu email adresu za više detalja!",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+
+        return;
+
+      }
+
       if (text === "missingInfoError") {
         setResponseMessage("Neuspješna prijava! Provjerite Vaše podatke!");
       } else if (text === "usernameError") {
@@ -39,6 +58,7 @@ function LoginPage() {
             accessToken: text,
           },
         });
+
         navigate("/home");
       }
     } catch (error) {

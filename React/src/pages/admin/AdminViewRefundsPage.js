@@ -3,6 +3,7 @@ import AdminConfirmDialogue from "../../components/AdminConfirmDialogue";
 import { apiRequest } from "../../utility/FetchAPI";
 import { AuthStateContext } from "../../components/UseAuthState";
 import AdminHeader from "./AdminHeader";
+import Swal from "sweetalert2";
 
 function AdminViewRefundsPage() {
   const [refunds, setRefunds] = useState([]);
@@ -10,7 +11,7 @@ function AdminViewRefundsPage() {
   const [selectedRefund, setSelectedRefund] = useState(null);
   const [dialogVisible, setDialogVisible] = useState(false);
   const [dialogReason, setDialogReason] = useState("");
-  const [dialogAction, setDialogAction] = useState(""); 
+  const [dialogAction, setDialogAction] = useState("");
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -18,9 +19,11 @@ function AdminViewRefundsPage() {
         const response = await apiRequest(
           "refunds/getallunhandled",
           "GET",
-          authState.adminToken,
+          authState.adminToken
         );
-        setRefunds(response);
+        const filtered = response.filter((refund) => refund[3] === null);
+
+        setRefunds(filtered);
       } catch (err) {
         console.error("Failed to fetch reports:", err);
       }
@@ -28,7 +31,6 @@ function AdminViewRefundsPage() {
 
     fetchReports();
   }, [authState.adminToken]);
-
   const handleOpenDialog = (refund, actionType) => {
     setSelectedRefund(refund);
     setDialogAction(actionType);
@@ -36,19 +38,47 @@ function AdminViewRefundsPage() {
   };
 
   const handleConfirm = async () => {
-    if (!selectedRefund) return;
+    console.log("Confirm started");
+
+    if (!selectedRefund) {
+      console.warn("No selected refund, aborting.");
+      return;
+    }
 
     const endpoint =
-      dialogAction === "approve" ? "/refunds/approve" : "/refunds/reject";
+      dialogAction === "approve"
+        ? `refunds/accept?idRefund=${selectedRefund[0]}`
+        : `refunds/deny?idRefund=${selectedRefund[0]}`;
+
+    console.log("Sending request to:", endpoint);
+    console.log("With token:", authState.adminToken);
+
     try {
-      await apiRequest("POST", endpoint, {
-        idRefund: selectedRefund.id,
-        reason: dialogReason,
+      await apiRequest(endpoint, "POST", authState.adminToken);
+      console.log("Request successful");
+
+      await Swal.fire({
+        icon: "success",
+        title:
+          dialogAction === "approve"
+            ? "Refundacija odobrena"
+            : "Refundacija odbijena",
+        text: `Refundacija je uspješno ${
+          dialogAction === "approve" ? "odobrena" : "odbijena"
+        }.`,
+        timer: 2500,
+        timerProgressBar: true,
+        showConfirmButton: false,
       });
-      setRefunds((prev) => prev.filter((r) => r.id !== selectedRefund.id));
     } catch (err) {
       console.error("Refund action failed:", err);
+      await Swal.fire({
+        icon: "error",
+        title: "Greška",
+        text: "Došlo je do greške pri obradi refundacije.",
+      });
     } finally {
+      console.log("Cleaning up...");
       setDialogVisible(false);
       setSelectedRefund(null);
       setDialogReason("");
@@ -63,7 +93,7 @@ function AdminViewRefundsPage() {
 
       <div className="flex flex-col bg-white rounded-lg shadow-md w-2/5 p-10 items-center justify-center">
         <h1 className="text-4xl font-bold text-cyan-900 mb-8 drop-shadow-md">
-          Pregled refundacija
+          Pregled zahtjeva za povrat novca
         </h1>
 
         <div className="flex flex-col items-center w-full">
@@ -88,7 +118,7 @@ function AdminViewRefundsPage() {
                   </div>
                   <div className="flex gap-4 mt-2 justify-center">
                     <button
-                      className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                      className="button-style px-4 py-2 "
                       onClick={() => handleOpenDialog(refund, "approve")}
                     >
                       Odobri
@@ -97,7 +127,7 @@ function AdminViewRefundsPage() {
                       className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
                       onClick={() => handleOpenDialog(refund, "reject")}
                     >
-                      Odbij
+                      Ukloni
                     </button>
                   </div>
                 </li>
@@ -117,12 +147,15 @@ function AdminViewRefundsPage() {
             : "Potvrda odbijanja"
         }
         message={`Da li ste sigurni da želite ${
-          dialogAction === "approve" ? "odobriti" : "odbit"
+          dialogAction === "approve" ? "odobriti" : "odbiti"
         } ovu refundaciju?`}
         onConfirm={handleConfirm}
         onCancel={() => setDialogVisible(false)}
-        showReasonInput={true}
-        reasonLabel="Unesite razlog suspenzije"
+        confirmButtonClass={
+          dialogAction === "approve"
+            ? "button-style"
+            : "bg-red-600 hover:bg-red-700"
+        }
       />
     </div>
   );

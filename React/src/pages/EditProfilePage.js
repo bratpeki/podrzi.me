@@ -7,6 +7,7 @@ import { apiRequest } from "../utility/FetchAPI";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import DeleteDialog from "../components/DeleteDialog";
+import defaultUser from "../Images/defaultUser.png";
 
 function EditProfilePage() {
   const { authState, authDispatch } = useContext(AuthStateContext);
@@ -224,13 +225,17 @@ function EditProfilePage() {
                 onChange={(e) => setProfileImage(e.target.files[0])}
                 className="w-full border rounded px-3 py-2"
               />
-              {profileImage && (
-                <img
-                  src={URL.createObjectURL(profileImage)}
-                  alt="Preview"
-                  className="mt-2 max-h-40 rounded"
-                />
-              )}
+              <img
+                src={
+                  profileImage
+                    ? URL.createObjectURL(profileImage)
+                    : formData.imagePath
+                    ? formData.imagePath
+                    : defaultUser
+                }
+                alt="Profilna slika"
+                className="mt-2 max-h-40 rounded"
+              />
             </div>
 
             <div className="relative">

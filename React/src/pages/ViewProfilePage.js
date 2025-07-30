@@ -9,6 +9,7 @@ import { jwtDecode } from "jwt-decode";
 import ReportDialog from "../components/ReportDialog";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import defaultUser from "../Images/defaultUser.png";
 
 function ViewProfilePage() {
   const location = useLocation();
@@ -115,15 +116,14 @@ function ViewProfilePage() {
 
       <div className="flex-grow flex items-center justify-center px-4 py-12">
         <div className="relative bg-white rounded-lg shadow-md max-w-5xl w-full p-8 mt-20">
-          {!isOwnProfile &&
-            authState.accessToken && (
-              <button
-                onClick={() => handleReportUser(user.idUser)}
-                className="bg-red-600 hover:bg-red-700 text-white font-semibold rounded transition absolute top-4 right-4  py-2 px-4  shadow-lg"
-              >
-                Prijavi korisnika
-              </button>
-            )}
+          {!isOwnProfile && authState.accessToken && (
+            <button
+              onClick={() => handleReportUser(user.idUser)}
+              className="bg-red-600 hover:bg-red-700 text-white font-semibold rounded transition absolute top-4 right-4  py-2 px-4  shadow-lg"
+            >
+              Prijavi korisnika
+            </button>
+          )}
 
           <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
             {isOwnProfile ? "Moj profil" : "Profil korisnika"}
@@ -131,7 +131,7 @@ function ViewProfilePage() {
 
           <div className="flex flex-col items-center space-y-4">
             <img
-              src={user.imagePath}
+              src={user.imagePath ? user.imagePath : defaultUser}
               alt="Profilna slika"
               className="w-32 h-32 rounded-full border-4 border-blue-500 shadow"
             />
