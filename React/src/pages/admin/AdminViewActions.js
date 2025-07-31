@@ -67,6 +67,9 @@ function AdminViewActions() {
         timer: 2500,
         timerProgressBar: true,
         showConfirmButton: false,
+        customClass:{
+          showConfirmButton:"button-style",
+        }
       });
     } catch (error) {
       setDialogVisible(false);

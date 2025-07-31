@@ -118,6 +118,9 @@ function ActionViewPage() {
         text: "Tekst notifikacije ne može biti prazan.",
         icon: "error",
         confirmButtonText: "U redu",
+        customClass: {
+          confirmButton: "button-style",
+        }
       });
       return;
     }
@@ -139,6 +142,9 @@ function ActionViewPage() {
           text: "Notifikacija je poslana.",
           icon: "success",
           confirmButtonText: "OK",
+          customClass: {
+            confirmButton: "button-style",
+          }
         });
         setShowCreateNotifModal(false);
         setNotifText(text);
@@ -152,6 +158,9 @@ function ActionViewPage() {
         text: err.message || "Došlo je do greške.",
         icon: "error",
         confirmButtonText: "U redu",
+        customClass: {
+          confirmButton: "button-style",
+        }
       });
     }
   };
@@ -167,6 +176,10 @@ function ActionViewPage() {
           showCancelButton: true,
           confirmButtonText: "Pošalji",
           cancelButtonText: "Otkaži",
+          customClass: {
+            confirmButton: "button-style",
+            cancelButton: "button-style",
+          }
         })
         .then((result) => {
           if (result.isConfirmed && result.value.trim()) {
@@ -260,6 +273,9 @@ function ActionViewPage() {
         text: error.message,
         icon: "error",
         confirmButtonText: "U redu",
+        customClass: {
+          confirmButton: "button-style",
+        }
       });
     } finally {
       setReportContext(null);
@@ -451,16 +467,14 @@ function ActionViewPage() {
 
               <div className="w-full bg-gray-200 rounded-full h-4 mb-2">
                 <div
-                  className={`h-4 rounded-full ${
-                    progress < 50 ? "bg-orange-400" : "bg-green-500"
-                  }`}
+                  className={`h-4 rounded-full ${progress < 50 ? "bg-orange-400" : "bg-green-500"
+                    }`}
                   style={{ width: `${progress}%` }}
                 />
               </div>
               <p
-                className={`text-sm font-medium mb-1 ${
-                  progress < 50 ? "text-orange-500" : "text-green-600"
-                }`}
+                className={`text-sm font-medium mb-1 ${progress < 50 ? "text-orange-500" : "text-green-600"
+                  }`}
               >
                 {progress}% prikupljeno
               </p>
@@ -500,11 +514,10 @@ function ActionViewPage() {
             </div>
 
             <button
-              className={`w-full mt-6 font-semibold py-2 px-4 rounded ${
-                isActionFinished
-                  ? "bg-gray-400 text-gray-700 cursor-not-allowed"
-                  : "button-style"
-              }`}
+              className={`w-full mt-6 font-semibold py-2 px-4 rounded ${isActionFinished
+                ? "bg-gray-400 text-gray-700 cursor-not-allowed"
+                : "button-style"
+                }`}
               onClick={() => {
                 if (!isActionFinished) setShowDonateModal(true);
               }}
@@ -619,7 +632,7 @@ function ActionViewPage() {
                           </button>
                         </div>
                       </div>
-                    ) : ( comment.edited ? <p className="text-gray-700 ml-9"> (IZMJENJENO) {comment.text}</p> :
+                    ) : (comment.edited ? <p className="text-gray-700 ml-9"> (IZMJENJENO) {comment.text}</p> :
                       <p className="text-gray-700 ml-9">{comment.text}</p>
                     )}
                   </div>
@@ -642,11 +655,10 @@ function ActionViewPage() {
               </div>
             )}
             <textarea
-              className={`w-full p-3 border rounded-md resize-y focus:outline-none ${
-                !authState.accessToken
-                  ? "border-gray-300 bg-gray-100 cursor-not-allowed"
-                  : "border-gray-300 focus:ring-2 focus:ring-cyan-500"
-              }`}
+              className={`w-full p-3 border rounded-md resize-y focus:outline-none ${!authState.accessToken
+                ? "border-gray-300 bg-gray-100 cursor-not-allowed"
+                : "border-gray-300 focus:ring-2 focus:ring-cyan-500"
+                }`}
               rows="3"
               placeholder="Napišite svoj komentar..."
               value={newCommentText}
@@ -656,9 +668,8 @@ function ActionViewPage() {
 
             <button
               type="submit"
-              className={`mt-3 font-semibold button-style ${
-                !authState.accessToken ? "opacity-50 cursor-not-allowed" : ""
-              }`}
+              className={`mt-3 font-semibold button-style ${!authState.accessToken ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               disabled={submittingComment || !authState.accessToken}
             >
               {submittingComment ? "Slanje..." : "Pošalji Komentar"}

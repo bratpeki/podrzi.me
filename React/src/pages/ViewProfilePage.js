@@ -88,6 +88,9 @@ function ViewProfilePage() {
         text: error.message,
         icon: "error",
         confirmButtonText: "U redu",
+        customClass: {
+          confirmButton: "button-style",
+        }
       });
     } finally {
       setReportContext(null);

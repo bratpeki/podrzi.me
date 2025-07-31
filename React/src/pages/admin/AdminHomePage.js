@@ -67,7 +67,7 @@ function AdminHomePage() {
             icon: "success",
             confirmButtonText: "OK",
             customClass: {
-              confirmButtonText: "button-style",
+              confirmButton: "button-style",
             },
           });
         } else {
@@ -79,9 +79,9 @@ function AdminHomePage() {
           title: "Greška!",
           text: err.message || "Došlo je do greške.",
           icon: "error",
-          confirmButtonText: "U redu",
+          confirmButton: "U redu",
           customClass: {
-            confirmButtonText: "button-style",
+            confirmButton: "button-style",
           },
         });
       }

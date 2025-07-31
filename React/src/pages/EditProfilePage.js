@@ -103,6 +103,9 @@ function EditProfilePage() {
           text: "Profil je ažuriran.",
           icon: "success",
           confirmButtonText: "OK",
+          customClass: {
+            confirmButton: "button-style",
+          }
         });
         navigate(`/viewProfile/${formData.idUser}`, {
           state: { id: formData.idUser },
@@ -114,6 +117,9 @@ function EditProfilePage() {
         text: err || "Nepoznata greška.",
         icon: "error",
         confirmButtonText: "U redu",
+        customClass: {
+          confirmButton: "button-style",
+        }
       });
     }
   };
@@ -149,6 +155,9 @@ function EditProfilePage() {
         text: err || "Greška pri slanju slike.",
         icon: "error",
         confirmButtonText: "U redu",
+        customClass: {
+          confirmButton: "button-style",
+        }
       });
       return false;
     }
@@ -230,8 +239,8 @@ function EditProfilePage() {
                   profileImage
                     ? URL.createObjectURL(profileImage)
                     : formData.imagePath
-                    ? formData.imagePath
-                    : defaultUser
+                      ? formData.imagePath
+                      : defaultUser
                 }
                 alt="Profilna slika"
                 className="mt-2 max-h-40 rounded"
@@ -308,11 +317,10 @@ function EditProfilePage() {
               disabled={
                 formData.password && formData.password !== confirmPassword
               }
-              className={`w-full py-2 rounded transition font-semibold ${
-                formData.password && formData.password !== confirmPassword
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-cyan-600 text-white hover:bg-cyan-700"
-              }`}
+              className={`w-full py-2 rounded transition font-semibold ${formData.password && formData.password !== confirmPassword
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-cyan-600 text-white hover:bg-cyan-700"
+                }`}
             >
               Sačuvaj Promjene
             </button>

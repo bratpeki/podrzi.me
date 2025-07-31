@@ -44,6 +44,9 @@ function ContactPage() {
           text: "Hvala što ste nas kontaktirali!",
           icon: "success",
           confirmButtonText: "U redu",
+           customClass:{
+            confirmButton: "button-style",
+          }
         });
         setFormData({ ime: "", email: "", poruka: "" });
       } else {
@@ -53,6 +56,9 @@ function ContactPage() {
           text: "Greška prilikom slanja poruke.",
           icon: "error",
           confirmButtonText: "U redu",
+           customClass:{
+            confirmButton: "button-style",
+          }
         });
       }
     } catch (error) {
@@ -62,6 +68,9 @@ function ContactPage() {
         text: error || "Došlo je do greške pri slanju.", //Error poslije izbacit (ostaviti za debug)
         icon: "error",
         confirmButtonText: "U redu",
+         customClass:{
+            confirmButton: "button-style",
+          }
       });
     }
   };

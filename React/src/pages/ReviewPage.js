@@ -23,9 +23,8 @@ const StarRating = ({ totalStars = 5, onRatingChange }) => {
             key={i}
             onClick={() => handleClick(starValue)}
             xmlns="http://www.w3.org/2000/svg"
-            className={`h-10 w-10 cursor-pointer ${
-              starValue <= rating ? "text-yellow-400" : "text-gray-300"
-            }`}
+            className={`h-10 w-10 cursor-pointer ${starValue <= rating ? "text-yellow-400" : "text-gray-300"
+              }`}
             fill="currentColor"
             viewBox="0 0 20 20"
           >
@@ -74,6 +73,9 @@ function ReviewPage() {
           text: "Hvala vam na recenziji!",
           icon: "success",
           confirmButtonText: "U redu",
+          customClass: {
+            confirmButton: "button-style",
+          }
         });
         setFormData({ text: "", stars: 0 });
       } else if (response == "reviewExistsError") {
@@ -82,6 +84,9 @@ function ReviewPage() {
           text: "Vec ste poslali recenziju!",
           icon: "error",
           confirmButtonText: "U redu",
+          customClass: {
+            confirmButton: "button-style",
+          }
         });
       } else {
         await sweetAlert.fire({
@@ -89,6 +94,9 @@ function ReviewPage() {
           text: "Greška prilikom slanja recenzije!",
           icon: "error",
           confirmButtonText: "U redu",
+          customClass: {
+            confirmButton: "button-style",
+          }
         });
       }
     } catch (error) {
@@ -97,6 +105,9 @@ function ReviewPage() {
         text: error || "Došlo je do greške pri slanju.", //Error poslije izbacit (ostaviti za debug)
         icon: "error",
         confirmButtonText: "U redu",
+        customClass: {
+          confirmButton: "button-style",
+        }
       });
     }
   };

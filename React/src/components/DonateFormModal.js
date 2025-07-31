@@ -81,6 +81,9 @@ function DonateFormModal({ action, onClose, onDonationSuccess }) {
           text: "Hvala na donaciji!",
           icon: "success",
           confirmButtonText: "U redu",
+          customClass:{
+            confirmButton: "button-style",
+          }
         });
 
     //  alert("Hvala na donaciji!"); // Možemo ovdje sweet alert koristiti za ljepšti pop up npr

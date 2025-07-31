@@ -97,15 +97,18 @@ function EditActionPage() {
   }
 
   const handleUpdate = async () => {
-     if (imageFiles.length === 0) {
-          Swal.fire({
-            icon: "warning",
-            title: "Morate postaviti sliku koja će predstaviti Vašu akciju!",
-            confirmButtonText: "U redu",
-          });
-          return;
+    if (imageFiles.length === 0) {
+      Swal.fire({
+        icon: "warning",
+        title: "Morate postaviti sliku koja će predstaviti Vašu akciju!",
+        confirmButtonText: "U redu",
+        customClass: {
+          confirmButton: "button-style",
         }
-    
+      });
+      return;
+    }
+
     try {
       const response = await apiRequest(
         "actions/updateaction",
@@ -120,7 +123,7 @@ function EditActionPage() {
           location: actionLocation,
           goal: goal,
           primaryImage: primaryImage,
-          videoLink : videoUrl,
+          videoLink: videoUrl,
         }
       );
       const text = await response;
@@ -190,22 +193,22 @@ function EditActionPage() {
   };
 
   const handleImageChange = (e) => {
-     const newFiles = Array.from(e.target.files).filter((file) => {
-         const isValidType = ["image/jpeg", "image/png", "image/jpg"].includes(
-           file.type
-         );
-         const isValidSize = file.size <= 3 * 1024 * 1024; // 3MB in bytes
-   
-         if (!isValidSize) {
-           Swal.fire({
-             icon: "error",
-             title: "Slika je prevelika!",
-             text: `Slika "${file.name}" prelazi ograničenje od 3MB.`,
-           });
-         }
-   
-         return isValidType && isValidSize;
-       });
+    const newFiles = Array.from(e.target.files).filter((file) => {
+      const isValidType = ["image/jpeg", "image/png", "image/jpg"].includes(
+        file.type
+      );
+      const isValidSize = file.size <= 3 * 1024 * 1024; // 3MB in bytes
+
+      if (!isValidSize) {
+        Swal.fire({
+          icon: "error",
+          title: "Slika je prevelika!",
+          text: `Slika "${file.name}" prelazi ograničenje od 3MB.`,
+        });
+      }
+
+      return isValidType && isValidSize;
+    });
 
     const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
 
@@ -224,21 +227,21 @@ function EditActionPage() {
     e.preventDefault();
 
     const newFiles = Array.from(e.dataTransfer.files).filter((file) => {
-         const isValidType = ["image/jpeg", "image/png", "image/jpg"].includes(
-           file.type
-         );
-         const isValidSize = file.size <= 3 * 1024 * 1024;
-   
-         if (!isValidSize) {
-           Swal.fire({
-             icon: "error",
-             title: "Slika je prevelika!",
-             text: `Slika "${file.name}" prelazi ograničenje od 3MB.`,
-           });
-         }
-   
-         return isValidType && isValidSize;
-       });
+      const isValidType = ["image/jpeg", "image/png", "image/jpg"].includes(
+        file.type
+      );
+      const isValidSize = file.size <= 3 * 1024 * 1024;
+
+      if (!isValidSize) {
+        Swal.fire({
+          icon: "error",
+          title: "Slika je prevelika!",
+          text: `Slika "${file.name}" prelazi ograničenje od 3MB.`,
+        });
+      }
+
+      return isValidType && isValidSize;
+    });
 
     const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
 
@@ -580,11 +583,10 @@ function EditActionPage() {
                         alt={`Preview ${i + 1}`}
                         onClick={() => setPrimaryImage(file)}
                         className={`cursor-pointer max-h-40 object-contain border rounded transition duration-150
-                      ${
-                        isPrimary
-                          ? "ring-4 ring-blue-500 border-blue-400"
-                          : "border-gray-300"
-                      }`}
+                      ${isPrimary
+                            ? "ring-4 ring-blue-500 border-blue-400"
+                            : "border-gray-300"
+                          }`}
                       />
                       <button
                         onClick={(e) => {

@@ -73,6 +73,9 @@ function AdminViewRefundsPage() {
         timer: 2500,
         timerProgressBar: true,
         showConfirmButton: false,
+        customClass:{
+          showConfirmButton:"button-style",
+        }
       });
       await fetchReports();
     } catch (err) {
