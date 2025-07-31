@@ -107,6 +107,9 @@ function ViewDonationsPage() {
         title: "Unesite razlog",
         text: "Morate unijeti razlog za povrat donacije.",
         confirmButtonText: "U redu",
+        customClass: {
+          confirmButton: "button-style",
+        }
       });
       return;
     }
@@ -130,6 +133,9 @@ function ViewDonationsPage() {
           timer: 2500,
           showConfirmButton: false,
           timerProgressBar: true,
+          customClass: {
+            confirmButton: "button-style",
+          }
         });
       } else {
         await Swal.fire({

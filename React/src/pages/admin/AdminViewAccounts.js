@@ -65,6 +65,9 @@ function AdminViewAccounts() {
         timer: 2500,
         timerProgressBar: true,
         showConfirmButton: false,
+        customClass: {
+          showConfirmButton: "button-style",
+        }
       });
       await apiRequest(`admins/handle?idUser=${selectedUserId}`,authState.adminToken);
       // Refresh user list after suspend
@@ -96,6 +99,9 @@ function AdminViewAccounts() {
         timer: 2500,
         timerProgressBar: true,
         showConfirmButton: false,
+        customClass: {
+          showConfirmButton: "button-style",
+        }
       });
       // Refresh user list after removal
       const refreshedUsers = await apiRequest("users/getusersstate", "GET");
@@ -130,25 +136,22 @@ function AdminViewAccounts() {
         {/* Filter buttons */}
         <div className="mb-6 space-x-3">
           <button
-            className={`px-4 py-2 rounded ${
-              filterState === 0 ? "bg-cyan-600 text-white" : "bg-gray-200"
-            }`}
+            className={`px-4 py-2 rounded ${filterState === 0 ? "bg-cyan-600 text-white" : "bg-gray-200"
+              }`}
             onClick={() => setFilterState(0)}
           >
             Aktivni korisnici
           </button>
           <button
-            className={`px-4 py-2 rounded ${
-              filterState === 1 ? "bg-cyan-600 text-white" : "bg-gray-200"
-            }`}
+            className={`px-4 py-2 rounded ${filterState === 1 ? "bg-cyan-600 text-white" : "bg-gray-200"
+              }`}
             onClick={() => setFilterState(1)}
           >
             Suspendovani korisnici
           </button>
           <button
-            className={`px-4 py-2 rounded ${
-              filterState === "all" ? "bg-cyan-600 text-white" : "bg-gray-200"
-            }`}
+            className={`px-4 py-2 rounded ${filterState === "all" ? "bg-cyan-600 text-white" : "bg-gray-200"
+              }`}
             onClick={() => setFilterState("all")}
           >
             Svi korisnici
@@ -192,20 +195,20 @@ function AdminViewAccounts() {
                         },
                         ...(state === 0
                           ? [
-                              {
-                                text: "Suspenduj profil",
-                                onClick: () => openSuspendDialog(id, name),
-                                type: "destructive",
-                              },
-                            ]
+                            {
+                              text: "Suspenduj profil",
+                              onClick: () => openSuspendDialog(id, name),
+                              type: "destructive",
+                            },
+                          ]
                           : [
-                              {
-                                text: "Ukloni suspenziju",
-                                onClick: () =>
-                                  handleRemoveSuspension(id, name),
-                                type: "normal",
-                              },
-                            ]),
+                            {
+                              text: "Ukloni suspenziju",
+                              onClick: () =>
+                                handleRemoveSuspension(id, name),
+                              type: "normal",
+                            },
+                          ]),
                       ]}
                     />
                   </li>

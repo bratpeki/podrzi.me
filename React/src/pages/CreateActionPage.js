@@ -52,6 +52,9 @@ function CreateActionPage() {
         icon: "warning",
         title: "Morate postaviti sliku koja će predstaviti Vašu akciju!",
         confirmButtonText: "U redu",
+         customClass:{
+            confirmButton: "button-style",
+          }
       });
       return;
     }

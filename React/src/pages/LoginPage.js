@@ -10,7 +10,7 @@ import withReactContent from "sweetalert2-react-content";
 function LoginPage() {
   const navigate = useNavigate();
 
-  const sweetAlert=withReactContent(Swal);
+  const sweetAlert = withReactContent(Swal);
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -39,6 +39,9 @@ function LoginPage() {
           text: "Vaš nalog je suspendovan! Provjerite Vašu email adresu za više detalja!",
           icon: "error",
           confirmButtonText: "OK",
+          customClass: {
+            confirmButton: "button-style",
+          }
         });
 
         return;
