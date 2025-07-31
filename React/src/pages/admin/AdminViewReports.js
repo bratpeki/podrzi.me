@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useCallback, useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiRequest } from "../../utility/FetchAPI";
 import AdminHeader from "./AdminHeader";
@@ -22,6 +22,21 @@ function AdminViewReports() {
     onCancel: null,
     showReasonInput: false,
   });
+  const fetchReportsWithDetails = useCallback(async () => {
+    try {
+      const allReports = await apiRequest(
+        "reports/getallunhandled",
+        "GET",
+        authState.adminToken
+      );
+      const withDetails = await Promise.all(
+        allReports.map(fetchReportedEntity)
+      );
+      setDetailedReports(withDetails);
+    } catch (err) {
+      console.error("Failed to fetch reports:", err);
+    }
+  }, [authState.adminToken]);
 
   // Helper to fetch reported entity info
   async function fetchReportedEntity(report) {
@@ -58,25 +73,10 @@ function AdminViewReports() {
 
   // Fetch all reports + details on mount or when token changes
   useEffect(() => {
-    const fetchReportsWithDetails = async () => {
-      try {
-        const allReports = await apiRequest(
-          "reports/getallunhandled",
-          "GET",
-          authState.adminToken
-        );
-        const withDetails = await Promise.all(
-          allReports.map(fetchReportedEntity)
-        );
-        setDetailedReports(withDetails);
-      } catch (err) {
-        console.error("Failed to fetch reports:", err);
-      }
-    };
     if (authState.adminToken) {
       fetchReportsWithDetails();
     }
-  }, [authState.adminToken]);
+  }, [authState.adminToken, fetchReportsWithDetails]);
 
   // Helper to open confirm dialogs
   function openConfirmDialog({
@@ -122,7 +122,7 @@ function AdminViewReports() {
             formData
           );
           Swal.fire("Suspendovan!", "Korisnik je suspendovan.", "success");
-          // Optionally refresh list here
+          fetchReportsWithDetails();
         } catch {
           Swal.fire("Greška", "Neuspjela akcija suspendovanja.", "error");
         }
@@ -146,7 +146,7 @@ function AdminViewReports() {
             }
           );
           Swal.fire("Obrisano!", "Akcija je obrisana.", "success");
-          // Optionally refresh list here
+          fetchReportsWithDetails();
         } catch {
           Swal.fire("Greška", "Neuspjelo brisanje akcije.", "error");
         }
@@ -167,7 +167,7 @@ function AdminViewReports() {
             authState.adminToken
           );
           Swal.fire("Obrisano!", "Komentar je obrisan.", "success");
-          // Optionally refresh list here
+          fetchReportsWithDetails();
         } catch {
           Swal.fire("Greška", "Neuspjelo brisanje komentara.", "error");
         }
@@ -176,18 +176,21 @@ function AdminViewReports() {
   };
 
   // Filter reports by search term (by reporting user or reported entity)
-  const filteredReports = detailedReports.filter((report) => {
-    const searchLower = searchTerm.toLowerCase();
-
-    return (
-      report.userReportee?.username?.toLowerCase().includes(searchLower) ||
-      (report.reportedEntity &&
-        (report.reportedEntity.username?.toLowerCase().includes(searchLower) ||
-          report.reportedEntity.name?.toLowerCase().includes(searchLower) ||
-          report.reportedEntity.title?.toLowerCase().includes(searchLower) ||
-          report.reportedEntity.text?.toLowerCase().includes(searchLower)))
-    );
-  });
+  const filteredReports = detailedReports
+    .filter((report) => report.reportedEntity !== null) // ✅ ignore missing data
+    .filter((report) => {
+      const searchLower = searchTerm.toLowerCase();
+      return (
+        report.userReportee?.username?.toLowerCase().includes(searchLower) ||
+        (report.reportedEntity &&
+          (report.reportedEntity.username
+            ?.toLowerCase()
+            .includes(searchLower) ||
+            report.reportedEntity.name?.toLowerCase().includes(searchLower) ||
+            report.reportedEntity.title?.toLowerCase().includes(searchLower) ||
+            report.reportedEntity.text?.toLowerCase().includes(searchLower)))
+      );
+    });
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-start pt-10 gradient-style">

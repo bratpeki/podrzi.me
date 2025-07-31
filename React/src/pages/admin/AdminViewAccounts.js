@@ -97,7 +97,7 @@ function AdminViewAccounts() {
         showConfirmButton: false,
       });
       // Refresh user list after removal
-      const refreshedUsers = await apiRequest("users/getusers", "GET");
+      const refreshedUsers = await apiRequest("users/getusersstate", "GET");
       setUsers(refreshedUsers);
     } catch (err) {
       console.error("Greška pri uklanjanju suspenzije:", err);
