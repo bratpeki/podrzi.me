@@ -28,8 +28,10 @@ public class AdminAPI {
     private final CommentRepository commentRepository;
     private final PasswordEncoder passwordEncoder;
     private final NotificationRepository notificationRepository;
+    private final ReportRepository reportRepository;
+    private final RefundRepository refundRepository;
 
-    public AdminAPI (AdminRepository adminRepository, JWT jwt, UserRepository userRepository, MailService mailService, ActionRepository actionRepository, ActionOwnerRepository actionOwnerRepository, CommentRepository commentRepository, PasswordEncoder passwordEncoder, NotificationRepository notificationRepository) {
+    public AdminAPI (AdminRepository adminRepository, JWT jwt, UserRepository userRepository, MailService mailService, ActionRepository actionRepository, ActionOwnerRepository actionOwnerRepository, CommentRepository commentRepository, PasswordEncoder passwordEncoder, NotificationRepository notificationRepository, ReportRepository reportRepository, RefundRepository refundRepository) {
         this.adminRepository = adminRepository;
         this.jwt = jwt;
         this.userRepository = userRepository;
@@ -39,6 +41,13 @@ public class AdminAPI {
         this.commentRepository = commentRepository;
         this.passwordEncoder = passwordEncoder;
         this.notificationRepository = notificationRepository;
+        this.reportRepository = reportRepository;
+        this.refundRepository = refundRepository;
+    }
+
+    @GetMapping("/getowner")
+    public ResponseEntity<?> getOwner(@RequestHeader Map<String, String> token) {
+        return ResponseEntity.ok(adminRepository.findByusername(jwt.extractUsername(token.get("token"))).getOwner());
     }
 
     @PostMapping("/addadmin")
@@ -134,6 +143,28 @@ public class AdminAPI {
             n.setText(text);
             notificationRepository.save(n);
         }
+
+        return ResponseEntity.ok("success");
+    }
+
+    @PostMapping("/handle")
+    public ResponseEntity<?> handleReport(@RequestHeader Map<String, String> token, @RequestParam(required = false) Integer idReport,
+                                          @RequestParam(required = false) Integer idRefund, @RequestParam(required = false) Integer idUser) {
+        Admin a = adminRepository.findByusername(jwt.extractUsername(token.get("token")));
+        if (idReport != null) {
+            Report r = reportRepository.findByidReport(idReport);
+            r.setAdmin(a);
+            reportRepository.save(r);
+        } else if (idRefund != null) {
+            Refund r = refundRepository.findByidRefund(idRefund);
+            r.setAdmin(a);
+            refundRepository.save(r);
+        } else if (idUser != null) {
+            User u = userRepository.findByidUser(idUser);
+            u.setAdmin(a);
+            userRepository.save(u);
+        } else
+            return ResponseEntity.ok("error");
 
         return ResponseEntity.ok("success");
     }

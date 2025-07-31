@@ -19,7 +19,14 @@ public class Comment {
     private Action action;
     @Column(name = "idAction", insertable = false, updatable = false)
     private Integer idAction;
+    private Boolean edited;
 
+    public Boolean getEdited() {
+        return edited;
+    }
+    public void setEdited(Boolean edited) {
+        this.edited = edited;
+    }
     public Integer getIdAction() {
         return idAction;
     }

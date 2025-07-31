@@ -10,8 +10,9 @@ public class CommentDTO {
     private Integer idUser;
     private String displayName;
     private String imagePath;
+    private Boolean edited;
 
-    public CommentDTO(String text, Integer idAction, LocalDateTime created, Integer idUser, String displayName, String imagePath, Integer idComment) {
+    public CommentDTO(String text, Integer idAction, LocalDateTime created, Integer idUser, String displayName, String imagePath, Integer idComment, Boolean edited) {
         this.text = text;
         this.idAction = idAction;
         this.created = created;
@@ -19,8 +20,15 @@ public class CommentDTO {
         this.displayName = displayName;
         this.imagePath = imagePath;
         this.idComment = idComment;
+        this.edited = edited;
     }
 
+    public Boolean getEdited() {
+        return edited;
+    }
+    public void setEdited(Boolean edited) {
+        this.edited = edited;
+    }
     public Integer getIdComment() {
         return idComment;
     }
