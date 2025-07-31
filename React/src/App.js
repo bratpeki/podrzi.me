@@ -18,6 +18,7 @@ import ReviewPage from './pages/ReviewPage';
 import ViewProfilePage from "./pages/ViewProfilePage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import GuidePage from "./pages/GuidePage.js";
+import CategoryActionsView from "./pages/CategoryActionsView"; 
 
 import AdminLoginPage from "./pages/admin/AdminLoginPage";
 import AdminHomePage from "./pages/admin/AdminHomePage";
@@ -26,8 +27,7 @@ import AdminViewActions from "./pages/admin/AdminViewActions";
 import AdminViewRefunds from "./pages/admin/AdminViewRefundsPage";
 import AdminViewReports from "./pages/admin/AdminViewReports";
 import AdminViewReviews from "./pages/admin/AdminViewReviews";
-
-import CategoryActionsView from "./pages/CategoryActionsView"; 
+import AddAdmin from "./pages/admin/AddAdmin";
 
 import { AuthStateContext, useAuth } from "./components/UseAuthState";
 
@@ -85,6 +85,7 @@ function App() {
             <Route path="/admin/viewRefunds" element={<AdminViewRefunds />} />
             <Route path="/admin/viewReports" element={<AdminViewReports />} />
             <Route path="/admin/viewReviews" element={<AdminViewReviews />} />
+            <Route path="/admin/AddAdmin" element={<AddAdmin />} />
 
           </Routes>
         </Router>
