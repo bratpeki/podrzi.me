@@ -481,7 +481,7 @@ function ActionViewPage() {
               <p className="text-md font-medium text-gray-700 mb-1">
                 📅 Datum završetka akcije:{" "}
                 <span className="font-semibold">
-                  {new Date(currentAction.endTime).toLocaleDateString()}
+                  {new Date(currentAction.endTime).toLocaleDateString("en-GB")}
                 </span>
               </p>
 
