@@ -73,10 +73,15 @@ function AdminViewRefundsPage() {
         timer: 2500,
         timerProgressBar: true,
         showConfirmButton: false,
-        customClass:{
-          showConfirmButton:"button-style",
-        }
+        customClass: {
+          showConfirmButton: "button-style",
+        },
       });
+      await apiRequest(
+        `admins/handle?idRefund=${selectedRefund[0]}`,
+        "POST",
+        authState.adminToken
+      );
       await fetchReports();
     } catch (err) {
       console.error("Refund action failed:", err);

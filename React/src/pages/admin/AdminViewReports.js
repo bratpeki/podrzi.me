@@ -104,7 +104,7 @@ function AdminViewReports() {
 
   // Action handlers using confirm dialog + SweetAlert for results
 
-  const handleSuspendUser = (userId) => {
+  const handleSuspendUser = (userId, reportId) => {
     openConfirmDialog({
       title: "Da li ste sigurni da želite suspendovati korisnika?",
       message:
@@ -122,6 +122,11 @@ function AdminViewReports() {
             formData
           );
           Swal.fire("Suspendovan!", "Korisnik je suspendovan.", "success");
+          await apiRequest(
+            `admins/handle?idReport=${reportId}`,
+            "POST",
+            authState.adminToken
+          );
           fetchReportsWithDetails();
         } catch {
           Swal.fire("Greška", "Neuspjela akcija suspendovanja.", "error");
@@ -130,7 +135,7 @@ function AdminViewReports() {
     });
   };
 
-  const handleDeleteAction = (actionId) => {
+  const handleDeleteAction = (actionId, reportId) => {
     openConfirmDialog({
       title: "Da li ste sigurni da želite obrisati akciju?",
       message: "Ova akcija će trajno obrisati prijavljenu akciju.",
@@ -146,6 +151,11 @@ function AdminViewReports() {
             }
           );
           Swal.fire("Obrisano!", "Akcija je obrisana.", "success");
+          await apiRequest(
+            `admins/handle?idReport=${reportId}`,
+            "POST",
+            authState.adminToken
+          );
           fetchReportsWithDetails();
         } catch {
           Swal.fire("Greška", "Neuspjelo brisanje akcije.", "error");
@@ -154,7 +164,7 @@ function AdminViewReports() {
     });
   };
 
-  const handleDeleteComment = (commentId) => {
+  const handleDeleteComment = (commentId, reportId) => {
     openConfirmDialog({
       title: "Da li ste sigurni da želite obrisati komentar?",
       message: "Ova akcija će trajno obrisati prijavljeni komentar.",
@@ -167,6 +177,11 @@ function AdminViewReports() {
             authState.adminToken
           );
           Swal.fire("Obrisano!", "Komentar je obrisan.", "success");
+          await apiRequest(
+            `admins/handle?idReport=${reportId}`,
+            "POST",
+            authState.adminToken
+          );
           fetchReportsWithDetails();
         } catch {
           Swal.fire("Greška", "Neuspjelo brisanje komentara.", "error");
@@ -239,7 +254,10 @@ function AdminViewReports() {
                               {
                                 text: "Suspenduj korisnika",
                                 onClick: () =>
-                                  handleSuspendUser(report.idUserReported),
+                                  handleSuspendUser(
+                                    report.idUserReported,
+                                    report.idReport
+                                  ),
                                 type: "destructive",
                               },
                             ]
@@ -249,7 +267,10 @@ function AdminViewReports() {
                               {
                                 text: "Obriši akciju",
                                 onClick: () =>
-                                  handleDeleteAction(report.idActionReported),
+                                  handleDeleteAction(
+                                    report.idActionReported,
+                                    report.idReport
+                                  ),
                                 type: "destructive",
                               },
                             ]
@@ -259,7 +280,10 @@ function AdminViewReports() {
                               {
                                 text: "Obriši komentar",
                                 onClick: () =>
-                                  handleDeleteComment(report.idCommentReported),
+                                  handleDeleteComment(
+                                    report.idCommentReported,
+                                    report.idReport
+                                  ),
                                 type: "destructive",
                               },
                             ]

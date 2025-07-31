@@ -45,13 +45,22 @@ function AdminViewActions() {
 
   const handleDeleteAction = async () => {
     try {
-      await apiRequest(`admins/removeaction?idAction=${selectedAction.idAction}`, "POST", authState.adminToken, {
-        idAction: selectedAction.idAction,
-      });
+      await apiRequest(
+        `admins/removeaction?idAction=${selectedAction.idAction}`,
+        "POST",
+        authState.adminToken,
+        {
+          idAction: selectedAction.idAction,
+        }
+      );
 
       setDialogVisible(false);
       setSelectedAction(null);
-
+      await apiRequest(
+        `admins/handle?idAction=${selectedAction.idAction}`,
+        "POST",
+        authState.adminToken
+      );
       // Refresh the actions list
       const refreshedActions = await apiRequest(
         "actions/getvisibleactions",
@@ -67,9 +76,9 @@ function AdminViewActions() {
         timer: 2500,
         timerProgressBar: true,
         showConfirmButton: false,
-        customClass:{
-          showConfirmButton:"button-style",
-        }
+        customClass: {
+          showConfirmButton: "button-style",
+        },
       });
     } catch (error) {
       setDialogVisible(false);
