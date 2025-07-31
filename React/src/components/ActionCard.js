@@ -41,6 +41,23 @@ function ActionCard({ action }) {
         >
           {progress}% prikupljeno
         </p>
+        {action.tags && action.tags.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-2">
+            {action.tags.slice(0, 3).map((tag, index) => (
+              <span
+                key={index}
+                className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full"
+              >
+                {tag}
+              </span>
+            ))}
+            {action.tags.length > 3 && (
+              <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                ...
+              </span>
+            )}
+          </div>
+        )}
       </div>
     </Link>
   );

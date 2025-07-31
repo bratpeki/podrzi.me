@@ -145,7 +145,7 @@ function ViewDonationsPage() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
       <NavigationBar showSearch={false} />
-
+<main className="flex-grow">
       <header className="text-center mt-12 mb-6 pt-10">
         <h1 className="text-5xl font-bold text-gray-800">
           Pregled doniranim akcijama
@@ -210,12 +210,14 @@ function ViewDonationsPage() {
             </div>
           ))}
       </div>
-      <InfoFooter />
       <RefundDialog
         show={showDialog}
         onClose={() => setShowDialog(false)}
-        onConfirm={confirmRefund}
+        onConfi
+        rm={confirmRefund}
       />
+      </main>
+      <InfoFooter />
     </div>
   );
 }

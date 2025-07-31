@@ -386,7 +386,7 @@ function ActionViewPage() {
                 >
                   <li className="flex items-center gap-3 hover:underline drop-shadow-md">
                     <img
-                      src={c.imagePath ||defaultUser }
+                      src={c.imagePath || defaultUser}
                       alt={c.displayName}
                       className="w-8 h-8 rounded-full object-fit border"
                     />
@@ -400,7 +400,7 @@ function ActionViewPage() {
       </div>
     );
   };
-
+  const isActionFinished = new Date(currentAction.endTime) < new Date();
   return (
     <div className="min-h-screen flex flex-col bg-gray-100 gradient-style">
       <NavigationBar showSearch={false} />
@@ -499,12 +499,23 @@ function ActionViewPage() {
             </div>
 
             <button
-              className="button-style w-full mt-6"
-              onClick={() => setShowDonateModal(true)}
+              className={`w-full mt-6 font-semibold py-2 px-4 rounded ${
+                isActionFinished
+                  ? "bg-gray-400 text-gray-700 cursor-not-allowed"
+                  : "button-style"
+              }`}
+              onClick={() => {
+                if (!isActionFinished) setShowDonateModal(true);
+              }}
+              disabled={isActionFinished}
             >
               Doniraj
             </button>
-
+            {isActionFinished && (
+              <p className="text-center text-red-600 font-semibold mt-2">
+                Akcija je završena!
+              </p>
+            )}
             {showCollaborations()}
           </div>
         </div>
@@ -536,12 +547,9 @@ function ActionViewPage() {
                         className="flex items-center mb-1 hover:underline"
                       >
                         <img
-                          src={
-                            comment.imagePath ||
-                            "https://via.placeholder.com/30"
-                          }
+                          src={comment.imagePath || defaultUser}
                           alt={comment.displayName || "Gost"}
-                          className="w-7 h-7 rounded-full object-cover mr-2 hover:bg-gray-200"
+                          className="w-7 h-7 rounded-full object-fit mr-2 hover:bg-gray-200"
                         />
                         <p className="font-semibold text-gray-800">
                           {comment.displayName || "Gost"}
@@ -551,39 +559,39 @@ function ActionViewPage() {
                         {new Date(comment.created).toLocaleString()}
                       </span>
                       {authState.accessToken && (
-
                         <ActionDropdown
-
                           actions={[
-
                             !isAuthor && {
                               text: "Prijavi korisnika",
                               onClick: () => handleReportUser(comment.idUser),
-                              type: 'destructive',
+                              type: "destructive",
                             },
 
                             !isAuthor && {
                               text: "Prijavi komentar",
-                              onClick: () => handleReportComment(comment.idComment),
-                              type: 'destructive',
+                              onClick: () =>
+                                handleReportComment(comment.idComment),
+                              type: "destructive",
                             },
 
                             isAuthor && {
                               text: "Izmjeni Komentar",
-                              onClick: () => handleEditComment(comment.idComment, comment.text),
-                              type: 'normal',
+                              onClick: () =>
+                                handleEditComment(
+                                  comment.idComment,
+                                  comment.text
+                                ),
+                              type: "normal",
                             },
 
                             isAuthor && {
                               text: "Obriši Komentar",
-                              onClick: () => handleDeleteComment(comment.idComment),
-                              type: 'destructive',
-                            }
-
+                              onClick: () =>
+                                handleDeleteComment(comment.idComment),
+                              type: "destructive",
+                            },
                           ].filter(Boolean)} // Filtriramo samo po onim vrijednostima koje su tačne
-
                         />
-
                       )}
                     </div>
 
@@ -674,14 +682,9 @@ function ActionViewPage() {
 
         {isOwner && authState.accessToken && (
           <div className="flex justify-end pt-4">
-            <button
-              className="button-style"
-            >
-              Finalizuj Akciju
-            </button>
+            <button className="button-style">Finalizuj Akciju</button>
           </div>
         )}
-      
       </main>
 
       <InfoFooter />
