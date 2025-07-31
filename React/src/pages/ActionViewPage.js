@@ -278,6 +278,7 @@ function ActionViewPage() {
       await apiRequest("comments/edit", "POST", authState.accessToken, {
         idComment: editingId,
         text: editingText,
+        edited: true,
       });
       setEditingId(null);
       setEditingText("");
@@ -618,7 +619,7 @@ function ActionViewPage() {
                           </button>
                         </div>
                       </div>
-                    ) : (
+                    ) : ( comment.edited ? <p className="text-gray-700 ml-9"> (IZMJENJENO) {comment.text}</p> :
                       <p className="text-gray-700 ml-9">{comment.text}</p>
                     )}
                   </div>

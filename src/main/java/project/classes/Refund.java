@@ -15,7 +15,17 @@ public class Refund {
     private Integer idDonation;
     private Boolean requestedRefund;
     private Boolean accepted;
+    @OneToOne
+    @JoinColumn(name = "handledBy")
+    private Admin admin;
 
+
+    public Admin getAdmin() {
+        return admin;
+    }
+    public void setAdmin(Admin admin) {
+        this.admin = admin;
+    }
     public Integer getIdDonation() {
         return idDonation;
     }

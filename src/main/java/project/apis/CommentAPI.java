@@ -41,6 +41,7 @@ public class CommentAPI {
         comm.setUser(u);
         comm.setText(com.getText());
         comm.setCreated(LocalDateTime.now());
+        comm.setEdited(false);
         commentRepository.save(comm);
 
         return ResponseEntity.ok("success");
@@ -63,7 +64,8 @@ public class CommentAPI {
         User u = userRepository.findByidUser(jwt.extractId(token.get("token")));
         Comment c = commentRepository.findByidComment(ecdto.getIdComment());
         if (c.getUser().getIdUser().equals(u.getIdUser())) {
-            c.setText("(Izmjenjeno) " + ecdto.getText());
+            c.setEdited(true);
+            c.setText(ecdto.getText());
             commentRepository.save(c);
             return ResponseEntity.ok("success");
         } else
@@ -73,6 +75,6 @@ public class CommentAPI {
     @GetMapping("/getbyid")
     public ResponseEntity<?> getByID(@RequestParam Integer idComment) {
         Comment c = commentRepository.findByidComment(idComment);
-        return ResponseEntity.ok(new CommentDTO(c.getText(), c.getIdAction(), c.getCreated(), c.getUser().getIdUser(), c.getUser().getDisplayName(), c.getUser().getImagePath(), c.getIdComment()));
+        return ResponseEntity.ok(new CommentDTO(c.getText(), c.getIdAction(), c.getCreated(), c.getUser().getIdUser(), c.getUser().getDisplayName(), c.getUser().getImagePath(), c.getIdComment(), c.getEdited()));
     }
 }

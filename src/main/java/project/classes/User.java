@@ -15,7 +15,18 @@ public class User {
     private String desc;
     private String imagePath = "";
     private Integer state;
+    @OneToOne
+    @JoinColumn(name = "bannedBy")
+    private Admin admin;
 
+
+
+    public Admin getAdmin() {
+        return admin;
+    }
+    public void setAdmin(Admin admin) {
+        this.admin = admin;
+    }
     public Integer getState() {
         return state;
     }

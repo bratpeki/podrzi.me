@@ -99,6 +99,8 @@ public class Security {
             "/api/admins/removeaction",
             "/api/admins/removecomment",
             "/api/admins/sendall",
+            "/api/admins/handle",
+            "/api/admins/getowner",
 
             "/api/refunds/getallunhandled",
             "/api/refunds/accept",
