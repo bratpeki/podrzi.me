@@ -13,24 +13,28 @@ function AdminViewRefundsPage() {
   const [dialogReason, setDialogReason] = useState("");
   const [dialogAction, setDialogAction] = useState("");
 
+  // Move fetchReports outside useEffect for reuse
+  const fetchReports = async () => {
+    try {
+      const response = await apiRequest(
+        "refunds/getallunhandled",
+        "GET",
+        authState.adminToken
+      );
+      const filtered = response.filter((refund) => refund[3] === null);
+
+      setRefunds(filtered);
+    } catch (err) {
+      console.error("Failed to fetch reports:", err);
+    }
+  };
+
   useEffect(() => {
-    const fetchReports = async () => {
-      try {
-        const response = await apiRequest(
-          "refunds/getallunhandled",
-          "GET",
-          authState.adminToken
-        );
-        const filtered = response.filter((refund) => refund[3] === null);
-
-        setRefunds(filtered);
-      } catch (err) {
-        console.error("Failed to fetch reports:", err);
-      }
-    };
-
-    fetchReports();
+    if (authState.adminToken) {
+      fetchReports();
+    }
   }, [authState.adminToken]);
+
   const handleOpenDialog = (refund, actionType) => {
     setSelectedRefund(refund);
     setDialogAction(actionType);
@@ -70,6 +74,7 @@ function AdminViewRefundsPage() {
         timerProgressBar: true,
         showConfirmButton: false,
       });
+      await fetchReports();
     } catch (err) {
       console.error("Refund action failed:", err);
       await Swal.fire({
