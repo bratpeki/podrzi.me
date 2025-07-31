@@ -308,7 +308,7 @@ function AdminViewReports() {
                             <p>
                               <strong>Datum:</strong>{" "}
                               {new Date(
-                                report.reportedEntity.created
+                                report.created
                               ).toLocaleString()}
                             </p>
                           </>
@@ -317,12 +317,12 @@ function AdminViewReports() {
                           <>
                             <p>
                               <strong>Naziv akcije:</strong>{" "}
-                              {report.reportedEntity.name}
+                              {report.reportedEntity.name || "Obrisana akcija"} 
                             </p>
                             <p>
                               <strong>Datum:</strong>{" "}
                               {new Date(
-                                report.reportedEntity.created
+                                report.created
                               ).toLocaleString()}
                             </p>
                           </>
@@ -340,7 +340,7 @@ function AdminViewReports() {
                             <p>
                               <strong>Datum:</strong>{" "}
                               {new Date(
-                                report.reportedEntity.created
+                                report.created
                               ).toLocaleString()}
                             </p>
                           </>
