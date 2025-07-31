@@ -66,6 +66,7 @@ function AdminViewAccounts() {
         timerProgressBar: true,
         showConfirmButton: false,
       });
+      await apiRequest(`admins/handle?idUser=${selectedUserId}`,authState.adminToken);
       // Refresh user list after suspend
       const refreshedUsers = await apiRequest("users/getusersstate", "GET");
       setUsers(refreshedUsers);
