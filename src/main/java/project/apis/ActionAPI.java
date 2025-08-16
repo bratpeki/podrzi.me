@@ -38,6 +38,8 @@ public class ActionAPI {
     @GetMapping("/getaction")
     public ResponseEntity<?> getAction(@RequestParam Integer idAction) {
         Action a = actionRepository.findByidAction(idAction);
+        if (a == null)
+            return ResponseEntity.ok("missingAction");
         List<Comment> lc = commentRepository.findByaction_idAction(idAction);
         List<CommentDTO> coms = lc.stream().map(c->new CommentDTO(c.getText(), c.getAction().getIdAction(), c.getCreated(), c.getUser().getIdUser(), c.getUser().getDisplayName(), c.getUser().getImagePath(), c.getIdComment(), c.getEdited())).toList();
         List<ActionOwnerDTO> AOs = actionOwnerRepository.findAll().stream().filter(ao->ao.getAction().getIdAction().equals(idAction)).map(ao->new ActionOwnerDTO(ao.getUser().getIdUser(), ao.getIsCollab(), ao.getUser().getDisplayName(), ao.getUser().getImagePath())).toList();

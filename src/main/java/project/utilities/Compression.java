@@ -12,8 +12,7 @@ public class Compression {
         File outputFile = new File(outputPath);
 
         Thumbnails.of(inputImage)
-                .scale(1.0)
-                .outputFormat("jpg")      // Convert all to JPEG for better compression
+                .scale(1.0) 
                 .outputQuality(0.7f)
                 .toFile(outputFile);
 

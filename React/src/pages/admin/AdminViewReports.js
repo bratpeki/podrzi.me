@@ -309,7 +309,7 @@ function AdminViewReports() {
                               <strong>Datum:</strong>{" "}
                               {new Date(
                                 report.created
-                              ).toLocaleString()}
+                              ).toLocaleString("en-GB")}
                             </p>
                           </>
                         )}
@@ -323,7 +323,7 @@ function AdminViewReports() {
                               <strong>Datum:</strong>{" "}
                               {new Date(
                                 report.created
-                              ).toLocaleString()}
+                              ).toLocaleString("en-GB")}
                             </p>
                           </>
                         )}
@@ -341,7 +341,7 @@ function AdminViewReports() {
                               <strong>Datum:</strong>{" "}
                               {new Date(
                                 report.created
-                              ).toLocaleString()}
+                              ).toLocaleString("en-GB")}
                             </p>
                           </>
                         )}
