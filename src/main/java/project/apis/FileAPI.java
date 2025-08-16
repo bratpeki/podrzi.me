@@ -22,8 +22,8 @@ import project.utilities.JWT;
 @RequestMapping("/api/images")
 public class FileAPI {
 
-    private static final String UPLOAD_LINK = "http://podrzime.ddns.net:8080/uploads";
-    //  private static final String UPLOAD_LINK = "http://localhost:8080/uploads";
+    //private static final String UPLOAD_LINK = "http://podrzime.ddns.net:8080/uploads";
+     private static final String UPLOAD_LINK = "http://localhost:8080/uploads";
 
     private final ActionRepository actionRepository;
     private final UserRepository userRepository;

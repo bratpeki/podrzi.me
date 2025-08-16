@@ -1,75 +1,90 @@
 import React from "react";
 import NavigationBar from "../components/NavigationHeader";
-import InfoFooter
- from "../components/InfoFooter";
+import InfoFooter from "../components/InfoFooter";
 const guideSections = [
   {
     title: "Kako donariti akciji",
-    description: "Ovdje ćete naučiti kako da donirate i podrzite odredjenu akciju.",
-    videoUrl: "/videos/donate.mp4", 
+    description:
+      "Ovdje ćete naučiti kako da donirate i podrzite odredjenu akciju.",
+    videoUrl: "https://www.youtube.com/watch?v=-zPw03fqoY8",
   },
   {
     title: "Kako postaviti komentar",
-    description: "Ovdje ćete naučiti kako da postavite komentar na željenu akciju.",
-    videoUrl: "/videos/donate.mp4", 
+    description:
+      "Ovdje ćete naučiti kako da postavite komentar na željenu akciju.",
+    videoUrl: "https://www.youtube.com/watch?v=0I_Rlt2gLKw",
   },
   {
     title: "Kako napraviti zahtjev za povrat novca",
-    description: "Ovdje ćete naučiti kako da napravite zahtjev za povrat novca u slučaju da sumnjate u akciju koju ste podržali.",
-    videoUrl: "/videos/donate.mp4", 
+    description:
+      "Ovdje ćete naučiti kako da napravite zahtjev za povrat novca u slučaju da sumnjate u akciju koju ste podržali.",
+    videoUrl: "https://www.youtube.com/watch?v=BVAhJzwjzaM",
   },
   {
     title: "Kako napraviti akciju",
-    description: "Ovdje ćete naučiti kako da kreirate vlastitu akciju na našoj platformi i privučete podršku.",
-    videoUrl: "/videos/create-action.mp4", 
+    description:
+      "Ovdje ćete naučiti kako da kreirate vlastitu akciju na našoj platformi i privučete podršku.",
+    videoUrl: "https://www.youtube.com/watch?v=1KLM7lyevXc",
   },
-   {
+  {
     title: "Kako ažurirati akciju",
-    description: "Ovdje ćete naučiti kako da pravite izmjene na kreiranoj akciji.",
-    videoUrl: "/videos/create-action.mp4", 
+    description:
+      "Ovdje ćete naučiti kako da pravite izmjene na kreiranoj akciji.",
+    videoUrl: "https://www.youtube.com/watch?v=jnlgITCawPo",
   },
   {
     title: "Kako ažurirati profil",
-    description: "Naučite kako uređivati svoj profil, pregledati svoje akcije i pratiti donacije.",
-    videoUrl: "/videos/profile-management.mp4",
+    description:
+      "Naučite kako uređivati svoj profil, pregledati svoje akcije i pratiti donacije.",
+    videoUrl: "https://www.youtube.com/watch?v=1LBISfDAkZg",
 
     title: "Kako prijaviti tuđi profil",
     description: "Ovdje ćete naučiti kako prijaviti drugog korisnika.",
-    videoUrl: "/videos/profile-management.mp4",
+    videoUrl: "https://www.youtube.com/watch?v=tOTVMMxlik0",
 
-     title: "Kako prijaviti tuđu akciju",
-    description: "Ovdje ćete naučiti kako prijaviti akciju u slučaju da sadrži neprikladan sadržaj ili ne verujete istoj.",
-    videoUrl: "/videos/profile-management.mp4",
+    title: "Kako prijaviti tuđu akciju",
+    description:
+      "Ovdje ćete naučiti kako prijaviti akciju u slučaju da sadrži neprikladan sadržaj ili ne verujete istoj.",
+    videoUrl: "https://www.youtube.com/watch?v=_8nrWT9WAB0",
 
-     title: "Kako prijaviti tuđi komentar",
+    title: "Kako prijaviti tuđi komentar",
     description: "Ovdje ćete naučiti kako prijaviti neprikladan komentar.",
-    videoUrl: "/videos/profile-management.mp4",
+    videoUrl: "https://www.youtube.com/watch?v=POlxM7Mlnj0",
   },
 ];
 
 function GuidePage() {
   return (
-    
     <div className="min-h-screen bg-gradient-to-b from-cyan-50 to-cyan-100 pt-24">
-       <NavigationBar showSearch={false} />
+      <NavigationBar showSearch={false} />
       <div className="max-w-5xl mx-auto">
-        <h1 className="text-4xl font-bold text-center text-cyan-900 mb-4">Vodič za korištenje platforme</h1>
+        <h1 className="text-4xl font-bold text-center text-cyan-900 mb-4">
+          Vodič za korištenje platforme
+        </h1>
         <p className="text-center text-gray-700 mb-10 text-lg">
-          Ovdje možete pronaći upute i video tutorijale kako biste se lakše snašli na našoj platformi.
+          Ovdje možete pronaći upute i video tutorijale kako biste se lakše
+          snašli na našoj platformi.
         </p>
 
         {guideSections.map((section, index) => (
           <div key={index} className="mb-16">
-            <h2 className="text-2xl font-semibold text-cyan-800 mb-2 text-center">{section.title}</h2>
-            <p className="text-gray-700 mb-4 text-center max-w-3xl mx-auto">{section.description}</p>
+            <h2 className="text-2xl font-semibold text-cyan-800 mb-2 text-center">
+              {section.title}
+            </h2>
+            <p className="text-gray-700 mb-4 text-center max-w-3xl mx-auto">
+              {section.description}
+            </p>
             <div className="flex justify-center">
-              <video
-                src={section.videoUrl}
-                controls
-                className="w-full max-w-3xl rounded-lg shadow-md"
-              >
-                Your browser does not support the video tag.
-              </video>
+              <iframe
+                src={`https://www.youtube.com/embed/${
+                  section.videoUrl.split("v=")[1]
+                }`}
+                title={section.title}
+                className="w-full max-w-3xl aspect-video rounded-lg shadow-md"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
             </div>
           </div>
         ))}
