@@ -3,9 +3,19 @@ import NavigationBar from "../components/NavigationHeader";
 import InfoFooter
  from "../components/InfoFooter";
 const guideSections = [
-    {
+  {
     title: "Kako donariti akciji",
     description: "Ovdje ćete naučiti kako da donirate i podrzite odredjenu akciju.",
+    videoUrl: "/videos/donate.mp4", 
+  },
+  {
+    title: "Kako postaviti komentar",
+    description: "Ovdje ćete naučiti kako da postavite komentar na željenu akciju.",
+    videoUrl: "/videos/donate.mp4", 
+  },
+  {
+    title: "Kako napraviti zahtjev za povrat novca",
+    description: "Ovdje ćete naučiti kako da napravite zahtjev za povrat novca u slučaju da sumnjate u akciju koju ste podržali.",
     videoUrl: "/videos/donate.mp4", 
   },
   {
@@ -19,8 +29,20 @@ const guideSections = [
     videoUrl: "/videos/create-action.mp4", 
   },
   {
-    title: "Upravljanje profilom",
+    title: "Kako ažurirati profil",
     description: "Naučite kako uređivati svoj profil, pregledati svoje akcije i pratiti donacije.",
+    videoUrl: "/videos/profile-management.mp4",
+
+    title: "Kako prijaviti tuđi profil",
+    description: "Ovdje ćete naučiti kako prijaviti drugog korisnika.",
+    videoUrl: "/videos/profile-management.mp4",
+
+     title: "Kako prijaviti tuđu akciju",
+    description: "Ovdje ćete naučiti kako prijaviti akciju u slučaju da sadrži neprikladan sadržaj ili ne verujete istoj.",
+    videoUrl: "/videos/profile-management.mp4",
+
+     title: "Kako prijaviti tuđi komentar",
+    description: "Ovdje ćete naučiti kako prijaviti neprikladan komentar.",
     videoUrl: "/videos/profile-management.mp4",
   },
 ];
