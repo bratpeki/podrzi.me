@@ -24,7 +24,7 @@ function ForgotPasswordPage() {
     });
 
     try {
-      const apiUrl = `http://podrzime.ddns.net:8080/api/users/forgotpassword?email=${encodeURIComponent(email)}`;
+      const apiUrl = `http://localhost:8080/api/users/forgotpassword?email=${encodeURIComponent(email)}`;
       
       const response = await fetch(apiUrl, {
         method: 'POST',

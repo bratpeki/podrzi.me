@@ -70,7 +70,7 @@ public class AdminAPI {
     }
 
     @PostMapping("/suspenduser")
-    public ResponseEntity<?> suspendUser(@RequestParam String reason, @RequestParam Integer idUser) {
+    public ResponseEntity<?> suspendUser(@RequestParam(required = false) String reason, @RequestParam Integer idUser) {
         User u = userRepository.findByidUser(idUser);
 
         if (u != null && u.getState() == 0) {

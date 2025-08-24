@@ -114,6 +114,7 @@ public class UserAPI {
             return ResponseEntity.ok("displayNameError");
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setState(0);
         userRepository.save(user);
         return ResponseEntity.ok("success");
     }
