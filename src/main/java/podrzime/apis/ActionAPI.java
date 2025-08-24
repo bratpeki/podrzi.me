@@ -135,9 +135,8 @@ public class ActionAPI {
             Action a = actionRepository.findByidAction(idAction);
             List<ActionOwner> ao = actionOwnerRepository.findAllByidAO_IdAction(idAction);
 
-            for (ActionOwner a1 : ao)
-                actionOwnerRepository.delete(a1);
-            actionRepository.delete(a);
+            a.setVisible(0);
+            actionRepository.save(a);
             return ResponseEntity.ok("success");
         }
         else

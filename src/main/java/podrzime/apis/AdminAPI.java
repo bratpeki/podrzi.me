@@ -93,8 +93,9 @@ public class AdminAPI {
         Action a = actionRepository.findByidAction(idAction);
         List<ActionOwner> ao = actionOwnerRepository.findAllByidAO_IdAction(idAction);
 
-        a.setVisible(false);
+        a.setVisible(0);
 
+        actionRepository.save(a);
         return ResponseEntity.ok("success");
     }
 

@@ -20,53 +20,58 @@ CREATE SCHEMA IF NOT EXISTS pdme;
 USE pdme;
 
 --
--- Table structure for table `Action`
+-- Table structure for table `action`
 --
 
-DROP TABLE IF EXISTS `Action`;
+
+DROP TABLE IF EXISTS `action`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `Action` (
+CREATE TABLE `action` (
   `idAction` int NOT NULL AUTO_INCREMENT,
   `goal` float NOT NULL DEFAULT '0',
   `collected` float NOT NULL DEFAULT '0',
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `desc` varchar(10000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `desc` varchar(10000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `visible` tinyint DEFAULT '1',
-  `primaryImage` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `collaborators` varbinary(255) DEFAULT NULL,
-  `owner` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `primaryImage` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `category` int DEFAULT NULL,
+  `endTime` datetime(6) DEFAULT NULL,
+  `tags` varbinary(255) DEFAULT NULL,
+  `subtitle` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `location` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `videoLink` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`idAction`),
   UNIQUE KEY `idAction_UNIQUE` (`idAction`)
-) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=129 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `ActionOwner`
+-- Table structure for table `actionowner`
 --
 
-DROP TABLE IF EXISTS `ActionOwner`;
+DROP TABLE IF EXISTS `actionowner`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `ActionOwner` (
+CREATE TABLE `actionowner` (
   `idUser` int NOT NULL,
   `idAction` int NOT NULL,
   `isCollab` tinyint NOT NULL DEFAULT '0',
   PRIMARY KEY (`idUser`,`idAction`),
   KEY `fk_ActionOwner_Action1_idx` (`idAction`),
-  CONSTRAINT `FK181w54wqbw2r4m46yk4sosese` FOREIGN KEY (`idAction`) REFERENCES `Action` (`idAction`),
-  CONSTRAINT `fk_ActionOwner_User` FOREIGN KEY (`idUser`) REFERENCES `User` (`idUser`)
+  CONSTRAINT `FK181w54wqbw2r4m46yk4sosese` FOREIGN KEY (`idAction`) REFERENCES `action` (`idAction`),
+  CONSTRAINT `FK57n1o9v29b3cn4byxb16rqag9` FOREIGN KEY (`idUser`) REFERENCES `user` (`idUser`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `Admin`
+-- Table structure for table `admin`
 --
 
-DROP TABLE IF EXISTS `Admin`;
+DROP TABLE IF EXISTS `admin`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `Admin` (
+CREATE TABLE `admin` (
   `username` varchar(40) NOT NULL,
   `password` varchar(255) DEFAULT NULL,
   `owner` bit(1) DEFAULT NULL,
@@ -75,125 +80,125 @@ CREATE TABLE `Admin` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `Comment`
+-- Table structure for table `comment`
 --
 
-DROP TABLE IF EXISTS `Comment`;
+DROP TABLE IF EXISTS `comment`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `Comment` (
+CREATE TABLE `comment` (
   `idComment` int NOT NULL AUTO_INCREMENT,
-  `text` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `text` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `idUser` int NOT NULL,
-  `idAction` int unsigned NOT NULL,
+  `idAction` int NOT NULL,
+  `edited` bit(1) DEFAULT b'0',
   PRIMARY KEY (`idComment`),
   UNIQUE KEY `idComment_UNIQUE` (`idComment`),
-  UNIQUE KEY `idAction_UNIQUE` (`idAction`),
   KEY `fk_Comment_User1_idx` (`idUser`),
   KEY `fk_Comment_Action1_idx` (`idAction`),
-  CONSTRAINT `fk_Comment_User1` FOREIGN KEY (`idUser`) REFERENCES `User` (`idUser`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  CONSTRAINT `FK1c4pjhp2wnhvr8lgngen2syto` FOREIGN KEY (`idAction`) REFERENCES `action` (`idAction`),
+  CONSTRAINT `FKgjcxo54qor85gqvjqyob7pp87` FOREIGN KEY (`idUser`) REFERENCES `user` (`idUser`)
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `Donation`
+-- Table structure for table `donation`
 --
 
-DROP TABLE IF EXISTS `Donation`;
+DROP TABLE IF EXISTS `donation`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `Donation` (
+CREATE TABLE `donation` (
   `idDonation` int NOT NULL AUTO_INCREMENT,
   `amount` float DEFAULT NULL,
   `idAction` int NOT NULL,
   `idUser` int NOT NULL,
   `donationTime` datetime NOT NULL,
+  `refunded` bit(1) DEFAULT b'0',
   PRIMARY KEY (`idDonation`),
   KEY `fk_ActionDonation_User1_idx` (`idUser`),
   KEY `FKskenriiwx4liur6e7e19xhpch` (`idAction`),
-  CONSTRAINT `fk_ActionDonation_User1` FOREIGN KEY (`idUser`) REFERENCES `User` (`idUser`),
-  CONSTRAINT `FKskenriiwx4liur6e7e19xhpch` FOREIGN KEY (`idAction`) REFERENCES `Action` (`idAction`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  CONSTRAINT `FKnrfjokj1xueftudgp7elt164n` FOREIGN KEY (`idUser`) REFERENCES `user` (`idUser`),
+  CONSTRAINT `FKskenriiwx4liur6e7e19xhpch` FOREIGN KEY (`idAction`) REFERENCES `action` (`idAction`)
+) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `DonationReport`
+-- Table structure for table `message`
 --
 
-DROP TABLE IF EXISTS `DonationReport`;
+DROP TABLE IF EXISTS `message`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `DonationReport` (
-  `idDonationReport` int NOT NULL AUTO_INCREMENT,
-  `idUser` int NOT NULL,
-  PRIMARY KEY (`idDonationReport`),
-  KEY `fk_DonationReport_User1_idx` (`idUser`),
-  CONSTRAINT `fk_DonationReport_User1` FOREIGN KEY (`idUser`) REFERENCES `User` (`idUser`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `Message`
---
-
-DROP TABLE IF EXISTS `Message`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `Message` (
+CREATE TABLE `message` (
   `idMessage` int NOT NULL AUTO_INCREMENT,
   `email` varchar(255) DEFAULT NULL,
   `messageText` varchar(500) DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`idMessage`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `Notification`
+-- Table structure for table `notification`
 --
 
-DROP TABLE IF EXISTS `Notification`;
+DROP TABLE IF EXISTS `notification`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `Notification` (
+CREATE TABLE `notification` (
   `idNotification` int NOT NULL AUTO_INCREMENT,
   `idUserReceiver` int NOT NULL,
-  `text` varchar(200) NOT NULL,
+  `text` varchar(255) DEFAULT NULL,
+  `created` datetime DEFAULT NULL,
+  `seen` tinyint DEFAULT '0',
+  `type` int NOT NULL,
+  `idActionSender` int DEFAULT NULL,
+  `idUserSender` int DEFAULT NULL,
   PRIMARY KEY (`idNotification`),
   KEY `fk_Notification_User1_idx` (`idUserReceiver`),
-  CONSTRAINT `fk_Notification_User1` FOREIGN KEY (`idUserReceiver`) REFERENCES `User` (`idUser`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+  KEY `FKoa1v7mmwme9p55plgbll2liue` (`idUserSender`),
+  KEY `FK6kgq65c6oid62pn1i95qw6abu` (`idActionSender`),
+  CONSTRAINT `FK6kgq65c6oid62pn1i95qw6abu` FOREIGN KEY (`idActionSender`) REFERENCES `action` (`idAction`),
+  CONSTRAINT `FKjp2ov5drl0p20fjf4gh64r04` FOREIGN KEY (`idUserReceiver`) REFERENCES `user` (`idUser`),
+  CONSTRAINT `FKoa1v7mmwme9p55plgbll2liue` FOREIGN KEY (`idUserSender`) REFERENCES `user` (`idUser`)
+) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `Refund`
+-- Table structure for table `refund`
 --
 
-DROP TABLE IF EXISTS `Refund`;
+DROP TABLE IF EXISTS `refund`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `Refund` (
+CREATE TABLE `refund` (
   `idRefund` int NOT NULL AUTO_INCREMENT,
-  `reason` varchar(200) NOT NULL,
+  `reason` varchar(255) DEFAULT NULL,
   `idDonation` int NOT NULL,
+  `requestedRefund` bit(1) DEFAULT NULL,
+  `accepted` bit(1) DEFAULT NULL,
+  `handledBy` varchar(40) DEFAULT NULL,
   PRIMARY KEY (`idRefund`),
+  UNIQUE KEY `UKaaf3asdopqsifnf7pmgjj5e5j` (`handledBy`),
   KEY `fk_refund_donation1_idx` (`idDonation`),
-  CONSTRAINT `fk_refund_donation1` FOREIGN KEY (`idDonation`) REFERENCES `Donation` (`idDonation`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+  CONSTRAINT `FK48iivtnt3a97706eldifx93x` FOREIGN KEY (`idDonation`) REFERENCES `donation` (`idDonation`),
+  CONSTRAINT `FK48wgiplcbu7i2wffqj5kl55f3` FOREIGN KEY (`handledBy`) REFERENCES `admin` (`username`)
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `Report`
+-- Table structure for table `report`
 --
 
-DROP TABLE IF EXISTS `Report`;
+DROP TABLE IF EXISTS `report`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `Report` (
+CREATE TABLE `report` (
   `idReport` int NOT NULL AUTO_INCREMENT,
-  `reportType` smallint NOT NULL,
-  `text` varchar(500) NOT NULL,
+  `reportType` int DEFAULT NULL,
+  `text` varchar(500) DEFAULT NULL,
   `created` datetime NOT NULL,
   `idUserReported` int unsigned DEFAULT NULL,
   `idActionReported` int unsigned DEFAULT NULL,
@@ -201,53 +206,52 @@ CREATE TABLE `Report` (
   `idUserCreated` int NOT NULL,
   `handledBy` varchar(40) DEFAULT NULL,
   PRIMARY KEY (`idReport`),
-  UNIQUE KEY `idActionReported_UNIQUE` (`idActionReported`),
-  UNIQUE KEY `idUserReported_UNIQUE` (`idUserReported`),
-  UNIQUE KEY `idCommentReported_UNIQUE` (`idCommentReported`),
   KEY `fk_Report_User1_idx` (`idUserReported`),
   KEY `fk_Report_Action1_idx` (`idActionReported`),
   KEY `fk_Report_Comment1_idx` (`idCommentReported`),
   KEY `fk_Report_User2_idx` (`idUserCreated`),
   KEY `fk_Report_Admin1_idx` (`handledBy`),
-  CONSTRAINT `fk_Report_Admin1` FOREIGN KEY (`handledBy`) REFERENCES `Admin` (`username`),
-  CONSTRAINT `fk_Report_User2` FOREIGN KEY (`idUserCreated`) REFERENCES `User` (`idUser`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+  CONSTRAINT `FKdq17x437k3x7bdl9o6tpd9i7x` FOREIGN KEY (`idUserCreated`) REFERENCES `user` (`idUser`),
+  CONSTRAINT `FKescn7bvp5eysh86wg4msj9ht` FOREIGN KEY (`handledBy`) REFERENCES `admin` (`username`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `Review`
+-- Table structure for table `review`
 --
 
-DROP TABLE IF EXISTS `Review`;
+DROP TABLE IF EXISTS `review`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `Review` (
-  `stars` smallint NOT NULL,
-  `text` varchar(200) NOT NULL,
+CREATE TABLE `review` (
+  `stars` int DEFAULT NULL,
+  `text` varchar(500) DEFAULT NULL,
   `idUser` int NOT NULL,
-  PRIMARY KEY (`idUser`),
-  CONSTRAINT `fk_Review_User1` FOREIGN KEY (`idUser`) REFERENCES `User` (`idUser`)
+  PRIMARY KEY (`idUser`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `User`
+-- Table structure for table `user`
 --
 
-DROP TABLE IF EXISTS `User`;
+DROP TABLE IF EXISTS `user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `User` (
+CREATE TABLE `user` (
   `idUser` int NOT NULL AUTO_INCREMENT,
-  `username` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `password` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `displayName` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `desc` varchar(2000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `imagePath` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
+  `displayName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `desc` varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `imagePath` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `state` int NOT NULL DEFAULT '0',
+  `bannedBy` varchar(40) COLLATE utf8mb4_bin DEFAULT NULL,
   PRIMARY KEY (`idUser`),
-  UNIQUE KEY `idUser_UNIQUE` (`idUser`)
-) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  UNIQUE KEY `idUser_UNIQUE` (`idUser`),
+  UNIQUE KEY `UK3ur2qxf9j2dm75c1bp5ix4xqs` (`bannedBy`)
+) ENGINE=InnoDB AUTO_INCREMENT=85 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -259,4 +263,4 @@ CREATE TABLE `User` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-07-15  0:43:08
+-- Dump completed on 2025-08-03 20:40:10
