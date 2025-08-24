@@ -20,13 +20,13 @@ CREATE SCHEMA IF NOT EXISTS pdme;
 USE pdme;
 
 --
--- Table structure for table `action`
+-- Table structure for table `Action`
 --
 
-DROP TABLE IF EXISTS `action`;
+DROP TABLE IF EXISTS `Action`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `action` (
+CREATE TABLE `Action` (
   `idAction` int NOT NULL AUTO_INCREMENT,
   `goal` float NOT NULL DEFAULT '0',
   `collected` float NOT NULL DEFAULT '0',
@@ -42,31 +42,31 @@ CREATE TABLE `action` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `actionowner`
+-- Table structure for table `ActionOwner`
 --
 
-DROP TABLE IF EXISTS `actionowner`;
+DROP TABLE IF EXISTS `ActionOwner`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `actionowner` (
+CREATE TABLE `ActionOwner` (
   `idUser` int NOT NULL,
   `idAction` int NOT NULL,
   `isCollab` tinyint NOT NULL DEFAULT '0',
   PRIMARY KEY (`idUser`,`idAction`),
   KEY `fk_ActionOwner_Action1_idx` (`idAction`),
-  CONSTRAINT `FK181w54wqbw2r4m46yk4sosese` FOREIGN KEY (`idAction`) REFERENCES `action` (`idAction`),
-  CONSTRAINT `fk_ActionOwner_User` FOREIGN KEY (`idUser`) REFERENCES `user` (`idUser`)
+  CONSTRAINT `FK181w54wqbw2r4m46yk4sosese` FOREIGN KEY (`idAction`) REFERENCES `Action` (`idAction`),
+  CONSTRAINT `fk_ActionOwner_User` FOREIGN KEY (`idUser`) REFERENCES `User` (`idUser`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `admin`
+-- Table structure for table `Admin`
 --
 
-DROP TABLE IF EXISTS `admin`;
+DROP TABLE IF EXISTS `Admin`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `admin` (
+CREATE TABLE `Admin` (
   `username` varchar(40) NOT NULL,
   `password` varchar(255) DEFAULT NULL,
   `owner` bit(1) DEFAULT NULL,
@@ -75,13 +75,13 @@ CREATE TABLE `admin` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `comment`
+-- Table structure for table `Comment`
 --
 
-DROP TABLE IF EXISTS `comment`;
+DROP TABLE IF EXISTS `Comment`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `comment` (
+CREATE TABLE `Comment` (
   `idComment` int NOT NULL AUTO_INCREMENT,
   `text` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -92,18 +92,18 @@ CREATE TABLE `comment` (
   UNIQUE KEY `idAction_UNIQUE` (`idAction`),
   KEY `fk_Comment_User1_idx` (`idUser`),
   KEY `fk_Comment_Action1_idx` (`idAction`),
-  CONSTRAINT `fk_Comment_User1` FOREIGN KEY (`idUser`) REFERENCES `user` (`idUser`)
+  CONSTRAINT `fk_Comment_User1` FOREIGN KEY (`idUser`) REFERENCES `User` (`idUser`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `donation`
+-- Table structure for table `Donation`
 --
 
-DROP TABLE IF EXISTS `donation`;
+DROP TABLE IF EXISTS `Donation`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `donation` (
+CREATE TABLE `Donation` (
   `idDonation` int NOT NULL AUTO_INCREMENT,
   `amount` float DEFAULT NULL,
   `idAction` int NOT NULL,
@@ -112,35 +112,35 @@ CREATE TABLE `donation` (
   PRIMARY KEY (`idDonation`),
   KEY `fk_ActionDonation_User1_idx` (`idUser`),
   KEY `FKskenriiwx4liur6e7e19xhpch` (`idAction`),
-  CONSTRAINT `fk_ActionDonation_User1` FOREIGN KEY (`idUser`) REFERENCES `user` (`idUser`),
-  CONSTRAINT `FKskenriiwx4liur6e7e19xhpch` FOREIGN KEY (`idAction`) REFERENCES `action` (`idAction`)
+  CONSTRAINT `fk_ActionDonation_User1` FOREIGN KEY (`idUser`) REFERENCES `User` (`idUser`),
+  CONSTRAINT `FKskenriiwx4liur6e7e19xhpch` FOREIGN KEY (`idAction`) REFERENCES `Action` (`idAction`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `donationreport`
+-- Table structure for table `DonationReport`
 --
 
-DROP TABLE IF EXISTS `donationreport`;
+DROP TABLE IF EXISTS `DonationReport`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `donationreport` (
+CREATE TABLE `DonationReport` (
   `idDonationReport` int NOT NULL AUTO_INCREMENT,
   `idUser` int NOT NULL,
   PRIMARY KEY (`idDonationReport`),
   KEY `fk_DonationReport_User1_idx` (`idUser`),
-  CONSTRAINT `fk_DonationReport_User1` FOREIGN KEY (`idUser`) REFERENCES `user` (`idUser`)
+  CONSTRAINT `fk_DonationReport_User1` FOREIGN KEY (`idUser`) REFERENCES `User` (`idUser`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `message`
+-- Table structure for table `Message`
 --
 
-DROP TABLE IF EXISTS `message`;
+DROP TABLE IF EXISTS `Message`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `message` (
+CREATE TABLE `Message` (
   `idMessage` int NOT NULL AUTO_INCREMENT,
   `email` varchar(255) DEFAULT NULL,
   `messageText` varchar(500) DEFAULT NULL,
@@ -150,47 +150,47 @@ CREATE TABLE `message` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `notification`
+-- Table structure for table `Notification`
 --
 
-DROP TABLE IF EXISTS `notification`;
+DROP TABLE IF EXISTS `Notification`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `notification` (
+CREATE TABLE `Notification` (
   `idNotification` int NOT NULL AUTO_INCREMENT,
   `idUserReceiver` int NOT NULL,
   `text` varchar(200) NOT NULL,
   PRIMARY KEY (`idNotification`),
   KEY `fk_Notification_User1_idx` (`idUserReceiver`),
-  CONSTRAINT `fk_Notification_User1` FOREIGN KEY (`idUserReceiver`) REFERENCES `user` (`idUser`)
+  CONSTRAINT `fk_Notification_User1` FOREIGN KEY (`idUserReceiver`) REFERENCES `User` (`idUser`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `refund`
+-- Table structure for table `Refund`
 --
 
-DROP TABLE IF EXISTS `refund`;
+DROP TABLE IF EXISTS `Refund`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `refund` (
+CREATE TABLE `Refund` (
   `idRefund` int NOT NULL AUTO_INCREMENT,
   `reason` varchar(200) NOT NULL,
   `idDonation` int NOT NULL,
   PRIMARY KEY (`idRefund`),
   KEY `fk_refund_donation1_idx` (`idDonation`),
-  CONSTRAINT `fk_refund_donation1` FOREIGN KEY (`idDonation`) REFERENCES `donation` (`idDonation`)
+  CONSTRAINT `fk_refund_donation1` FOREIGN KEY (`idDonation`) REFERENCES `Donation` (`idDonation`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `report`
+-- Table structure for table `Report`
 --
 
-DROP TABLE IF EXISTS `report`;
+DROP TABLE IF EXISTS `Report`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `report` (
+CREATE TABLE `Report` (
   `idReport` int NOT NULL AUTO_INCREMENT,
   `reportType` smallint NOT NULL,
   `text` varchar(500) NOT NULL,
@@ -209,35 +209,35 @@ CREATE TABLE `report` (
   KEY `fk_Report_Comment1_idx` (`idCommentReported`),
   KEY `fk_Report_User2_idx` (`idUserCreated`),
   KEY `fk_Report_Admin1_idx` (`handledBy`),
-  CONSTRAINT `fk_Report_Admin1` FOREIGN KEY (`handledBy`) REFERENCES `admin` (`username`),
-  CONSTRAINT `fk_Report_User2` FOREIGN KEY (`idUserCreated`) REFERENCES `user` (`idUser`)
+  CONSTRAINT `fk_Report_Admin1` FOREIGN KEY (`handledBy`) REFERENCES `Admin` (`username`),
+  CONSTRAINT `fk_Report_User2` FOREIGN KEY (`idUserCreated`) REFERENCES `User` (`idUser`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `review`
+-- Table structure for table `Review`
 --
 
-DROP TABLE IF EXISTS `review`;
+DROP TABLE IF EXISTS `Review`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `review` (
+CREATE TABLE `Review` (
   `stars` smallint NOT NULL,
   `text` varchar(200) NOT NULL,
   `idUser` int NOT NULL,
   PRIMARY KEY (`idUser`),
-  CONSTRAINT `fk_Review_User1` FOREIGN KEY (`idUser`) REFERENCES `user` (`idUser`)
+  CONSTRAINT `fk_Review_User1` FOREIGN KEY (`idUser`) REFERENCES `User` (`idUser`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `user`
+-- Table structure for table `User`
 --
 
-DROP TABLE IF EXISTS `user`;
+DROP TABLE IF EXISTS `User`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `user` (
+CREATE TABLE `User` (
   `idUser` int NOT NULL AUTO_INCREMENT,
   `username` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `password` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
