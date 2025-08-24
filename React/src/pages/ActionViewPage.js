@@ -310,23 +310,41 @@ function ActionViewPage() {
   };
 
   const handleDeleteComment = async (commentId) => {
-    const confirmDelete = window.confirm(
-      "Da li ste sigurni da želite obrisati komentar?"
-    );
-    if (!confirmDelete) return;
+  const result = await Swal.fire({
+    title: "Jeste li sigurni?",
+    text: "Ova radnja će trajno obrisati komentar!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#0891b2",
+    cancelButtonColor: "#dc2626",
+    confirmButtonText: "Da, obriši!",
+    cancelButtonText: "Odustani",
+  });
 
-    try {
-      await apiRequest(
-        `comments/remove`,
-        "POST",
-        authState.accessToken,
-        commentId
-      );
-      fetchActionData();
-    } catch (err) {
-      console.error("Greška pri brisanju komentara:", err.message);
-    }
-  };
+  if (!result.isConfirmed) return;
+
+  try {
+    await apiRequest(
+      `comments/remove`,
+      "POST",
+      authState.accessToken,
+      commentId
+    );
+
+    await Swal.fire({
+      title: "Obrisano!",
+      text: "Komentar je uspješno obrisan.",
+      icon: "success",
+      timer: 1500,
+      showConfirmButton: false,
+    });
+
+    fetchActionData();
+  } catch (err) {
+    console.error("Greška pri brisanju komentara:", err.message);
+    Swal.fire("Greška", "Došlo je do greške pri brisanju komentara.", "error");
+  }
+};
 
   if (loadingAction) {
     return (
