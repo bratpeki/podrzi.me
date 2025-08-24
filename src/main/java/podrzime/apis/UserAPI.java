@@ -1,0 +1,190 @@
+package podrzime.apis;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+import podrzime.classes.User;
+import podrzime.dtos.UserLoginDTO;
+import podrzime.dtos.UserProfileDTO;
+import podrzime.repositories.ActionOwnerRepository;
+import podrzime.repositories.UserRepository;
+import podrzime.utilities.*;
+
+import java.security.SecureRandom;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping("/api/users")
+public class UserAPI {
+    private final JWT jwt;
+    private final UserRepository userRepository;
+    private final ActionOwnerRepository actionOwnerRepository;
+    private final MailService mailService;
+    private final PasswordEncoder passwordEncoder;
+
+    public UserAPI (UserRepository userRepository, JWT jwt, ActionOwnerRepository actionOwnerRepository, MailService mailService, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.jwt = jwt;
+        this.actionOwnerRepository = actionOwnerRepository;
+        this.mailService = mailService;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    public String generateRandomPassword(int length) {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%";
+        SecureRandom random = new SecureRandom();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            sb.append(chars.charAt(random.nextInt(chars.length())));
+        }
+        return sb.toString();
+    }
+
+    @PostMapping("/forgotpassword")
+    public ResponseEntity<?> forgotPassword(@RequestParam String email) {
+        User user = userRepository.findByemail(email);
+        if (user == null)
+            return ResponseEntity.ok("emailNotFound");
+
+        String newPassword = generateRandomPassword(10);
+        String newPasswordEn = passwordEncoder.encode(newPassword);
+
+        user.setPassword(newPasswordEn);
+        userRepository.save(user);
+
+        mailService.send(user.getEmail(), "Vasa nova lozinka",
+                "Vasa nova lozinka za prijavu na sistem je: " + newPassword + "\nPromjenite ju sto prije!");
+
+        return ResponseEntity.ok("newPasswordSent");
+    }
+
+    @GetMapping("/getusers")
+    public ResponseEntity<?> getUsers() {
+        Map<Integer, String> map = userRepository.findAllUsersForAdmin(58).stream()
+                .collect(Collectors.toMap(
+                        row -> (Integer) row[0],
+                        row -> (String) row[1]
+                ));
+
+        return ResponseEntity.ok(map);
+    }
+    @GetMapping("/getusersstate")
+    public ResponseEntity<?> getUsersState() {
+    List<Map<String, Object>> list = userRepository.findAllUsersForAdmin(58).stream()
+            .map(row -> {
+                Map<String, Object> map = new HashMap<>();
+                map.put("id", row[0]);
+                map.put("name", row[1]);
+                map.put("state", row[2]);
+                return map;
+            }).collect(Collectors.toList());
+
+    return ResponseEntity.ok(list);
+    }
+
+    @PostMapping("/userauth")
+    public ResponseEntity<?> LoginUser(@RequestBody UserLoginDTO uldto) {
+        if (uldto.getUsername().isBlank() && uldto.getPassword().isBlank())
+            return ResponseEntity.ok("missingInfoError");
+        if (userRepository.findByusername(uldto.getUsername()) == null)
+            return ResponseEntity.ok("usernameError");
+        if (!passwordEncoder.matches(uldto.getPassword(), userRepository.findByusername(uldto.getUsername()).getPassword()))
+            return ResponseEntity.ok("passwordError");
+
+        String jwtt = jwt.generateToken(uldto.getUsername());
+        return ResponseEntity.ok(jwtt);
+    }
+
+    @PostMapping("/adduser")
+    public ResponseEntity<?> AddUser(@RequestBody User user) {
+        if (!Pattern.compile("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$").matcher(user.getEmail()).matches() || user.getEmail().isBlank() || user.getUsername().isBlank() || user.getDisplayName().isBlank())
+            return ResponseEntity.ok("invalidDataError");
+
+        if (userRepository.findByemail(user.getEmail()) != null)
+            return ResponseEntity.ok("emailError");
+
+        if (userRepository.findByusername(user.getUsername()) != null)
+            return ResponseEntity.ok("usernameError");
+
+        if (userRepository.findBydisplayName(user.getDisplayName()) != null)
+            return ResponseEntity.ok("displayNameError");
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
+        return ResponseEntity.ok("success");
+    }
+
+    @GetMapping("/showprofile")
+    public ResponseEntity<?> ShowProfile(@RequestHeader Map<String, String> token) {
+        User user = userRepository.findByidUser(jwt.extractId(token.get("token")));
+        UserProfileDTO updto = new UserProfileDTO("",  user.getEmail(), user.getDisplayName(), user.getDesc(), user.getImagePath(), user.getUsername(), "", user.getIdUser());
+        return ResponseEntity.ok(updto);
+    }
+
+    @GetMapping("/showuserprofile")
+    public ResponseEntity<?> ShowUserProfile(@RequestHeader Map<String, String> token, @RequestParam Integer idUser) {
+        User user = userRepository.findByidUser(idUser);
+        UserProfileDTO updto = new UserProfileDTO("",  user.getEmail(), user.getDisplayName(), user.getDesc(), user.getImagePath(), user.getUsername(), "", user.getIdUser());
+        return ResponseEntity.ok(updto);
+    }
+
+    @PostMapping("/updateprofile")
+    public ResponseEntity<?> UpdateProfile(@RequestHeader Map<String, String> token, @RequestBody UserProfileDTO updto) {
+        String email = updto.getEmail();
+        if (!Pattern.compile("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$").matcher(email).matches())
+            return ResponseEntity.ok("invalidEmailError");
+
+       User user = userRepository.findByidUser(jwt.extractId(token.get("token")));
+
+        if (updto.getOldPassword() == null || updto.getOldPassword().isBlank())
+            return ResponseEntity.ok("missingOldPasswordError");
+
+       if (updto.getEmail() != null && !updto.getEmail().isBlank())
+           user.setEmail(updto.getEmail());
+
+        if (updto.getDesc() != null && !updto.getDesc().isBlank())
+            user.setDesc(updto.getDesc());
+
+        if (updto.getDisplayName() != null && !updto.getDisplayName().isBlank())
+            user.setDisplayName(updto.getDisplayName());
+
+        if (updto.getImagePath() != null && !updto.getImagePath().isBlank())
+            user.setImagePath(updto.getImagePath());
+
+        if (!passwordEncoder.matches(updto.getOldPassword(), user.getPassword()))
+            return ResponseEntity.ok("invalidOldPassword");
+
+        if (updto.getPassword() != null && !updto.getPassword().isBlank())
+            user.setPassword(passwordEncoder.encode(updto.getPassword()));
+
+        userRepository.save(user);
+        return ResponseEntity.ok("success");
+    }
+
+    @GetMapping("/getnamebyid")
+    public ResponseEntity<?> GetNameByID(@RequestParam Integer idUser) {
+        if (userRepository.findByidUser(idUser) != null)
+            return ResponseEntity.ok(userRepository.findByidUser(idUser).getDisplayName());
+        else
+            return ResponseEntity.ok("invalidUserError");
+    }
+
+    @PostMapping("/removeuser")
+    public ResponseEntity<?> removeUser(@RequestHeader Map<String, String> token, @RequestParam String password) {
+        User u = userRepository.findByidUser(jwt.extractId(token.get("token")));
+        if (u.getPassword().equals(password)) {
+            if (actionOwnerRepository.findByidAO_IdUser(u.getIdUser()) == null) {
+                userRepository.delete(u);
+                return ResponseEntity.ok("success");
+            }
+            else
+                return ResponseEntity.ok("hasActionsError");
+        }
+        else
+            return ResponseEntity.ok("wrongPasswordError");
+    }
+}

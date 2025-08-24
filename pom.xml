@@ -9,8 +9,8 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>project</groupId>
-	<artifactId>Project</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<artifactId>PodrziMe</artifactId>
+	<version>0.1</version>
 	<name>Podrzi.me</name>
 	<description>Podrzi.me backend</description>
 	<url/>
